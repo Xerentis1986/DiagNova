@@ -80,6 +80,13 @@ pytest ../../tests -q
 
 Abgedeckt: Auth/Demo-Modus, Seed-Fahrzeuge, Simulator DTCs/Live, Bericht CSV/PDF, DTC-/PID-Parser.
 
+## Dokumentation (Phase 00)
+
+- Fortschritt: [`DIAGNOVA_PROGRESS.md`](DIAGNOVA_PROGRESS.md)
+- Anforderungsmatrix: [`docs/requirements.md`](docs/requirements.md)
+- Fähigkeitenkatalog: [`docs/capabilities.md`](docs/capabilities.md)
+- Phasenstatus + Baseline-Tests: [`docs/phase-status.md`](docs/phase-status.md)
+
 ## Monorepo-Struktur
 
 ```
@@ -94,9 +101,11 @@ diagnova/
 ├── docs/
 ├── tests/
 ├── docker-compose.yml
+├── DIAGNOVA_PROGRESS.md
 ├── .env.example
 └── README.md
 ```
+
 
 ## Sicherheit (V1-Minimum)
 
