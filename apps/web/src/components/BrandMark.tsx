@@ -24,7 +24,7 @@ export function BrandMark({
   const { resolved } = useTheme()
   const dark = resolved === 'dark'
   const wordmarkSrc = dark ? '/brand/wordmark-dark.png' : '/brand/wordmark-light.png'
-  const symbolSrc = '/brand/symbol-128.png'
+  const symbolSrc = '/brand/symbol.svg'
   const loading = priority ? 'eager' : 'lazy'
   const common = {
     loading: loading as 'eager' | 'lazy',

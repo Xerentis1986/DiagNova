@@ -36,7 +36,7 @@ React/Tailwind-Primitives unter `apps/web/src/components/ui/`:
 | PWA Icons | `apps/web/public/icons/pwa-{192,512}.png` |
 | Manifest | `apps/web/public/manifest.webmanifest` |
 | Wordmark light/dark | `apps/web/public/brand/wordmark-*.png` |
-| Symbol | `apps/web/public/brand/symbol-{64,128,256}.png` |
+| Symbol | `apps/web/public/brand/symbol.svg` (+ `symbol-64.png`, `symbol-256.png`) |
 
 `BrandMark`: Theme-aware (hell: charcoal Wordmark, dunkel: weißes Monochrom). Login Wordmark hero-level; Sidebar Lockup.
 
