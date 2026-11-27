@@ -2,6 +2,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using DiagNova.Connector.Adapters;
 using DiagNova.Connector.Adapters.DelphiCdp;
+using DiagNova.Connector.Adapters.ObdDiag;
 using DiagNova.Connector.Auth;
 using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Ecu;
@@ -30,6 +31,8 @@ builder.Services.AddSingleton<AdapterRegistry>();
 builder.Services.AddSingleton<HardwareInventoryProbe>();
 builder.Services.AddSingleton<J2534PassThruAbstraction>();
 builder.Services.AddSingleton<DelphiCdpAdapterService>();
+builder.Services.AddSingleton<CdpFirmwareManager>();
+builder.Services.AddSingleton<ObdDiagAdapterService>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
@@ -241,6 +244,31 @@ app.MapPost("/adapters/delphi-cdp/vehicle-command", () => Results.Json(new
         "Fahrzeug-/CAN-/Relais-Befehle sind deaktiviert. " +
         "Keine ungeprüfte OBD-Pin-Umschaltung, kein ECU-Schreiben, kein Auto-Firmwareupdate."
 }, statusCode: StatusCodes.Status403Forbidden));
+app.MapGet("/adapters/delphi-cdp/firmware", (CdpFirmwareManager fw) => Results.Json(fw.Status()));
+app.MapPost("/adapters/delphi-cdp/firmware/import", async (HttpRequest req, CdpFirmwareManager fw) =>
+{
+    // Multipart optional – JSON { label, content_base64, user_confirmed_rights }
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var root = doc.RootElement;
+    var label = root.TryGetProperty("label", out var l) ? l.GetString() ?? "package" : "package";
+    var confirmed = root.TryGetProperty("user_confirmed_rights", out var c) && c.GetBoolean();
+    var b64 = root.TryGetProperty("content_base64", out var b) ? b.GetString() : null;
+    byte[] bytes;
+    try { bytes = string.IsNullOrWhiteSpace(b64) ? Array.Empty<byte>() : Convert.FromBase64String(b64); }
+    catch { return Results.Json(new { ok = false, message_de = "Ungültiges Base64" }, statusCode: 400); }
+    return Results.Json(fw.ImportPackage(label, bytes, confirmed, root.TryGetProperty("notes", out var n) ? n.GetString() : null));
+});
+app.MapPost("/adapters/delphi-cdp/firmware/flash", async (HttpRequest req, CdpFirmwareManager fw) =>
+{
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var id = doc.RootElement.TryGetProperty("package_id", out var p) ? p.GetString() ?? "" : "";
+    var confirm = doc.RootElement.TryGetProperty("user_confirm_flash", out var c) && c.GetBoolean();
+    var result = fw.RequestFlash(id, confirm);
+    return Results.Json(result, statusCode: StatusCodes.Status403Forbidden);
+});
+
+app.MapGet("/adapters/obd-diag/status", (ObdDiagAdapterService obd) => Results.Json(obd.Status()));
+app.MapGet("/adapters/obd-diag/probe-guidance", (ObdDiagAdapterService obd) => Results.Json(obd.ProbeGuidance()));
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 

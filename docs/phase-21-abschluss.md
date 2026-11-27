@@ -1,68 +1,44 @@
-# Phase 21 – Abschlussbericht: B2B/B2C-Abrechnung & Adapter-Integration
+# Phase 21 – Abschlussbericht: Produktfertigstellung & kommerzielle Vorbereitung
 
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-21-billing-adapters-e3f2`  
 **PR:** https://github.com/Xerentis1986/DiagNova/pull/32  
-**Basis:** Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` (PR #30)
+**Basis:** Phase 20 (NO-GO kommerziell) – Blocker systematisch adressiert, nicht alle geschlossen
 
 ## Auftrag
 
-Verbindliche Ergänzung: vollständiges kaufmännisches Backend B2B+B2C (AT-Steuer/OSS/VIES), Multi-Adapter-Connector, Recherche OBD-DIAG 2055+ und Delphi/Autocom – ohne erfundene Hardwareerfolge und ohne proprietäre DLLs ohne Rechte.
+Vollständige technische Produktfertigstellung soweit ohne externe HW/Keys/Rechtsfreigaben möglich: Adapter, OBD, Connector, Betreiber-Backend B2B/B2C, Stripe-Testmodus, Lizenzen, Docs, Release-Status.
 
-**Ergänzung Delphi GitHub:** unabhängige CDP+-Protokollimplementierung (smooker/obd als Forschungsquelle, kein GPL-Copy).
+## Erledigt (Code)
 
-## Erledigt
+### Adapter / Diagnose
 
-### Commerce
+- Delphi/Autocom CDP+: eigenes Safe-Read-Modul, Fake/FTDI-Abstraktion, Firmware-Store **ohne Flash**, Probe-Tool
+- OBD-DIAG 2055+: Profil + Status/Guidance – **BlockedUndocumented**, kein ELM-Fake
+- ELM/OBD-II Engine: produktiv im Sim + COM-Live-Pfad (HW ungetestet)
+- Service/Coding: Architektur + Gates; Schreibend gesperrt
 
-- Billing-Konten B2B/B2C, Consent, Lizenzen, Kündigung
-- VIES-Prüfung (Stub + optional Live `VIES_LIVE=1`) mit Protokoll
-- Steuerengine AT (Inland, EU Reverse Charge, B2C OSS-Demo, Drittland) – `draft_needs_review`
-- Rechnungen + Gutschriften + JSON-Download
-- UI `/commerce`
-- Alembic `014_phase21`
-- Tests `test_phase21_commerce.py`
+### Kaufmännisch / Admin
 
-### Connector / Adapter
-
-- Multi-Adapter-Registry, Profile, AutoDetect-Kandidaten, Connection-Test
-- Hardware-Inventur read-only + Hersteller-Anfrageentwurf
-- J2534-Abstraktion ohne DLL-Bindung
-- OBD-DIAG 2055+: **BlockedUndocumented** – ELM nicht angenommen
-- Delphi/Autocom CDP+: **PartiallySupported** – eigenes Safe-Read-Modul (`*200`/`*201`/`*203`/`*20A`), Fake-Transport, FTDI-Abstraktion (ehrlicher Fail), Probe-Tool, CAN/Relais/Flash gesperrt
-- Unit-Tests Phase 21 (Connector inkl. DelphiCdp)
+- B2B/B2C Commerce, Steuer draft, Rechnungen
+- Stripe Checkout + Webhooks (Testmodus; Live gesperrt)
+- Lizenz Activate/Verify + Gerätebindung
+- E-Mail Templates (dry_run / optional SMTP)
+- Admin-Dashboard mit DB-Kennzahlen (MRR/ARR Katalog-Näherung, keine Fake-Zahlungen)
 
 ### Dokumentation
 
-- `DIAGNOVA_B2B_B2C_BILLING.md`
-- `DIAGNOVA_TAX_CONFIGURATION.md`
-- `DIAGNOVA_ADAPTER_RESEARCH.md`
-- `DIAGNOVA_OBD_DIAG_2055_STATUS.md`
-- `DIAGNOVA_DELPHI_AUTOCOM_STATUS.md`
-- `DIAGNOVA_DELPHI_GITHUB_RESEARCH.md`
-- `DIAGNOVA_DELPHI_PROTOCOL_SPEC.md`
-- `DIAGNOVA_DELPHI_DRIVER_STATUS.md`
-- `DIAGNOVA_DELPHI_HARDWARE_TEST.md`
-- `DIAGNOVA_DELPHI_LICENSE_REVIEW.md`
-- `DIAGNOVA_CONNECTOR_DRIVER_MATRIX.md`
+Alle verbindlichen `DIAGNOVA_*` Ergebnisdateien inkl. `RELEASE_BLOCKERS` / `RELEASE_READINESS`.
 
 ## Tests
 
 | Suite | Ergebnis |
 |-------|----------|
-| pytest | unverändert (Commerce) – bei Push erneut |
-| `dotnet test` | **44 passed** (inkl. DelphiCdp) |
-| Web build | nach Commit prüfen |
-
-## Bewusst nicht / offen
-
-- Kein echter PSP (BLK-PAY)
-- Keine produktive Steuerfreigabe
-- Kein Live-Labor am Delphi-Adapter (VID/PID/`*200`/`*201` offen)
-- Keine Fahrzeug-/Relais-/CAN-Befehle, kein Auto-Firmwareupdate
-- Kein GPL-Code aus smooker/obd in der Binary
-- Kein Prod-Redeploy
+| `pytest tests/api` | **140 passed** |
+| `dotnet test` | **46 passed** |
 
 ## Verdict
 
-Kaufmännische Simulation B2B/B2C **einsatzbereit für Demo**. CDP+-Geräte-Lese-Pfad **simuliert/codec-fertig**, Hardware **nicht** freigegeben. Kommerzielle Echtzahlung und Live-Adapter weiter **NO-GO** bis Freigaben.
+**NO-GO** für kommerziellen Verkauf. Technisch weitgehend vorbereitet; freigaberelevant bleiben HW-Labor, Stripe-Keys/Live, Recht/Steuer, Signing, Deploy.
+
+Details: `DIAGNOVA_PHASE21_PROGRESS.md`, `DIAGNOVA_RELEASE_BLOCKERS.md`.

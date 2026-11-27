@@ -239,7 +239,12 @@ def test_admin_dashboard_platform_only(client: TestClient, auth_headers: dict[st
     dash = client.get("/api/admin/dashboard", headers=auth_headers)
     assert dash.status_code == 200, dash.text
     body = dash.json()
-    assert body["payment_mode"] == "mock_stub"
+    assert body["payment_mode"] in {
+        "mock_stub",
+        "mock_stub_plus_stripe_ready",
+        "stripe_test",
+        "stripe_live_gated",
+    }
     assert body["workshops_count"] >= 1
     assert body["users_count"] >= 2
     assert "BLK-PAY" in " ".join(body["legal_open_items_de"]) or any(

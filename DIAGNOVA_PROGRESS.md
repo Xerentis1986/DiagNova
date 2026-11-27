@@ -60,9 +60,22 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 | 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
-| 21 Billing + Adapter | 🟢 Simuliert / Docs | B2B/B2C; CDP+ Safe-Reads sim; Live-HW NO-GO |
+| 21 Produktfertigstellung | 🟡 Code weitgehend / NO-GO Release | Stripe-Test, CDP+, Admin; HW/Legal/Pay-Live offen |
 
 ## Chronik
+
+### 2026-11-27 – Phase 21 Gesamt: Produktfertigstellung
+
+**Erledigt**
+
+- Stripe-Testmodus, Lizenzen, E-Mail dry_run, Admin-Kennzahlen
+- CDP+ Firmware-Store (kein Flash), OBD-DIAG blocked-Modul
+- Pflicht-Docs inkl. RELEASE_READINESS (**NO-GO**)
+- Tests: pytest API **140**, dotnet **46**
+
+**Nicht gemacht (bewusst / extern)**
+
+- Kein HW-Laborerfolg, keine Live-Charges, kein Prod-Redeploy, keine Rechtsfreigabe
 
 ### 2026-11-27 – Phase 21 Ergänzung: Delphi/Autocom CDP+ (GitHub-Forschung)
 

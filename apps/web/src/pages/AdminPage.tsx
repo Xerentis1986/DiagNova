@@ -32,23 +32,34 @@ export function AdminPage() {
     <div className="space-y-6">
       <PageHeader
         title="Administration"
-        description="Nutzer, Abos, Datenversionen, Software-Updates, Adapter, Support und Audit. Zahlung nur Stub."
+        description="Betreiber-Kennzahlen aus der Datenbank. Stripe-Testmodus möglich; Live-Charges gesperrt ohne Freigabe."
       />
 
       <Panel>
         <div className="mb-3 flex flex-wrap gap-2">
-          <Badge tone="warn">SIMULATION / STUB</Badge>
+          <Badge tone="warn">KEINE DEMO-UMSÄTZE ALS ZAHLUNG</Badge>
           <Badge>{d?.payment_mode ?? '…'}</Badge>
         </div>
         <p className="mb-3 text-sm text-[var(--dn-muted)]">{d?.payment_note_de}</p>
+        <p className="mb-3 text-xs text-[var(--dn-muted)]">{d?.metrics_note_de}</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Mandanten" value={d?.workshops_count} />
           <Stat label="Nutzer" value={d?.users_count} />
+          <Stat label="Kunden gesamt" value={d?.customers_count} />
+          <Stat label="B2B / B2C" value={
+            d?.customers_b2b != null ? `${d.customers_b2b} / ${d.customers_b2c}` : undefined
+          } />
           <Stat label="Aktive Abos" value={d?.active_subscriptions} />
+          <Stat label="Testabos" value={d?.trial_subscriptions} />
           <Stat label="Past due" value={d?.past_due_subscriptions} />
           <Stat label="Gekündigt/abgelaufen" value={d?.canceled_subscriptions} />
+          <Stat label="MRR (Cent, Katalog)" value={d?.mrr_cents} />
+          <Stat label="ARR (Cent, Katalog)" value={d?.arr_cents} />
+          <Stat label="Offene Rechnungen" value={d?.invoices_open} />
+          <Stat label="Bezahlt" value={d?.invoices_paid} />
+          <Stat label="Überfällig" value={d?.invoices_overdue} />
+          <Stat label="Lizenzen/Geräte" value={d?.devices_bound} />
           <Stat label="Offene Einladungen" value={d?.invitations_pending} />
-          <Stat label="Geräte" value={d?.devices_bound} />
         </div>
       </Panel>
 
@@ -189,7 +200,7 @@ export function AdminPage() {
   )
 }
 
-function Stat({ label, value }: { label: string; value?: number }) {
+function Stat({ label, value }: { label: string; value?: number | string }) {
   return (
     <div className="rounded-md border border-[var(--dn-border)] px-3 py-2">
       <div className="text-xs text-[var(--dn-muted)]">{label}</div>

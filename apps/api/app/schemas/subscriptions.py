@@ -193,6 +193,19 @@ class AdminDashboardOut(BaseModel):
     recent_webhooks: list[dict[str, Any]]
     subscriptions: list[SubscriptionOut]
     legal_open_items_de: list[str]
+    # Phase 21 – Betreiberkennzahlen (DB, keine Fake-Zahlungen)
+    stripe: dict[str, Any] | None = None
+    customers_count: int = 0
+    customers_b2b: int = 0
+    customers_b2c: int = 0
+    trial_subscriptions: int = 0
+    mrr_cents: int = 0
+    arr_cents: int = 0
+    invoices_open: int = 0
+    invoices_paid: int = 0
+    invoices_overdue: int = 0
+    active_licenses: int = 0
+    metrics_note_de: str | None = None
 
 
 class AdminUserOut(BaseModel):
