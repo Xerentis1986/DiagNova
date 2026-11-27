@@ -18,6 +18,13 @@ export function DiagnosticsPage() {
   const [history, setHistory] = useState<{ t: string; rpm: number; speed: number; coolant: number }[]>([])
   const [lastReportId, setLastReportId] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [showClear, setShowClear] = useState(false)
+  const [clearPhrase, setClearPhrase] = useState('')
+  const [ackFf, setAckFf] = useState(false)
+  const [ackRdy, setAckRdy] = useState(false)
+  const [ackPerm, setAckPerm] = useState(false)
+  const [ackReport, setAckReport] = useState(false)
+  const [clearMsg, setClearMsg] = useState<string | null>(null)
 
   const vehiclesQ = useQuery({ queryKey: ['vehicles'], queryFn: () => api.vehicles() })
   const vehicleId =
@@ -67,17 +74,50 @@ export function DiagnosticsPage() {
     onSuccess: (r) => setLastReportId(r.id),
   })
 
+  const clearWarningsQ = useQuery({
+    queryKey: ['clear-warnings'],
+    queryFn: () => api.clearDtcWarnings(),
+    enabled: showClear,
+  })
+
+  const clearDtcs = useMutation({
+    mutationFn: () =>
+      api.clearDtcs(vehicleId!, {
+        confirmation_phrase: clearPhrase,
+        acknowledge_freeze_frame_loss: ackFf,
+        acknowledge_readiness_reset: ackRdy,
+        acknowledge_permanent_remain: ackPerm,
+        pre_report_saved: ackReport,
+        operator_note: 'UI simulated clear',
+      }),
+    onSuccess: (r) => {
+      setClearMsg(r.message_de)
+      setShowClear(false)
+      void qc.invalidateQueries({ queryKey: ['dtcs', vehicleId] })
+    },
+    onError: (e: Error) => setClearMsg(e.message),
+  })
+
   const vehicleLabel = useMemo(() => {
     const v = vehiclesQ.data?.find((x) => x.id === vehicleId)
     return v ? `${v.make} ${v.model}` : '–'
   }, [vehiclesQ.data, vehicleId])
 
+  const dataSource = liveQ.data?.data_source ?? 'simulated'
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-blue-100">OBD-Diagnose (Simulator)</h1>
+          <h1 className="text-2xl font-semibold text-blue-100">OBD-Diagnose</h1>
           <p className="text-sm text-slate-400">Fahrzeug: {vehicleLabel}</p>
+          <p
+            className={`mt-1 text-xs font-medium ${
+              dataSource === 'live' ? 'text-emerald-300' : 'text-amber-300'
+            }`}
+          >
+            Datenquelle: {dataSource === 'live' ? 'LIVE' : 'DEMO / simuliert'} – strikt getrennt
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -94,7 +134,18 @@ export function DiagnosticsPage() {
             onClick={() => createReport.mutate()}
             className="rounded-md bg-blue-600 px-3 py-2 text-sm hover:bg-blue-500 disabled:opacity-50"
           >
-            Bericht speichern
+            Vorher-Bericht speichern
+          </button>
+          <button
+            type="button"
+            disabled={!vehicleId}
+            onClick={() => {
+              setShowClear(true)
+              setClearMsg(null)
+            }}
+            className="rounded-md border border-red-800/60 px-3 py-2 text-sm text-red-200 hover:bg-red-950/40 disabled:opacity-50"
+          >
+            Fehler löschen…
           </button>
           {lastReportId && (
             <>
@@ -118,7 +169,73 @@ export function DiagnosticsPage() {
       </div>
 
       {sessionId && (
-        <p className="text-xs text-emerald-300">Aktive Sitzung: {sessionId} (simuliert)</p>
+        <p className="text-xs text-emerald-300">
+          Aktive Sitzung: {sessionId} ({dataSource})
+        </p>
+      )}
+      {clearMsg && <p className="text-sm text-amber-200">{clearMsg}</p>}
+
+      {showClear && (
+        <section className="dn-panel space-y-3 border border-red-900/50 p-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-red-200">
+            Fehlerlöschung (freigabegeschützt)
+          </h2>
+          <p className="text-xs text-slate-400">
+            Quelle: {clearWarningsQ.data?.data_source ?? '…'} · Hardware-Live:{' '}
+            {clearWarningsQ.data?.hardware_live ? 'ja' : 'nein (Simulator)'}
+          </p>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-300">
+            {(clearWarningsQ.data?.warnings_de ?? []).map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" checked={ackFf} onChange={(e) => setAckFf(e.target.checked)} />
+            Freeze-Frame-Verlust verstanden
+          </label>
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" checked={ackRdy} onChange={(e) => setAckRdy(e.target.checked)} />
+            Readiness-Reset verstanden
+          </label>
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" checked={ackPerm} onChange={(e) => setAckPerm(e.target.checked)} />
+            Permanente DTCs bleiben bestehen
+          </label>
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={ackReport}
+              onChange={(e) => setAckReport(e.target.checked)}
+            />
+            Vorher-Bericht wurde gespeichert
+          </label>
+          <label className="block text-sm">
+            Bestätigungsphrase ({clearWarningsQ.data?.requires_confirmation_phrase ?? '…'})
+            <input
+              className="mt-1 w-full rounded border border-[var(--dn-border)] bg-slate-950 px-2 py-1 font-mono text-sm"
+              value={clearPhrase}
+              onChange={(e) => setClearPhrase(e.target.value)}
+              autoComplete="off"
+            />
+          </label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="rounded-md bg-red-800 px-3 py-2 text-sm disabled:opacity-50"
+              disabled={clearDtcs.isPending || !vehicleId}
+              onClick={() => clearDtcs.mutate()}
+            >
+              Löschung ausführen (simuliert)
+            </button>
+            <button
+              type="button"
+              className="rounded-md border border-[var(--dn-border)] px-3 py-2 text-sm"
+              onClick={() => setShowClear(false)}
+            >
+              Abbrechen
+            </button>
+          </div>
+        </section>
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -141,6 +258,9 @@ export function DiagnosticsPage() {
                   </div>
                   <div className="text-right text-xs">
                     <div className="uppercase text-slate-400">{d.status}</div>
+                    {d.status === 'permanent' && (
+                      <div className="text-rose-300">nicht löschbar</div>
+                    )}
                     <div
                       className={
                         d.severity === 'critical'

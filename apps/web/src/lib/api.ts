@@ -269,6 +269,38 @@ export const api = {
   live(vehicleId: string) {
     return request<LiveData>(`/api/diagnostics/${vehicleId}/live`)
   },
+  clearDtcWarnings() {
+    return request<{
+      data_source: string
+      warnings_de: string[]
+      permanent_dtcs_clearable: boolean
+      requires_confirmation_phrase: string
+      hardware_live: boolean
+    }>('/api/diagnostics/clear/warnings')
+  },
+  clearDtcs(
+    vehicleId: string,
+    body: {
+      confirmation_phrase: string
+      acknowledge_freeze_frame_loss: boolean
+      acknowledge_readiness_reset: boolean
+      acknowledge_permanent_remain: boolean
+      pre_report_saved: boolean
+      operator_note?: string
+    },
+  ) {
+    return request<{
+      success: boolean
+      data_source: string
+      message_de: string
+      before?: DtcEntry[]
+      after?: DtcEntry[]
+      permanent_remain?: DtcEntry[]
+    }>(`/api/diagnostics/${vehicleId}/dtcs/clear`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
   startSession(vehicleId: string) {
     return request<SessionSummary>(`/api/sessions?vehicle_id=${encodeURIComponent(vehicleId)}`, {
       method: 'POST',

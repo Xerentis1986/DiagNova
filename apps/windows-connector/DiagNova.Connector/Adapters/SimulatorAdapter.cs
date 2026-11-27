@@ -1,7 +1,8 @@
 namespace DiagNova.Connector.Adapters;
 
 /// <summary>
-/// Separater Simulator-Adapter (kein serieller Port, keine Fahrzeugbefehle).
+/// Separater Simulator-Adapter (kein echter Fahrzeugbus).
+/// data_source immer "simulated".
 /// </summary>
 public sealed class SimulatorAdapter : IDiagnosticAdapter
 {
@@ -13,14 +14,14 @@ public sealed class SimulatorAdapter : IDiagnosticAdapter
         AdapterConnected: true,
         VehicleConnected: false,
         Mode: "simulator",
-        MessageDe: "Simulator getrennt vom Hardware-Pfad – Adapter „verbunden“, Fahrzeug nicht (Phase 03 sendet keine OBD-Befehle).",
+        MessageDe: "Simulator-Pfad – keine Hardware. OBD-Antworten aus dokumentierten Testvektoren (simulated).",
         PortName: null,
         TransportName: "simulator",
         LastHeartbeat: DateTimeOffset.UtcNow,
         LimitationsDe: new[]
         {
             "Rein simuliert – keine Hardware.",
-            "Fahrzeugverbindung bleibt in Phase 03 bewusst false."
+            "Keine Live-Freigabe ohne Hardwaretest."
         }
     );
 }

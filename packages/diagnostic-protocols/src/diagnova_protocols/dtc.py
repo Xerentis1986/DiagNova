@@ -37,3 +37,52 @@ def parse_dtc_bytes(data: bytes | list[int]) -> list[str]:
             continue
         codes.append(decode_dtc(high, low))
     return codes
+
+
+# Mode → Status-Label (SAE J1979)
+DTC_MODE_STATUS = {
+    0x03: "stored",
+    0x07: "pending",
+    0x0A: "permanent",
+}
+
+
+def parse_mode_dtc_response(
+    service_response: int,
+    data: bytes | list[int],
+    *,
+    ecu_id: str | None = None,
+) -> list[dict]:
+    """
+    Parst positive Mode-03/07/0A-Antworten (43/47/4A).
+    Manche ECUs liefern Count-Byte zuerst – wird erkannt.
+    Permanente DTCs (0A) sind nicht löschbar.
+    """
+    request_mode = service_response - 0x40
+    status = DTC_MODE_STATUS.get(request_mode)
+    if status is None:
+        raise ValueError(f"Unsupported DTC response service 0x{service_response:02X}")
+
+    raw = list(data)
+    # Optional leading count (number of codes)
+    if raw and raw[0] <= 16 and len(raw) == 1 + raw[0] * 2:
+        raw = raw[1:]
+    elif raw and len(raw) % 2 == 1:
+        raw = raw[1:]
+
+    codes = parse_dtc_bytes(raw)
+    clearable = status != "permanent"
+    return [
+        {
+            "code": code,
+            "status": status,
+            "clearable": clearable,
+            "ecu_id": ecu_id if ecu_id is not None else "unknown",
+            "message_de": (
+                "Permanenter DTC – nicht durch Mode 04 löschbar."
+                if not clearable
+                else f"DTC ({status})."
+            ),
+        }
+        for code in codes
+    ]

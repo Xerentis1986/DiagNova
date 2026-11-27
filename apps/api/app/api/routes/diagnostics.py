@@ -10,6 +10,7 @@ from fastapi.responses import Response
 from app.api.deps import CurrentUser, DbSession, require_roles
 from app.models import DiagnosticReport, DiagnosticSession, User, Vehicle
 from app.schemas.api import (
+    ClearDtcRequest,
     ConnectionStatusOut,
     DiagnosticSessionOut,
     DtcOut,
@@ -64,6 +65,46 @@ def get_live(vehicle_id: str, _user: CurrentUser, db: DbSession) -> LiveDataOut:
     if vehicle is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
     return simulator.live_data(vehicle.id, vehicle.vin)
+
+
+@router.get("/diagnostics/clear/warnings")
+def clear_warnings(_user: CurrentUser) -> dict:
+    """Warnhinweise für Fehlerlöschung – immer mit data_source-Kennzeichnung."""
+    return simulator.clear_dtc_warnings()
+
+
+@router.post("/diagnostics/{vehicle_id}/dtcs/clear")
+def clear_dtcs(
+    vehicle_id: str,
+    body: ClearDtcRequest,
+    user: Technician,
+    db: DbSession,
+) -> dict:
+    """
+    Freigabegeschützte DTC-Löschung im Simulator.
+    Permanente DTCs bleiben. Kein Hardwarezugriff – data_source=simulated.
+    """
+    vehicle = db.get(Vehicle, vehicle_id)
+    if vehicle is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+    result = simulator.clear_dtcs_simulated(
+        vehicle.id,
+        confirmation_phrase=body.confirmation_phrase,
+        acknowledge_freeze_frame_loss=body.acknowledge_freeze_frame_loss,
+        acknowledge_readiness_reset=body.acknowledge_readiness_reset,
+        acknowledge_permanent_remain=body.acknowledge_permanent_remain,
+        pre_report_saved=body.pre_report_saved,
+    )
+    if not result.get("success"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result.get("message_de"))
+    write_audit(
+        db,
+        user_id=user.id,
+        action="dtc.clear.simulated",
+        resource=f"vehicle:{vehicle.id}",
+        detail=body.operator_note or "simulated clear",
+    )
+    return result
 
 
 @router.post("/sessions", response_model=DiagnosticSessionOut)

@@ -41,6 +41,18 @@ MVP_SIMULATED_CAPABILITIES = [
         "status": "simulated",
         "phase": 1,
     },
+    {
+        "id": "obd_clear_dtc_gated",
+        "label_de": "Fehlerlöschung freigabegeschützt (simuliert; permanente DTCs bleiben)",
+        "status": "simulated",
+        "phase": 4,
+    },
+    {
+        "id": "obd_connector_parser",
+        "label_de": "Connector OBD-Parser/Allowlist (simuliert getestet, keine HW-Freigabe)",
+        "status": "simulated",
+        "phase": 4,
+    },
 ]
 
 PLANNED_CAPABILITIES = [

@@ -1,7 +1,7 @@
 # DiagNova – Anforderungsmatrix (Phase 00)
 
 **Stand:** 2026-11-27 (Europe/Vienna)  
-**Basis:** MVP `6adfcc4` + Phase 00; Phase 02 `cursor/diagnova-phase-02-brands-c4de`; Phase 03 `cursor/diagnova-phase-03-connector-90c7`  
+**Basis:** MVP `6adfcc4` + Phase 00; Phase 02–03 Feature-Branches; Phase 04 `cursor/diagnova-phase-04-obd-606d`  
 **Quelle:** Master-Prompt 00 sowie Promptpaket Phasen 02–19
 
 ## Statuslegende
@@ -62,13 +62,14 @@
 | REQ-03-LOG | Diagnoseprotokoll (Transport/Status) | 03 | `simuliert getestet` | `DiagnosticProtocolLog`, `GET /log` | Unit-Tests | — |
 | REQ-03-ELM | ELM327/Vgate Treiber-Vorbereitung (nur AT) | 03 | `simuliert getestet` | `Elm327DriverPrep` | Fake-Port AT-Sequenz | BLK-ADAPTER |
 | REQ-03-DELPHI | Delphi/Autocom nur dokumentierte Schnittstellen | 03 | `implementiert` (Blocker dokumentiert) | `docs/delphi-autocom-interface.md` | Review | BLK-ADAPTER |
-| REQ-04-INIT | Adapter-Init + Protokollerkennung (echt) | 04 | `geplant` | nur Simulator | — | BLK-HW |
-| REQ-04-PID | Supported-PID-Bitmap, Live mit Einheiten | 04 | `geplant` (Parser-Teil MVP) | `pids.py` + Simulator | Unit-Tests Parser | BLK-HW |
-| REQ-04-DTC-R | Stored/pending/permanent DTCs echt | 04 | `geplant` | Decoder vorhanden | Unit-Tests Decoder | BLK-HW |
-| REQ-04-FF | Freeze-Frame echt | 04 | `geplant` | Simulator liefert Fake | — | BLK-HW |
-| REQ-04-RDY | Readiness echt | 04 | `geplant` | Simulator Fake | — | BLK-HW |
-| REQ-04-CLR | DTC-Löschung mit Freigabe/Audit | 04 | `geplant` | **nicht** implementiert (bewusst) | — | BLK-HW + Freigabe |
-| REQ-04-MULTI | Mehrere ECU-Antworten getrennt | 04 | `geplant` | — | — | BLK-HW |
+| REQ-04-INIT | Adapter-Init + Protokollerkennung | 04 | `simuliert getestet` | `ObdSession.InitializeAsync`, ATDP/ATDPN | Connector xUnit | BLK-HW (keine Live-Freigabe) |
+| REQ-04-PID | Supported-PID-Bitmap, Live mit Einheiten | 04 | `simuliert getestet` | `pid_support.py`, `ObdSession.ReadLiveAsync` | Protocol + Connector | BLK-HW |
+| REQ-04-DTC-R | Stored/pending/permanent DTCs | 04 | `simuliert getestet` | Mode 03/07/0A Parser + Session | Protocol + Connector | BLK-HW |
+| REQ-04-FF | Freeze-Frame | 04 | `simuliert getestet` | Mode 02 + `freeze_frame.py` | Protocol + Connector | BLK-HW |
+| REQ-04-RDY | Readiness | 04 | `simuliert getestet` | `readiness.py` + `/obd/readiness` | Protocol + Connector | BLK-HW |
+| REQ-04-CLR | DTC-Löschung mit Freigabe/Audit | 04 | `simuliert getestet` | `ClearDtcGate` + API Clear (permanent bleibt) | API + Connector | BLK-HW – Live Clear nicht freigegeben |
+| REQ-04-MULTI | Mehrere ECU-Antworten getrennt | 04 | `simuliert getestet` | `elm_response` / `ObdResponseParser` | Protocol + Connector | BLK-HW |
+| REQ-04-VIN | VIN Mode 09 soweit unterstützt | 04 | `simuliert getestet` | `vin.py` + `/obd/vin` | Protocol + Connector | BLK-HW |
 | REQ-05-PROTO | Multiprotokoll (ISO/KWP/CAN/UDS/DoIP/…) | 05 | `geplant` | Package nur OBD-II Basis | — | BLK-HW, Spezifikationen |
 | REQ-05-ECU | Steuergeräteübersicht mit verifizierten Adressen | 05 | `geplant` | UI „Geplant“ | — | BLK-OEM |
 | REQ-05-CAP-MAT | Capability-Matrix pro Adapter | 05 | `geplant` | — | — | BLK-ADAPTER |
@@ -117,7 +118,7 @@
 | Live-Daten | REQ-01-LIVE, REQ-04-PID | MVP simuliert; echt Phase 04 |
 | Freeze-Frame | REQ-01-LIVE, REQ-04-FF | |
 | Readiness | REQ-01-LIVE, REQ-04-RDY | |
-| DTC-Löschung | REQ-04-CLR | deaktiviert bis Freigabe |
+| DTC-Löschung | REQ-04-CLR | simuliert + Connector-Gate; Live-HW nicht freigegeben |
 | CSV | REQ-10-CSV | MVP vorhanden |
 | Audit | REQ-01-AUDIT, REQ-15-SEC | Basis vorhanden |
 | Backups | REQ-15-BACKUP | geplant |

@@ -90,12 +90,20 @@ public class FakeSerialTransportTests
     }
 
     [Fact]
-    public async Task Fake_obd_pid_gets_question_mark_not_vehicle_data()
+    public async Task Fake_obd_pid_returns_documented_simulator_vector()
     {
         await using var port = new FakeSerialTransport();
         await port.OpenAsync(new SerialTransportOptions { PortName = "FAKE" });
         var raw = await port.TransactTextAsync("0100", TimeSpan.FromSeconds(1));
-        Assert.Contains('?', raw);
-        Assert.DoesNotContain("41 00", raw);
+        Assert.Contains("41 00", raw);
+        Assert.Contains("7E8", raw);
+        Assert.Contains("7E9", raw); // multi-ECU Simulatorvektor
+    }
+
+    [Fact]
+    public async Task Direct_obd_raw_still_rejected_outside_session()
+    {
+        var prep = new Elm327DriverPrep(new DiagnosticProtocolLog());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => prep.RejectVehicleCommandAsync("0100"));
     }
 }
