@@ -1,7 +1,11 @@
+using System.IO.Ports;
+using System.Runtime.InteropServices;
+using System.Text;
+
 namespace DiagNova.Connector.Adapters.DelphiCdp;
 
 /// <summary>
-/// Transportabstraktion FTDI-Bulk / Simulator.
+/// Transportabstraktion FTDI-Bulk / VCP / Simulator.
 /// Kein automatisches Öffnen gefährlicher Kanäle.
 /// </summary>
 public interface ICdpTransport : IAsyncDisposable
@@ -32,9 +36,7 @@ public sealed class FakeCdpTransport : ICdpTransport
 
     public void LoadDocumentedIdentityResponses()
     {
-        // Dokumentierte Beispiele aus Forschungsanalyse (ASCII-Antworten)
         _responses.Clear();
-        // Reihenfolge je nach Aufruf – Caller enqueued gezielt oder wir mappen
     }
 
     public Task OpenAsync(CancellationToken ct = default)
@@ -54,7 +56,6 @@ public sealed class FakeCdpTransport : ICdpTransport
         if (!IsOpen) throw new InvalidOperationException("Transport nicht geöffnet");
         _sent.Add(framedCommand);
         var code = CdpProtocol.ExtractCommandCode(framedCommand);
-        // Auto-Antworten für Safe-Reads, wenn Queue leer und bekannt
         if (_responses.Count == 0)
         {
             var auto = code.ToUpperInvariant() switch
@@ -85,38 +86,126 @@ public sealed class FakeCdpTransport : ICdpTransport
 }
 
 /// <summary>
-/// FTDI 0403:D6DA – Platzhalter für Windows-Bulk/D2XX.
-/// Öffnet in dieser Umgebung keine echte Hardware; dokumentiert den Pfad.
+/// FTDI 0403:D6DA – Phase 22: versucht Windows-VCP (ftdi_sio/COM) wenn Port bekannt,
+/// sonst ehrlicher Fail. Kein D2XX-Binary bundling; kein Auto-Flash.
 /// </summary>
 public sealed class FtdiCdpTransport : ICdpTransport
 {
+    private SerialPort? _port;
+    private readonly string? _preferredPort;
+
+    public FtdiCdpTransport(string? preferredComPort = null)
+    {
+        _preferredPort = preferredComPort;
+    }
+
     public string Name => "ftdi-0403-d6da";
-    public bool IsOpen { get; private set; }
+    public bool IsOpen => _port?.IsOpen == true;
     public bool IsSimulator => false;
     public string? LastErrorDe { get; private set; }
+    public string? OpenedPort { get; private set; }
 
     public Task OpenAsync(CancellationToken ct = default)
     {
-        // Keine Libusb/D2XX-Bindung im Cloud-Agent – ehrlich ablehnen
-        LastErrorDe =
-            "FTDI-Transport: keine gebundene D2XX/libusb-Session in dieser Build-Umgebung. " +
-            "Auf Windows mit Adapter: Gerät 0403:D6DA inventarisieren, ftdi_sio/VCP prüfen, " +
-            "Bulk-Pipes erst nach Freigabe nutzen. Kein Automatik-Flash.";
-        IsOpen = false;
-        return Task.FromException(new InvalidOperationException(LastErrorDe));
+        // Nur auf Windows sinnvoll für lokale Adapter-HW
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && string.IsNullOrWhiteSpace(_preferredPort))
+        {
+            LastErrorDe =
+                "FTDI-Transport: Nicht-Windows ohne expliziten COM-Port. " +
+                "Auf Windows: COM-Port der VID 0403/PID D6DA angeben oder inventarisieren. Kein Auto-Flash.";
+            IsOpenAssertFalse();
+            return Task.FromException(new InvalidOperationException(LastErrorDe));
+        }
+
+        var ports = SerialPort.GetPortNames();
+        var candidate = _preferredPort;
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            // Ohne USB-Inventur: kein Ratespiel – ehrlich ablehnen
+            LastErrorDe =
+                "FTDI-Transport: kein preferred COM-Port gesetzt. " +
+                "Bitte Port nach Inventur (0403:D6DA) übergeben. D2XX-Native optional später. " +
+                $"Gefundene Ports: {string.Join(",", ports)}";
+            return Task.FromException(new InvalidOperationException(LastErrorDe));
+        }
+
+        try
+        {
+            _port = new SerialPort(candidate!, 115200, Parity.None, 8, StopBits.One)
+            {
+                ReadTimeout = 3000,
+                WriteTimeout = 3000,
+                NewLine = "\r"
+            };
+            _port.Open();
+            OpenedPort = candidate;
+            LastErrorDe = null;
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            LastErrorDe = $"FTDI/VCP Open fehlgeschlagen auf {candidate}: {ex.Message}";
+            _port?.Dispose();
+            _port = null;
+            return Task.FromException(new InvalidOperationException(LastErrorDe));
+        }
     }
+
+    private void IsOpenAssertFalse() { /* helper for clarity */ }
 
     public Task CloseAsync(CancellationToken ct = default)
     {
-        IsOpen = false;
+        if (_port is not null)
+        {
+            if (_port.IsOpen) _port.Close();
+            _port.Dispose();
+            _port = null;
+        }
         return Task.CompletedTask;
     }
 
-    public Task WriteAsciiAsync(string framedCommand, CancellationToken ct = default) =>
-        throw new InvalidOperationException("FTDI nicht geöffnet");
+    public Task WriteAsciiAsync(string framedCommand, CancellationToken ct = default)
+    {
+        if (_port is null || !_port.IsOpen)
+            throw new InvalidOperationException("FTDI/VCP nicht geöffnet");
+        var bytes = Encoding.ASCII.GetBytes(framedCommand);
+        _port.Write(bytes, 0, bytes.Length);
+        return Task.CompletedTask;
+    }
 
-    public Task<string> ReadAsciiFrameAsync(TimeSpan timeout, CancellationToken ct = default) =>
-        throw new InvalidOperationException("FTDI nicht geöffnet");
+    public Task<string> ReadAsciiFrameAsync(TimeSpan timeout, CancellationToken ct = default)
+    {
+        if (_port is null || !_port.IsOpen)
+            throw new InvalidOperationException("FTDI/VCP nicht geöffnet");
+        var deadline = DateTime.UtcNow + timeout;
+        var sb = new StringBuilder();
+        while (DateTime.UtcNow < deadline)
+        {
+            ct.ThrowIfCancellationRequested();
+            try
+            {
+                var ch = _port.ReadExisting();
+                if (!string.IsNullOrEmpty(ch))
+                {
+                    sb.Append(ch);
+                    var s = sb.ToString();
+                    var frames = CdpProtocol.SplitFrames(s);
+                    if (frames.Count > 0)
+                        return Task.FromResult(frames[0]);
+                }
+            }
+            catch (TimeoutException)
+            {
+                // continue until deadline
+            }
+            Thread.Sleep(20);
+        }
+        throw new TimeoutException("Keine CDP-Antwort innerhalb Timeout");
+    }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync()
+    {
+        CloseAsync().GetAwaiter().GetResult();
+        return ValueTask.CompletedTask;
+    }
 }

@@ -15,6 +15,9 @@ import { api } from '../lib/api'
 export function DiagnosticsPage() {
   const [params] = useSearchParams()
   const qc = useQueryClient()
+  const [diagMode, setDiagMode] = useState<'demo' | 'live'>(() =>
+    (localStorage.getItem('dn_diag_mode') as 'demo' | 'live') || 'demo',
+  )
   const [history, setHistory] = useState<{ t: string; rpm: number; speed: number; coolant: number }[]>([])
   const [lastReportId, setLastReportId] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -30,16 +33,28 @@ export function DiagnosticsPage() {
   const vehicleId =
     params.get('vehicle') || localStorage.getItem('dn_active_vehicle') || vehiclesQ.data?.[0]?.id || null
 
+  const bridgeQ = useQuery({
+    queryKey: ['bridge-status'],
+    queryFn: () => api.bridgeStatus(),
+    refetchInterval: 10000,
+  })
+  const connectionQ = useQuery({
+    queryKey: ['connection', diagMode],
+    queryFn: () => api.connection(diagMode),
+    refetchInterval: 5000,
+  })
+
   const dtcsQ = useQuery({
-    queryKey: ['dtcs', vehicleId],
-    queryFn: () => api.dtcs(vehicleId!),
+    queryKey: ['dtcs', vehicleId, diagMode],
+    queryFn: () => api.dtcs(vehicleId!, diagMode),
     enabled: !!vehicleId,
+    retry: diagMode === 'live' ? false : 1,
   })
 
   const liveQ = useQuery({
-    queryKey: ['live', vehicleId],
+    queryKey: ['live', vehicleId, diagMode],
     queryFn: async () => {
-      const live = await api.live(vehicleId!)
+      const live = await api.live(vehicleId!, diagMode)
       const rpm = live.readings.find((r) => r.name === 'rpm')?.value ?? 0
       const speed = live.readings.find((r) => r.name === 'speed')?.value ?? 0
       const coolant = live.readings.find((r) => r.name === 'coolant_temp')?.value ?? 0
@@ -49,7 +64,8 @@ export function DiagnosticsPage() {
       return live
     },
     enabled: !!vehicleId,
-    refetchInterval: 2000,
+    refetchInterval: diagMode === 'demo' ? 2000 : 3000,
+    retry: diagMode === 'live' ? false : 1,
   })
 
   const startSession = useMutation({
@@ -118,8 +134,30 @@ export function DiagnosticsPage() {
           >
             Datenquelle: {dataSource === 'live' ? 'LIVE' : 'DEMO / simuliert'} – strikt getrennt
           </p>
+          <p className="mt-1 text-xs text-[var(--dn-muted)]">
+            Connector:{' '}
+            {bridgeQ.data?.connector?.reachable
+              ? `erreichbar (${bridgeQ.data.connector.base_url ?? 'loopback'})`
+              : `nicht erreichbar${bridgeQ.data?.connector?.error_de ? ` – ${bridgeQ.data.connector.error_de}` : ''}`}
+            {connectionQ.data ? ` · Modus-API: ${connectionQ.data.mode}` : ''}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <select
+            className="rounded-md border border-[var(--dn-border)] bg-transparent px-2 py-2 text-sm"
+            value={diagMode}
+            onChange={(e) => {
+              const m = e.target.value === 'live' ? 'live' : 'demo'
+              setDiagMode(m)
+              localStorage.setItem('dn_diag_mode', m)
+              setHistory([])
+              void qc.invalidateQueries({ queryKey: ['live'] })
+              void qc.invalidateQueries({ queryKey: ['dtcs'] })
+            }}
+          >
+            <option value="demo">DEMO</option>
+            <option value="live">LIVE (Connector)</option>
+          </select>
           <button
             type="button"
             disabled={!vehicleId || startSession.isPending}

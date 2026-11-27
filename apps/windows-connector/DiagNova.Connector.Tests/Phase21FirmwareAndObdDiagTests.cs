@@ -24,7 +24,11 @@ public class Phase21FirmwareAndObdDiagTests
     [Fact]
     public void ObdDiag_Remains_Blocked_Without_Invented_Success()
     {
-        var svc = new ObdDiagAdapterService();
+        var inventory = new DiagNova.Connector.Discovery.CompositeDeviceInventory(
+            new DiagNova.Connector.Discovery.ComPortScanner(),
+            new DiagNova.Connector.Discovery.BluetoothScanner(),
+            new DiagNova.Connector.Discovery.UsbScanner());
+        var svc = new ObdDiagAdapterService(inventory);
         var status = svc.Status();
         Assert.Equal(false, status.GetType().GetProperty("elm327_assumed")!.GetValue(status));
         Assert.Equal(false, status.GetType().GetProperty("hardware_tested")!.GetValue(status));

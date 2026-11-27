@@ -374,9 +374,10 @@ def invoice_to_dict(inv: Invoice) -> dict[str, Any]:
         "due_at": inv.due_at.isoformat() if inv.due_at else None,
         "retention_until": inv.retention_until.isoformat() if inv.retention_until else None,
         "download": {
-            "format": "json",
+            "format": "json_or_pdf",
             "path": f"/api/commerce/invoices/{inv.id}/download",
-            "note_de": "JSON-Download (Simulation). PDF später.",
+            "pdf_path": f"/api/commerce/invoices/{inv.id}/download?format=pdf",
+            "note_de": "JSON und PDF (Snapshot mit SHA-256-Hinweis).",
         },
         "is_example_data": inv.is_example_data,
     }

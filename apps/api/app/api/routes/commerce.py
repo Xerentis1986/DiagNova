@@ -239,12 +239,37 @@ def invoice_detail(invoice_id: str, user: CurrentUser, db: DbSession) -> dict[st
 
 
 @router.get("/invoices/{invoice_id}/download")
-def invoice_download(invoice_id: str, user: CurrentUser, db: DbSession) -> JSONResponse:
+def invoice_download(
+    invoice_id: str,
+    user: CurrentUser,
+    db: DbSession,
+    format: str = Query(default="json", pattern="^(json|pdf)$"),
+):
     wid = require_workshop_id(user)
     inv = billing_svc.get_invoice(db, wid, invoice_id)
+    if format == "pdf":
+        from fastapi.responses import Response
+
+        from app.services.commerce.invoice_pdf import render_invoice_pdf
+
+        pdf = render_invoice_pdf(inv)
+        return Response(
+            content=pdf,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{inv.number}.pdf"',
+                "X-DiagNova-Doc-Type": inv.doc_type,
+                "X-DiagNova-Format": "pdf",
+            },
+        )
     payload = billing_svc.invoice_to_dict(inv)
     payload["buyer"] = json.loads(inv.buyer_snapshot_json or "{}")
     payload["tax"] = json.loads(inv.tax_snapshot_json or "{}")
+    payload["download"] = {
+        "format": "json",
+        "pdf_path": f"/api/commerce/invoices/{inv.id}/download?format=pdf",
+        "note_de": "JSON und PDF verfügbar.",
+    }
     return JSONResponse(
         content=payload,
         headers={

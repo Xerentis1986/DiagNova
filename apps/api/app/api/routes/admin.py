@@ -1,13 +1,15 @@
-"""Phase 13 – Plattform-Admin-Dashboard."""
+"""Phase 13 – Plattform-Admin-Dashboard (+ Phase 22 MFA)."""
 
 from __future__ import annotations
 
 from fastapi import APIRouter
+from pydantic import BaseModel, Field
 
 from app.api.deps import CurrentUser, DbSession
 from app.schemas.subscriptions import AdminDashboardOut, AdminUserOut, SubscriptionOut
 from app.services import admin_platform, subscriptions as subsvc
 from app.services.admin_platform import require_platform_admin
+from app.services import mfa_totp
 from app.models.subscriptions import Subscription
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -83,3 +85,26 @@ def admin_support(user: CurrentUser, db: DbSession) -> dict:
         "payment_note_de": subsvc.PAYMENT_NOTE,
         "legal_open_items_de": admin_platform.LEGAL_OPEN,
     }
+
+
+@router.get("/mfa/status")
+def mfa_status(user: CurrentUser) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.mfa_status(user)
+
+
+@router.post("/mfa/setup")
+def mfa_setup(user: CurrentUser, db: DbSession) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.start_mfa_setup(db, user)
+
+
+class MfaConfirmIn(BaseModel):
+    code: str = Field(min_length=6, max_length=8)
+
+
+@router.post("/mfa/confirm")
+def mfa_confirm(body: MfaConfirmIn, user: CurrentUser, db: DbSession) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.confirm_mfa(db, user, body.code)
+

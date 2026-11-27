@@ -1364,14 +1364,21 @@ export const api = {
   vehicle(id: string) {
     return request<Vehicle>(`/api/vehicles/${id}`)
   },
-  connection() {
-    return request<ConnectionStatus>('/api/connection')
+  connection(mode: 'demo' | 'live' = 'demo') {
+    return request<ConnectionStatus>(`/api/connection?mode=${mode}`)
   },
-  dtcs(vehicleId: string) {
-    return request<DtcEntry[]>(`/api/diagnostics/${vehicleId}/dtcs`)
+  bridgeStatus() {
+    return request<{
+      default_mode: string
+      connector: { reachable: boolean; error_de?: string; base_url?: string }
+      message_de: string
+    }>('/api/connector/bridge-status')
   },
-  live(vehicleId: string) {
-    return request<LiveData>(`/api/diagnostics/${vehicleId}/live`)
+  dtcs(vehicleId: string, mode: 'demo' | 'live' = 'demo') {
+    return request<DtcEntry[]>(`/api/diagnostics/${vehicleId}/dtcs?mode=${mode}`)
+  },
+  live(vehicleId: string, mode: 'demo' | 'live' = 'demo') {
+    return request<LiveData>(`/api/diagnostics/${vehicleId}/live?mode=${mode}`)
   },
   clearDtcWarnings() {
     return request<{

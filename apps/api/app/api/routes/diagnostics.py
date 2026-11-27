@@ -22,15 +22,21 @@ from app.schemas.vehicle_history import (
     SessionDetailOut,
     SessionStartRequest,
 )
+from app.services import connector_bridge
 from app.services import simulator
 from app.services import vehicle_history as vh
 from app.services.audit import write_audit
+from app.services.connector_bridge import ConnectorBridgeError
 from app.services.reports import create_report
 from app.services.tenant import require_workshop_id
 
 router = APIRouter(tags=["diagnostics"])
 
 Technician = Annotated[User, Depends(require_roles("admin", "technician"))]
+
+
+def _mode_from_query(mode: str | None) -> connector_bridge.DiagMode:
+    return connector_bridge.resolve_mode(mode)
 
 
 def _tenant_vehicle(db: DbSession, user: User, vehicle_id: str) -> Vehicle:
@@ -80,8 +86,36 @@ class SessionStartBody(BaseModel):
 
 
 @router.get("/connection", response_model=ConnectionStatusOut)
-def get_connection(_user: CurrentUser) -> ConnectionStatusOut:
-    return simulator.connection_status()
+async def get_connection(
+    _user: CurrentUser,
+    mode: str | None = Query(default=None, description="demo|live"),
+) -> ConnectionStatusOut:
+    return await connector_bridge.connection_status(_mode_from_query(mode))
+
+
+@router.get("/connector/bridge-status")
+async def bridge_status(_user: CurrentUser) -> dict:
+    probe = await connector_bridge.probe_connector()
+    return {
+        "default_mode": connector_bridge.resolve_mode(None),
+        "connector": probe,
+        "message_de": (
+            "LIVE nur mit erreichbarem Windows-Connector; DEMO nutzt Simulator. "
+            "Kein Simulator-Fallback im LIVE-Modus."
+        ),
+    }
+
+
+@router.post("/connector/obd-init")
+async def bridge_obd_init(
+    _user: Technician,
+    mode: str | None = Query(default=None),
+) -> dict:
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.ensure_obd_init(m)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/pids")
@@ -90,15 +124,33 @@ def list_pids(_user: CurrentUser) -> dict:
 
 
 @router.get("/diagnostics/{vehicle_id}/dtcs", response_model=list[DtcOut])
-def get_dtcs(vehicle_id: str, user: CurrentUser, db: DbSession) -> list[DtcOut]:
+async def get_dtcs(
+    vehicle_id: str,
+    user: CurrentUser,
+    db: DbSession,
+    mode: str | None = Query(default=None),
+) -> list[DtcOut]:
     vehicle = _tenant_vehicle(db, user, vehicle_id)
-    return simulator.list_dtcs(vehicle.id)
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.list_dtcs(m, vehicle.id)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/{vehicle_id}/live", response_model=LiveDataOut)
-def get_live(vehicle_id: str, user: CurrentUser, db: DbSession) -> LiveDataOut:
+async def get_live(
+    vehicle_id: str,
+    user: CurrentUser,
+    db: DbSession,
+    mode: str | None = Query(default=None),
+) -> LiveDataOut:
     vehicle = _tenant_vehicle(db, user, vehicle_id)
-    return simulator.live_data(vehicle.id, vehicle.vin)
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.live_data(m, vehicle.id, vehicle.vin)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/clear/warnings")

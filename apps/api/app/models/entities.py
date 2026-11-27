@@ -27,6 +27,9 @@ class User(Base):
     )
     # Phase 13 – plattformweite Admin-UI (nicht Mandanten-Admin)
     is_platform_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Phase 22 – TOTP MFA
+    mfa_secret: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    mfa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     theme_preference: Mapped[str] = mapped_column(String(16), default="system")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

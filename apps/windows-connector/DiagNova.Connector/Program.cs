@@ -33,6 +33,7 @@ builder.Services.AddSingleton<J2534PassThruAbstraction>();
 builder.Services.AddSingleton<DelphiCdpAdapterService>();
 builder.Services.AddSingleton<CdpFirmwareManager>();
 builder.Services.AddSingleton<ObdDiagAdapterService>();
+builder.Services.AddSingleton<LicenseGateService>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
@@ -269,6 +270,20 @@ app.MapPost("/adapters/delphi-cdp/firmware/flash", async (HttpRequest req, CdpFi
 
 app.MapGet("/adapters/obd-diag/status", (ObdDiagAdapterService obd) => Results.Json(obd.Status()));
 app.MapGet("/adapters/obd-diag/probe-guidance", (ObdDiagAdapterService obd) => Results.Json(obd.ProbeGuidance()));
+app.MapPost("/adapters/obd-diag/inventory-probe", async (ObdDiagAdapterService obd, CancellationToken ct) =>
+    Results.Json(await obd.InventoryProbeAsync(ct)));
+
+app.MapGet("/license/gate", (LicenseGateService gate) => Results.Json(gate.Status()));
+app.MapPost("/license/gate/apply", async (HttpRequest req, LicenseGateService gate) =>
+{
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var root = doc.RootElement;
+    var allowed = root.TryGetProperty("allowed", out var a) && a.GetBoolean();
+    var plan = root.TryGetProperty("plan_code", out var p) ? p.GetString() ?? "none" : "none";
+    var hours = root.TryGetProperty("offline_hours", out var h) ? h.GetInt32() : 72;
+    var msg = root.TryGetProperty("message_de", out var m) ? m.GetString() : null;
+    return Results.Json(gate.ApplyServerVerification(allowed, plan, hours, msg));
+});
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 
@@ -324,8 +339,17 @@ app.MapPost("/adapter/disconnect", async (AdapterConnectionManager manager, Canc
     Results.Json(await manager.DisconnectAsync(ct)));
 
 // —— Phase 04 OBD ——
-app.MapPost("/obd/init", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapPost("/obd/init", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    var statusJson = System.Text.Json.JsonSerializer.Serialize(manager.GetExtendedStatus());
+    var simPath = statusJson.Contains("simulated", StringComparison.OrdinalIgnoreCase)
+                  || statusJson.Contains("simulator", StringComparison.OrdinalIgnoreCase)
+                  || statusJson.Contains("fake", StringComparison.OrdinalIgnoreCase);
+    if (!gate.IsAllowed() && !simPath)
+    {
+        return Results.Json(new { error = "license_required", license = gate.Status() },
+            statusCode: StatusCodes.Status402PaymentRequired);
+    }
     try
     {
         return Results.Json(await manager.InitObdAsync(ct));
@@ -336,8 +360,14 @@ app.MapPost("/obd/init", async (AdapterConnectionManager manager, CancellationTo
     }
 });
 
-app.MapGet("/obd/live", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/live", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    var json = System.Text.Json.JsonSerializer.Serialize(manager.GetExtendedStatus());
+    var sim = json.Contains("simulated", StringComparison.OrdinalIgnoreCase)
+              || json.Contains("simulator", StringComparison.OrdinalIgnoreCase)
+              || json.Contains("fake", StringComparison.OrdinalIgnoreCase);
+    if (!gate.IsAllowed() && !sim)
+        return Results.Json(new { error = "license_required", license = gate.Status() }, statusCode: StatusCodes.Status402PaymentRequired);
     try
     {
         return Results.Json(await manager.ReadLiveAsync(ct));
