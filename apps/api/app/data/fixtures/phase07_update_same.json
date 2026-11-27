@@ -1,0 +1,22 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "phase07-sim-new-v1",
+  "source_key": "diagnova-structural",
+  "license_name": "DiagNova structural",
+  "manufacturers": [],
+  "models": [],
+  "variants": [],
+  "ecus": [],
+  "dtcs": [
+    {
+      "code": "P0301",
+      "description_de": "Simuliert: Zylinder 1 Aussetzer (Demo-Text, keine SAE/OEM-Quelle)",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Nur Pipeline-Test Phase 07"
+    }
+  ],
+  "pids": [],
+  "units": [],
+  "service_procedures": []
+}

@@ -1,0 +1,4 @@
+code,description_de,description_status,data_scope
+P0500,,unknown,generic
+P0600,,unknown,generic
+BADCODE,fake,known,generic
