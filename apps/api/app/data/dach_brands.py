@@ -116,6 +116,12 @@ PLANNED_CAPABILITIES = [
         "status": "simulated",
         "phase": 12,
     },
+    {
+        "id": "lkw_j1939_rp1210",
+        "label_de": "LKW/Nutzfahrzeug J1939/RP1210 (Architektur, nicht freigegeben)",
+        "status": "planned",
+        "phase": 19,
+    },
 ]
 
 

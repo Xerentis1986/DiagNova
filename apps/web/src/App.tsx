@@ -13,6 +13,7 @@ import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
 import { EcuPage } from './pages/EcuPage'
 import { CodingPage } from './pages/CodingPage'
 import { GuidedPage } from './pages/GuidedPage'
+import { LkwPage } from './pages/LkwPage'
 import { PlannedPage } from './pages/PlannedPage'
 import { TuningPage } from './pages/TuningPage'
 import { ReportsPage } from './pages/ReportsPage'
@@ -82,6 +83,7 @@ export default function App() {
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="software-updates" element={<SoftwareUpdatesPage />} />
                 <Route path="security" element={<SecurityPage />} />
+                <Route path="lkw" element={<LkwPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="planned/:moduleId" element={<PlannedPage />} />
               </Route>

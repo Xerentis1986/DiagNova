@@ -123,9 +123,33 @@ ADAPTER_CAPABILITIES: list[dict[str, Any]] = [
             "iso_14229_uds": "planned",
             "iso_15765_2_isotp": "not_supported",
             "sae_j1979_obd": "planned",
+            "sae_j1939": "not_supported",
+            "rp1210": "not_supported",
         },
         "notes_de": "Vorbereitung; ELM-Adapter ersetzt DoIP nicht.",
         "blocker": "BLK-HW",
+    },
+    {
+        "adapter_id": "rp1210-commercial",
+        "name": "RP1210 Nutzfahrzeug-Adapter (generisch)",
+        "data_source": "live",
+        "hardware_tested": False,
+        "protocols": {
+            "rp1210": "planned",
+            "sae_j1939": "planned",
+            "sae_j1708_j1587": "planned",
+            "iso_14229_uds": "planned",
+            "sae_j1979_obd": "not_supported",
+            "iso_13400_doip": "not_supported",
+            "can_fd": "not_supported",
+            "sae_j2534": "not_supported",
+        },
+        "notes_de": (
+            "Phase 19 Architektur only – keine RP1210-DLL-Bindung. "
+            "24-V-Hardware und Vendor-API erforderlich. PKW-OBD-Dongle ≠ RP1210."
+        ),
+        "blocker": "BLK-HW",
+        "voltage_class": "24v_typical",
     },
 ]
 
@@ -134,7 +158,7 @@ def capability_matrix() -> dict[str, Any]:
     return {
         "disclaimer_de": (
             "Capability ≠ Freigabe. hardware_tested ist überall false. "
-            "Günstiger OBD-Adapter ist kein universelles DoIP/CAN-FD-Interface."
+            "Günstiger OBD-Adapter ist kein universelles DoIP/CAN-FD/J1939/RP1210-Interface."
         ),
         "adapters": ADAPTER_CAPABILITIES,
     }

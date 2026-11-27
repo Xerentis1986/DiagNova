@@ -13,6 +13,7 @@ from app.api.routes import (
     diagnostics,
     guided,
     invitations,
+    lkw,
     preferences,
     protocols,
     reports,
@@ -52,3 +53,4 @@ api_router.include_router(admin.router)
 api_router.include_router(software_updates.router)
 api_router.include_router(security.router)
 api_router.include_router(tuning.router)
+api_router.include_router(lkw.router)

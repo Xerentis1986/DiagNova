@@ -93,7 +93,10 @@ PLAN_CATALOG: list[dict[str, Any]] = [
         "trial_days": 0,
         "max_devices": 0,
         "release_status": "planned",
-        "description_de": "LKW/J1939 – Phase 19. Nicht buchbar, keine Entitlements freigegeben.",
+        "description_de": (
+            "LKW/J1939 – Phase 19 Architektur (documented_prep). "
+            "Nicht buchbar, keine Entitlements freigegeben, keine Diagnose."
+        ),
         "entitlements": [],
     },
     {

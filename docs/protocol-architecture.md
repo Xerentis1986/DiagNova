@@ -28,4 +28,4 @@
 | Adapter | `capability_matrix.py` | `Adapters/*`, `AdapterCapabilityMatrix` |
 | Fahrzeugdef. | `ecu_definition.py`, `obd_addresses.py` | `Ecu/*` |
 
-Siehe auch: [adapter-capability-matrix.md](./adapter-capability-matrix.md), [j2534-doip-j1939-prep.md](./j2534-doip-j1939-prep.md).
+Siehe auch: [adapter-capability-matrix.md](./adapter-capability-matrix.md), [j2534-doip-j1939-prep.md](./j2534-doip-j1939-prep.md), [lkw-j1939-architecture.md](./lkw-j1939-architecture.md) (Phase 19).

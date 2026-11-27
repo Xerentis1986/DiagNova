@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 18 Architektur abgeschlossen (Chiptuning Geplant/deaktiviert). Phase 19 **nicht** starten. **STOP** vor Prod-Rollout.  
-**Basis:** Phase-17-Branch `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26); Arbeit auf `cursor/diagnova-phase-18-chiptuning-c46a`.
+**Aktuelle Arbeitsphase:** 20 Systemprüfung / kommerzielle Einsatzbereitschaft. Phase 17–19 integriert (18+19 auf 17). **STOP** vor Prod-Rollout.  
+**Basis:** Merge `cursor/diagnova-phase-18-chiptuning-c46a` + `cursor/diagnova-phase-19-lkw-arch-9892` → `cursor/diagnova-phase-20-readiness-e3f2`.
 
 ## Phasenübersicht
 
@@ -28,7 +28,22 @@
 | **16** | World4You Ubuntu/Plesk Deploy | **Implementiert (Docs/Ops)** | Install/Compose/Proxy/Backup/Rollback; Live Smoke; kein destruktives Redeploy |
 | **17** | Gesamtabnahme | **Erledigt (Docs/Abnahme)** | Checkliste + Go/No-Go; **NO-GO** Voll-Launch; STOP Prod-Rollout |
 | **18** | Chiptuning (optional) | **Simuliert getestet** (Architektur) | Baselines/Gates/UI; Map/Flash/Aktivierung **gesperrt**; keine Algorithmen |
-| 19 | LKW (optional) | Später | **nicht gestartet**; J1939/RP1210 |
+| **19** | LKW (optional, Architektur) | **Architektur (Docs/Flags/UI)** | J1939/RP1210 Prep; Diagnose bewusst aus; UI „Geplant“ |
+| **20** | Systemprüfung / Einsatzbereitschaft | **In Arbeit** | Audit, Fixes, GO/NO-GO kommerziell |
+
+## Phase 19 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Scope | Architektur only – keine vorgetäuschte LKW-Diagnose |
+| API | `/api/lkw/architecture|brands|capabilities`; Diagnose-POSTs **403** |
+| Caps | Capability-Flags + Adapter `rp1210-commercial` (`planned`) |
+| UI | `/lkw`, Nav/Dashboard Badge „Geplant“ |
+| Marken | MAN, MB Trucks, Scania, Volvo Trucks, DAF, Iveco, Renault Trucks (Nav only) |
+| Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER |
+| Nächste Phase | Phase 20 Systemprüfung |
+
+Details: [phase-19-abschluss.md](./phase-19-abschluss.md), [lkw-j1939-architecture.md](./lkw-j1939-architecture.md).
 
 ## Phase 18 – Kurzfazit
 
@@ -52,7 +67,7 @@ Details: [phase-18-abschluss.md](./phase-18-abschluss.md).
 | Smoke | pytest **126 passed**; Web-Build OK; Live `/`+`/health` 200 |
 | Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER, BLK-LEGAL, BLK-PAY, BLK-CERT, BLK-DEPLOY |
 | Prod-Rollout | **STOP** – nur nach Betreiber- + Coordinator-Freigabe |
-| Nächste Phase | **18/19 nicht gestartet** |
+| Nächste Phase | optional 18/19; 19 Architektur erledigt |
 
 Details: [phase-17-abschluss.md](./phase-17-abschluss.md).
 

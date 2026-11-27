@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Badge, Panel } from '../components/ui'
 
 const LABELS: Record<string, string> = {
@@ -8,7 +8,16 @@ const LABELS: Record<string, string> = {
   actuator: 'Stellglieddiagnose',
   flash: 'Programmierung',
   chiptuning: 'Chiptuning',
-  lkw: 'LKW / Nutzfahrzeuge',
+  lkw: 'LKW / Nutzfahrzeug (J1939/RP1210)',
+}
+
+const EXTRA: Record<string, string> = {
+  chiptuning:
+    'Phase 18 liefert Architektur, Baselines und Gates. ' +
+    'Keine Kennfeldänderungen, kein Flash, keine produktive Aktivierung.',
+  lkw:
+    'Phase 19 liefert nur Architektur, Capability-Flags und Markennavigation. ' +
+    'Keine J1939-Diagnose, keine RP1210-Verbindung, keine simulierten LKW-Messwerte.',
 }
 
 export function PlannedPage() {
@@ -23,6 +32,23 @@ export function PlannedPage() {
         Dieses Modul ist für eine spätere Phase vorgesehen und im MVP nicht verfügbar. Es handelt sich um keine
         fertige Funktion und um keine echte Fahrzeugdiagnose.
       </p>
+      {EXTRA[moduleId] && (
+        <p className="mt-3 text-sm text-[var(--dn-muted)]">{EXTRA[moduleId]}</p>
+      )}
+      {moduleId === 'lkw' && (
+        <p className="mt-4 text-sm">
+          <Link className="text-[var(--dn-accent)] underline" to="/lkw">
+            Zur Architekturübersicht
+          </Link>
+        </p>
+      )}
+      {moduleId === 'chiptuning' && (
+        <p className="mt-4 text-sm">
+          <Link className="text-[var(--dn-accent)] underline" to="/tuning">
+            Zur Tuning-Architektur
+          </Link>
+        </p>
+      )}
     </Panel>
   )
 }

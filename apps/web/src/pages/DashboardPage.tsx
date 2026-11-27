@@ -123,13 +123,15 @@ export function DashboardPage() {
               subscriptions: '/subscriptions',
               admin: '/admin',
             }
+            // Architektur-UI für geplante Module (ohne Diagnose-Freigabe)
             const plannedRoutes: Record<string, string> = {
               chiptuning: '/tuning',
+              lkw: '/lkw',
             }
             const isSim = m.status === 'simulated' && simRoutes[m.id]
             const href = isSim
               ? simRoutes[m.id]
-              : plannedRoutes[m.id] || `/planned/${m.id}`
+              : plannedRoutes[m.id] ?? `/planned/${m.id}`
             return (
               <Link
                 key={m.id}

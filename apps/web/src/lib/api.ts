@@ -1186,6 +1186,59 @@ export interface LegalGateCheck {
   productive_activation_locked: boolean
 }
 
+export interface LkwArchitecture {
+  phase: number
+  scope: string
+  status: string
+  title_de: string
+  summary_de: string
+  entitlement_granted: boolean
+  entitlement_key?: string
+  brand_count?: number
+  blockers?: string[]
+  explicitly_disabled?: string[]
+  tariff_codes_planned?: string[]
+  layers?: Record<string, unknown>[]
+  docs?: string[]
+}
+
+export interface LkwBrand {
+  slug: string
+  name: string
+  group: string
+  release_status: string
+  diagnosis_available: boolean
+  voltage_note_de: string
+  coverage_disclaimer_de: string
+  example_models_nav_only: string[]
+  protocols_planned: string[]
+}
+
+export interface LkwBrandsResponse {
+  disclaimer_de: string
+  count: number
+  brands: LkwBrand[]
+}
+
+export interface LkwCapabilityFlag {
+  id: string
+  label_de: string
+  status: string
+  enabled: boolean
+  phase: number
+  blocker?: string
+  notes_de?: string
+}
+
+export interface LkwCapabilities {
+  disclaimer_de: string
+  release_status: string
+  diagnosis_enabled: boolean
+  flags: LkwCapabilityFlag[]
+  available: LkwCapabilityFlag[]
+  unavailable: LkwCapabilityFlag[]
+}
+
 class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -2041,6 +2094,16 @@ export const api = {
   },
   securityAudit(limit = 50) {
     return request<SecurityAuditList>(`/api/security/audit?limit=${limit}`)
+  },
+  lkwArchitecture() {
+    return request<LkwArchitecture>('/api/lkw/architecture')
+  },
+  lkwBrands(q?: string) {
+    const qs = q ? `?q=${encodeURIComponent(q)}` : ''
+    return request<LkwBrandsResponse>(`/api/lkw/brands${qs}`)
+  },
+  lkwCapabilities() {
+    return request<LkwCapabilities>('/api/lkw/capabilities')
   },
   logout() {
     return request<{ status: string; message_de: string }>('/api/auth/logout', { method: 'POST' })

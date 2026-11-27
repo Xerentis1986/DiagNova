@@ -42,7 +42,10 @@ def test_protocol_catalog_statuses():
     doip = next(p for p in summary["protocols"] if p["id"] == "iso_13400_doip")
     assert doip["status"] == "documented_prep"
     j1939 = next(p for p in summary["protocols"] if p["id"] == "sae_j1939")
-    assert j1939["status"] == "planned_later"
+    assert j1939["status"] == "documented_prep"
+    assert j1939["phase"] == 19
+    rp1210 = next(p for p in summary["protocols"] if p["id"] == "rp1210")
+    assert rp1210["status"] == "documented_prep"
 
 
 def test_capability_matrix_elm_not_doip():

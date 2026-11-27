@@ -51,6 +51,7 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
   { to: '/tuning', label: 'Chiptuning', icon: <IconSettings />, planned: true },
   { to: '/subscriptions', label: 'Abos & Lizenzen', icon: <IconUpdates /> },
+  { to: '/lkw', label: 'LKW / Nutzfahrzeug', icon: <IconFleet />, planned: true },
   { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
   { to: '/admin', label: 'Administration', icon: <IconSettings /> },
 ]
