@@ -41,9 +41,6 @@ export function LoginPage() {
           </p>
         </div>
         <div className="dn-panel relative z-[1] w-full max-w-md p-8 shadow-2xl shadow-[color-mix(in_srgb,var(--diagnova-charcoal)_28%,transparent)]">
-          <div className="mb-5 flex justify-center">
-            <BrandMark variant="symbol" height="3rem" priority />
-          </div>
           <h1 className="sr-only">DiagNova Anmeldung</h1>
           <div className="dn-banner-sim mb-4 rounded-lg px-3 py-2 text-xs">
             Demo-Zugang vorkonfiguriert. Alle Diagnosedaten sind <strong>simuliert</strong>.

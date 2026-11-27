@@ -58,25 +58,15 @@ export function BrandMark({
     )
   }
 
+  // lockup = nur Wordmark (kein Symbol neben dem Logo)
   return (
-    <span className={`dn-brand-lockup inline-flex max-w-full items-center gap-2 ${className}`.trim()}>
-      <img
-        src={symbolSrc}
-        alt=""
-        aria-hidden
-        width={128}
-        height={128}
-        {...common}
-        className="dn-brand-mark dn-brand-mark--symbol shrink-0"
-      />
-      <img
-        src={wordmarkSrc}
-        alt="DiagNova"
-        width={800}
-        height={145}
-        {...common}
-        className="dn-brand-mark dn-brand-mark--wordmark min-w-0"
-      />
-    </span>
+    <img
+      src={wordmarkSrc}
+      alt="DiagNova"
+      width={800}
+      height={145}
+      {...common}
+      className={`dn-brand-mark dn-brand-mark--wordmark ${className}`.trim()}
+    />
   )
 }

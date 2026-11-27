@@ -128,7 +128,7 @@ export function AppShell() {
         aria-label="Hauptmenü"
       >
         <div className="dn-sidebar__brand">
-          <BrandMark variant="lockup" height="2rem" />
+          <BrandMark variant="wordmark" height="2rem" />
           <p className="mt-2 text-xs text-[var(--dn-muted)]">Mehrmarken-Diagnose</p>
         </div>
 
