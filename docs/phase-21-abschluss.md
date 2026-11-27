@@ -2,6 +2,7 @@
 
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-21-billing-adapters-e3f2`  
+**PR:** https://github.com/Xerentis1986/DiagNova/pull/32  
 **Basis:** Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` (PR #30)
 
 ## Auftrag
