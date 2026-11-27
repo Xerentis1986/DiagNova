@@ -1,0 +1,9 @@
+{
+  "component": "web",
+  "version": "0.16.0",
+  "release_notes_de": "Demo-Inkompatibilität – erfordert API 0.16.",
+  "migration_plan": [],
+  "channel": "stable-fixture",
+  "kind": "software",
+  "note_de": "Abnahmetest manipuliert/inkompatibel – muss abgelehnt werden."
+}

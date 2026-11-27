@@ -67,6 +67,9 @@ export function AdminPage() {
             <Link to="/software-updates" className="text-[var(--dn-accent)] underline">
               Software-Updates
             </Link>
+            <Link to="/security" className="text-[var(--dn-accent)] underline">
+              Sicherheit & Datenschutz
+            </Link>
           </p>
         </Panel>
 

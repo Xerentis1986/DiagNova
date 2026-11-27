@@ -194,6 +194,77 @@ export interface AdminDashboard {
   legal_open_items_de: string[]
 }
 
+export interface SecurityThreatNode {
+  id: string
+  surface: string
+  threat: string
+  mitigation_de: string
+  status: 'mitigated' | 'partial' | 'open' | 'accepted'
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info'
+}
+
+export interface SecurityFinding {
+  id: string
+  title_de: string
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info'
+  status: 'open' | 'mitigated' | 'accepted' | 'documented'
+  detail_de: string
+}
+
+export interface SecurityDashboard {
+  version: string
+  demo_mode: boolean
+  jwt_secret_insecure_default: boolean
+  cors_origins: string[]
+  rate_limits: Record<string, number>
+  auth: Record<string, string | boolean | number>
+  rbac_roles: string[]
+  audit_redaction: boolean
+  security_headers: boolean
+  ssrf_protection_data_updates: boolean
+  connector_loopback_only: boolean
+  productive_auto_updates_blocked: boolean
+  monitoring_enabled: boolean
+  disclaimer_de: string
+  threat_model: SecurityThreatNode[]
+  findings: SecurityFinding[]
+  open_risks_de: string[]
+}
+
+export interface SecurityPrivacy {
+  disclaimer_de: string
+  processes: {
+    id: string
+    title_de: string
+    description_de: string
+    api_hint: string | null
+    legal_note_de: string
+  }[]
+  retention_note_de: string
+  av_note_de: string
+}
+
+export interface SecurityBackup {
+  disclaimer_de: string
+  recommended_steps_de: string[]
+  restore_steps_de: string[]
+  monitoring_hints_de: string[]
+  phase16_checklist_hint: string
+}
+
+export interface SecurityAuditList {
+  items: {
+    id: string
+    action: string
+    resource: string
+    detail: string | null
+    user_id: string | null
+    workshop_id: string | null
+    created_at: string | null
+  }[]
+  note_de: string
+}
+
 export interface Vehicle {
   id: string
   workshop_id?: string | null
@@ -1730,6 +1801,21 @@ export const api = {
   },
   softwareInstallerDocs() {
     return request<Record<string, unknown>>('/api/software-updates/installer-docs')
+  },
+  securityDashboard() {
+    return request<SecurityDashboard>('/api/security/dashboard')
+  },
+  securityPrivacy() {
+    return request<SecurityPrivacy>('/api/security/privacy')
+  },
+  securityBackup() {
+    return request<SecurityBackup>('/api/security/backup')
+  },
+  securityAudit(limit = 50) {
+    return request<SecurityAuditList>(`/api/security/audit?limit=${limit}`)
+  },
+  logout() {
+    return request<{ status: string; message_de: string }>('/api/auth/logout', { method: 'POST' })
   },
 }
 

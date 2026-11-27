@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import api_router
 from app.core.config import get_settings
+from app.core.security import is_insecure_default_secret
+from app.core.security_headers import SecurityHeadersMiddleware
 from app.db.base import Base
 from app.db.seed import seed_all
 from app.db.session import SessionLocal, engine
@@ -35,6 +37,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
@@ -48,13 +51,24 @@ app.include_router(api_router)
 
 @app.get("/health")
 def health() -> dict:
+    insecure = is_insecure_default_secret()
     return {
         "status": "ok",
         "demo_mode": settings.demo_mode,
         "data_source_default": "simulated",
         "version": COMPONENT_VERSIONS["api"],
         "components": COMPONENT_VERSIONS,
+        "security": {
+            "jwt_secret_insecure_default": insecure,
+            "headers": True,
+            "login_rate_limit": True,
+        },
         "message_de": "API bereit. Fahrzeugdaten im MVP sind simuliert.",
+        "prod_ready_hint_de": (
+            "Nicht produktionsbereit: Default-JWT-Secret."
+            if insecure
+            else "JWT-Secret gesetzt; Freigabe weiterhin an Checkliste Phase 15/16 gebunden."
+        ),
     }
 
 

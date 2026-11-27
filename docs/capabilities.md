@@ -96,7 +96,8 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Abo/Zahlungen | Phase 13 Stub/Simulation (HMAC-Webhooks); **kein** echter PSP (BLK-PAY) |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
 | Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
-| Software-/Connector-Updates | Phase 14 simuliert (Versionen/Signatur/Staging/Admin-Freigabe/Rollback/Busy-Gate); Prod-Auto ohne Zertifikat gesperrt |
+| Software-/Connector-Updates | Phase 14/15 Versionen 0.15.x; Signatur/Staging/Admin-Freigabe/Rollback/Busy-Gate; Prod-Auto ohne Zertifikat gesperrt |
+| Sicherheit / Datenschutz / QA | Phase 15: Threat Model, Rate-Limits, Audit-Redaction, Security-Header, DSGVO-Prozess-Docs, Backup-Hinweise; UI `/security` |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
@@ -125,7 +126,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `session_measurement_samples` | Begrenzter Messwertverlauf |
 | `vehicle_record_notes` | Notizen/Service/Reparatur im Zeitstrahl |
 | `diagnostic_reports` | Berichtsinhalt JSON |
-| `audit_logs` | Aktion/Resource/Detail |
+| `audit_logs` | Aktion/Resource/Detail + outcome/ip_hash (Phase 15) |
 | `data_license_sources` | Lizenz/Attribution/Prüfdatum |
 | `diag_*` | Versionierte Hersteller/Modelle/ECU/DTC/PID/Units/Service |
 | `import_*` | Batches, Quarantäne, Applied-Records für Rollback |
@@ -228,6 +229,7 @@ Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` +
 | API Phase 12 | `tests/api/test_phase12_coding.py` | Identifikation, Spannungs-/VIN-Gates, Flash 403 |
 | API Phase 13 | `tests/api/test_phase13_subscriptions.py` | Abos, Webhook-Stub, Kündigung, Mandanten, Admin |
 | API Phase 14 | `tests/api/test_phase14_software_updates.py` | Signatur, Inkompatibilität, Busy, Install/Rollback, Zertifikat-Sperre |
+| API Phase 15 | `tests/api/test_phase15_security.py` | Rate-Limit, Audit-Redaction, IDOR/RBAC, Threat-Dashboard, Origin, Headers |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

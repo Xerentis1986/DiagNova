@@ -16,6 +16,7 @@ from app.api.routes import (
     preferences,
     protocols,
     reports,
+    security,
     service,
     software_updates,
     subscriptions,
@@ -48,3 +49,4 @@ api_router.include_router(invitations.router)
 api_router.include_router(billing.router)
 api_router.include_router(admin.router)
 api_router.include_router(software_updates.router)
+api_router.include_router(security.router)

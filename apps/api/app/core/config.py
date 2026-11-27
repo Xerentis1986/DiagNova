@@ -37,9 +37,24 @@ class Settings(BaseSettings):
     # Nie ungeprüfte Auto-Installs – Standard aus
     software_update_auto_install_enabled: bool = False
 
+    # Phase 15 – Rate Limits / Security
+    rate_limit_login_max: int = 10
+    rate_limit_login_window_sec: float = 60.0
+    rate_limit_write_max: int = 120
+    rate_limit_write_window_sec: float = 60.0
+    # Security-Header und Origin-Hinweis (Bearer-Auth → CSRF-Risiko gering)
+    security_require_origin_for_cookie_auth: bool = False
+    # Monitoring-Hinweis: kein echter Alert-Kanal ohne Zustimmung
+    security_monitoring_enabled: bool = False
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    def is_allowed_origin(self, origin: str | None) -> bool:
+        if not origin:
+            return True  # native clients / curl ohne Origin
+        return origin in self.cors_origin_list
 
 
 @lru_cache

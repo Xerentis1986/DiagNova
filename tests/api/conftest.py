@@ -49,6 +49,9 @@ from app.db.session import get_db
 
 @pytest.fixture()
 def client():
+    from app.core.rate_limit import login_limiter
+
+    login_limiter.reset()
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
@@ -66,6 +69,7 @@ def client():
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
+    login_limiter.reset()
 
 
 @pytest.fixture()

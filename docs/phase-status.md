@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 14 abgeschlossen (simuliert getestet). **STOP** – Phase 15 nicht starten (Coordinator).  
-**Basis:** Phase-13-Branch `cursor/diagnova-phase-13-subscriptions-66ed` (PR #21); Arbeit auf `cursor/diagnova-phase-14-software-updates-8f1e`.
+**Aktuelle Arbeitsphase:** 15 abgeschlossen (simuliert getestet). **STOP** – Phase 16 nicht starten (nur Checkliste; Deploy bereits weitgehend live).  
+**Basis:** Phase-14-Branch `cursor/diagnova-phase-14-software-updates-8f1e` (PR #22); Arbeit auf `cursor/diagnova-phase-15-security-4381`.
 
 ## Phasenübersicht
 
@@ -24,25 +24,42 @@
 | **12** | Codierung / Programmierung | **Simuliert getestet** | Identifikation + Gates; Flash/Schreiben DEAKTIVIERT; J2534 Prep |
 | **13** | Abos & Administration | **Simuliert getestet** | Stub-Zahlung, Entitlements, Mandanten/Einladungen, Admin-UI; kein echter PSP |
 | **14** | Software-/Connector-Updates | **Simuliert getestet** | Versionierung/Signatur/Staging/Freigabe/Rollback; getrennt von Daten-Updates; kein Auto-Install |
-| 15 | Sicherheit / Datenschutz / QA | Offen | Auth-Basis vorhanden |
-| 16 | World4You Ubuntu/Plesk Deploy | Offen / parallel vorbereitet | kein Prod-Deploy |
+| **15** | Sicherheit / Datenschutz / QA | **Simuliert getestet** | Threat Model, Rate-Limits, Audit-Redaction, DSGVO-Docs, Backup; UI `/security` |
+| 16 | World4You Ubuntu/Plesk Deploy | Offen / weitgehend live | nur Checkliste ergänzt – Phase nicht gestartet |
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 15 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Threat Model | Browser/API/Connector/Adapter/Updates/Mandanten dokumentiert |
+| Auth | bcrypt, JWT iat/typ/exp, Login-Rate-Limit, Origin-Check, Logout-Audit |
+| RBAC/IDOR | Mandant 404 + Rollen; Regressionstests |
+| Audit | Redaction Passwort/VIN/E-Mail/Telefon; outcome/ip_hash |
+| DSGVO | Prozess-Docs; keine Konformität behauptet |
+| Backup | Docs + API; Phase-16-Checkliste ergänzt |
+| UI | `/security` – Designsystem 10B |
+| Versionen | API/Web/Connector `0.15.0` |
+| Tests | pytest **126 passed**; Web-Build OK |
+| Blocker | BLK-LEGAL, BLK-CERT, Default-JWT nur Dev/Tests |
+
+Details: [phase-15-abschluss.md](./phase-15-abschluss.md).
 
 ## Phase 14 – Kurzfazit
 
 | Bereich | Ergebnis |
 |---------|----------|
 | Trennung | Software-Updates ≠ Diagnosedaten-Updates (Phase 07) |
-| Versionen | API/Web/Connector `0.14.0` + Kompatibilitätsmatrix |
+| Versionen | Linie jetzt `0.15.0` (Phase 15); Integrität/Busy/Rollback unverändert |
 | Integrität | SHA-256 + HMAC; manipulierte Pakete abgelehnt |
 | Freigabe | Staging → Admin-Freigabe; keine ungeprüften Auto-Installs |
 | Busy-Gate | Keine Installation während Diagnose/Service/Flash |
 | Rollback | Manuell + automatisch bei Healthcheck-Fail |
 | Prod | Auto-Updates ohne Signaturzertifikat gesperrt |
 | UI | `/software-updates` – Designsystem 10B |
-| Tests | pytest **113 passed**; Web-Build OK |
+| Tests | pytest (Regression in Phase-15-Suite) |
 | Blocker | BLK-CERT (echtes Code-Signing) |
 
 Details: [phase-14-abschluss.md](./phase-14-abschluss.md).

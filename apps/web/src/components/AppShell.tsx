@@ -50,6 +50,7 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/service', label: 'Service', icon: <IconWorkshop /> },
   { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
   { to: '/subscriptions', label: 'Abos & Lizenzen', icon: <IconUpdates /> },
+  { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
   { to: '/admin', label: 'Administration', icon: <IconSettings /> },
 ]
 
@@ -106,7 +107,7 @@ function StatusFooter() {
       <div className="dn-side-status__row text-[11px] text-[var(--dn-muted)]">
         Letztes Update: {lastLabel}
       </div>
-      <div className="dn-side-status__row text-[11px] text-[var(--dn-muted)]">Version: v0.13.0</div>
+      <div className="dn-side-status__row text-[11px] text-[var(--dn-muted)]">Version: v0.15.0</div>
     </div>
   )
 }
