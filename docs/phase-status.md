@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 15 abgeschlossen (simuliert getestet). **STOP** – Phase 16 nicht starten (nur Checkliste; Deploy bereits weitgehend live).  
-**Basis:** Phase-14-Branch `cursor/diagnova-phase-14-software-updates-8f1e` (PR #22); Arbeit auf `cursor/diagnova-phase-15-security-4381`.
+**Aktuelle Arbeitsphase:** 16 abgeschlossen (Docs/Ops; Live Smoke). **STOP** – Phase 17 nicht starten (Freigabeprüfung Coordinator).  
+**Basis:** Phase-15-Branch `cursor/diagnova-phase-15-security-4381` (PR #24); Arbeit auf `cursor/diagnova-phase-16-deploy-8876`.
 
 ## Phasenübersicht
 
@@ -25,10 +25,25 @@
 | **13** | Abos & Administration | **Simuliert getestet** | Stub-Zahlung, Entitlements, Mandanten/Einladungen, Admin-UI; kein echter PSP |
 | **14** | Software-/Connector-Updates | **Simuliert getestet** | Versionierung/Signatur/Staging/Freigabe/Rollback; getrennt von Daten-Updates; kein Auto-Install |
 | **15** | Sicherheit / Datenschutz / QA | **Simuliert getestet** | Threat Model, Rate-Limits, Audit-Redaction, DSGVO-Docs, Backup; UI `/security` |
-| 16 | World4You Ubuntu/Plesk Deploy | Offen / weitgehend live | nur Checkliste ergänzt – Phase nicht gestartet |
-| 17 | Gesamtabnahme | Offen | |
+| **16** | World4You Ubuntu/Plesk Deploy | **Implementiert (Docs/Ops)** | Install/Compose/Proxy/Backup/Rollback; Live Smoke; kein destruktives Redeploy |
+| 17 | Gesamtabnahme | Offen | **nicht gestartet** |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 16 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Install | `docs/world4you-plesk-install.md` (SSH/Plesk/Docker/DNS, Secrets, Staging) |
+| Compose Prod | Volumes, Healthchecks, Restart, Memory-Limits, DB ohne Host-Port |
+| Proxy / TLS / WS | Plesk LE Ist; `web.conf` + `plesk-proxy.conf` mit Upgrade |
+| Backup / Rollback | Skripte + Docs; Pre-Deploy-Dump im Deploy-Skript |
+| Live Smoke | `/` + `/health` 200 (kein Server-Schreibzugriff in dieser Phase) |
+| Unangetastet | helix-ki, masterdesk, `/sv/` |
+| Blocker | BLK-DEPLOY (Redeploy nur mit Freigabe); Staging nicht angelegt |
+| Nächste Phase | **17 nicht gestartet** |
+
+Details: [phase-16-abschluss.md](./phase-16-abschluss.md), Checkliste [phase-16-deploy-checklist.md](./phase-16-deploy-checklist.md).
 
 ## Phase 15 – Kurzfazit
 

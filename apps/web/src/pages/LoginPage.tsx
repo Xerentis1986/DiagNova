@@ -8,8 +8,8 @@ import { ApiError } from '../lib/api'
 
 export function LoginPage() {
   const { user, login, loading } = useAuth()
-  const [email, setEmail] = useState('admin@example.com')
-  const [password, setPassword] = useState('AdminDemo123!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -52,6 +52,7 @@ export function LoginPage() {
             <Field label="E-Mail">
               <Input
                 type="email"
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -60,6 +61,7 @@ export function LoginPage() {
             <Field label="Passwort">
               <Input
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -71,9 +73,6 @@ export function LoginPage() {
               {busy ? 'Anmelden…' : 'Anmelden'}
             </Button>
           </form>
-          <p className="mt-4 text-xs text-[var(--dn-muted)]">
-            Seed: admin@example.com / AdminDemo123! · tech@example.com / TechDemo123!
-          </p>
         </div>
       </div>
     </div>
