@@ -104,7 +104,10 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `vehicles` | Fahrzeuge inkl. VIN, Kennzeichen, `workshop_id`/`customer_id`, Archiv |
 | `user_brand_favorites` | Favoriten-Marken pro User |
 | `user_recent_selections` | Zuletzt verwendete Auswahlen |
-| `diagnostic_sessions` | Sitzungen mit `data_source`, DTC-Snapshot JSON |
+| `diagnostic_sessions` | Sitzungen mit `data_source`, DTC-Snapshot, Adapter/Protokoll/km, Abort, Idempotenz |
+| `session_ecu_results` / `session_dtc_results` | Geprüfte ECUs + beobachtete DTCs (Phase 09) |
+| `session_measurement_samples` | Begrenzter Messwertverlauf |
+| `vehicle_record_notes` | Notizen/Service/Reparatur im Zeitstrahl |
 | `diagnostic_reports` | Berichtsinhalt JSON |
 | `audit_logs` | Aktion/Resource/Detail |
 | `data_license_sources` | Lizenz/Attribution/Prüfdatum |
@@ -115,7 +118,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `update_changelogs` | Änderungsprotokoll |
 | `update_job_locks` | Sperre gegen parallele Jobs |
 
-Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`, `005_phase08`, `006_phase09`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -136,9 +139,11 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`. Runtime
 | GET | `/api/diagnostics/pids` | JWT |
 | GET | `/api/diagnostics/{vehicle_id}/dtcs` | JWT |
 | GET | `/api/diagnostics/{vehicle_id}/live` | JWT |
-| POST | `/api/sessions?vehicle_id=` | JWT admin/technician |
-| GET | `/api/sessions` | JWT |
-| POST | `/api/sessions/{id}/close` | JWT admin/technician |
+| POST | `/api/sessions?vehicle_id=` · `/api/sessions/v2` | JWT admin/technician |
+| GET | `/api/sessions` · `/api/sessions/{id}` · `/api/sessions/compare` | JWT |
+| POST | `/api/sessions/{id}/close` · `/abort` · `/snapshot` | JWT admin/technician |
+| GET | `/api/vehicle-records/lookup` · `/{id}` · `/{id}/timeline` · `/{id}/measurements` | JWT |
+| POST | `/api/vehicle-records/{id}/notes` | JWT admin/technician |
 | POST | `/api/reports` | JWT admin/technician |
 | GET | `/api/reports/{id}` | JWT |
 | GET | `/api/reports/{id}/export.csv` | JWT |
@@ -164,6 +169,7 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`. Runtime
 | `/select/:brandSlug` | VehicleSelectPage | Wizard Marke→…→VIN |
 | `/dashboard` | DashboardPage | Aktives Fahrzeug, Simulator-Status |
 | `/vehicles` | VehiclesPage | Fahrzeugliste |
+| `/vehicle-record` | VehicleRecordPage | Digitale Akte, Zeitstrahl, Vergleich, Messwerte |
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
 | `/reports` | ReportsPage | Berichte / Export |
 | `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
@@ -178,6 +184,7 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`. Runtime
 | API | `tests/api/test_auth_and_demo.py` | Health, Login, Seed, Simulator, Session, CSV/PDF |
 | API Phase 02 | `tests/api/test_phase02_catalog.py` | Katalog, Theme, Favoriten, VIN, Capabilities |
 | API Phase 06 | `tests/api/test_phase06_diagnostic_data.py` | Quellen, Lookup, Import/Quarantäne/Rollback, ODX 403 |
+| API Phase 09 | `tests/api/test_phase09_vehicle_history.py` | Akte, Lookup, Abort, Vergleich, Mandant, Persistenz |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

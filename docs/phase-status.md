@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 08 abgeschlossen (simuliert getestet). **Phase 09 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-07-Branch `cursor/diagnova-phase-07-updates-4111` (PR #12); Arbeit auf `cursor/diagnova-phase-08-workshop-d09b`.
+**Aktuelle Arbeitsphase:** 09 abgeschlossen (simuliert getestet). **Phase 10 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-08-Branch `cursor/diagnova-phase-08-workshop-d09b` (PR #13); Arbeit auf `cursor/diagnova-phase-09-history-f3fe`.
 
 ## Phasenübersicht
 
@@ -17,7 +17,7 @@
 | **06** | Diagnosedatenbank & Importe | **Simuliert getestet** | Modell/Import/Quarantäne/Rollback; DTC unbekannt; ODX 403 |
 | **07** | Automatische Daten-Updates | **Simuliert getestet** | Scheduler/SSRF/Signatur/Staging/Freigabe/Rollback; keine echten Feeds |
 | **08** | Werkstatt- & Kundenverwaltung | **Simuliert getestet** | Mandant/Rollen/Kunden/Aufträge/DSGVO; keine Produktivdaten |
-| 09 | Fahrzeug-History / Akte | Offen | |
+| **09** | Fahrzeug-History / Akte | **Simuliert getestet** | Zeitstrahl, Vergleich, Messwerte; Demo getrennt |
 | 10 | PDF-Berichte & Archiv | Offen | MVP-PDF rudimentär |
 | 11 | Erweiterte Diagnose / Service | Offen | UI-Platzhalter |
 | 12 | Codierung / Programmierung | Offen | UI-Platzhalter; Schreibpfade gesperrt |
@@ -28,6 +28,20 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 09 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Akte | Zeitstrahl Sitzungen/Notizen/Aufträge/Berichte; Authentizität markiert |
+| Lookup | VIN / Kennzeichen mandantenspezifisch |
+| Sitzung | Auto-Save, Abort, Idempotenz; Adapter/Protokoll/km/ECU/DTC/FF |
+| Vergleich | neu / weiterhin / nicht erneut beobachtet; ohne ECU-Check ≠ behoben |
+| Messwerte | begrenzt (500/Sitzung, 5000/Fahrzeug) |
+| UI | `/vehicle-record` |
+| Blocker | BLK-HW (keine Live-Historie), BLK-LEGAL |
+
+Details: [phase-09-abschluss.md](./phase-09-abschluss.md).
 
 ## Phase 08 – Kurzfazit
 

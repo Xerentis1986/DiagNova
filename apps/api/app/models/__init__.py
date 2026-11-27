@@ -28,6 +28,12 @@ from app.models.entities import (
     UserRecentSelection,
     Vehicle,
 )
+from app.models.vehicle_history import (
+    SessionDtcResult,
+    SessionEcuResult,
+    SessionMeasurementSample,
+    VehicleRecordNote,
+)
 from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
 
 __all__ = [
@@ -49,6 +55,9 @@ __all__ = [
     "ImportAppliedRecord",
     "ImportBatch",
     "ImportQuarantineItem",
+    "SessionDtcResult",
+    "SessionEcuResult",
+    "SessionMeasurementSample",
     "UpdateChangelog",
     "UpdateChannel",
     "UpdateJobLock",
@@ -57,6 +66,7 @@ __all__ = [
     "UserBrandFavorite",
     "UserRecentSelection",
     "Vehicle",
+    "VehicleRecordNote",
     "WorkOrder",
     "Workshop",
 ]

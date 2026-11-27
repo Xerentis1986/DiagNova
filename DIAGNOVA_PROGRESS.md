@@ -17,6 +17,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-06-Branch | `cursor/diagnova-phase-06-database-80ce` |
 | Phase-07-Branch | `cursor/diagnova-phase-07-updates-4111` |
 | Phase-08-Branch | `cursor/diagnova-phase-08-workshop-d09b` |
+| Phase-09-Branch | `cursor/diagnova-phase-09-history-f3fe` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -31,31 +32,36 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 05 Multiprotokoll / Mehr-ECU | 🟢 Simuliert getestet | Schichten/Matrix/ISO-TP/UDS |
 | 06 Diagnosedatenbank | 🟢 Simuliert getestet | Modell/Import/Quarantäne; DTC unbekannt |
 | 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe |
-| 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO; **Phase 09 nicht gestartet** |
-| 09–15 | ⚪ Offen | |
+| 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
+| 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte; **Phase 10 nicht gestartet** |
+| 10–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
 
-### 2026-11-27 – Phase 08 Werkstatt- und Kundenverwaltung
+### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-07-updates-4111` (PR #12)
-- Alembic `005_phase08` + Werkstatt/Kunden/Aufträge; `workshop_id` serverseitig
-- Rollen admin/technician/viewer; Cross-Tenant 404; DSGVO-Export/Archiv/Anonymize
-- UI `/workshop`, `/customers`, `/work-orders`; nur Beispieldaten im Seed
-- Tests: pytest **73 passed**
+- Branch von `origin/cursor/diagnova-phase-08-workshop-d09b` (PR #13)
+- Alembic `006_phase09` + Sitzungsdetails/ECU/DTC/Messwerte/Notizen
+- Lookup VIN/Kennzeichen, Zeitstrahl, Abort, Idempotenz, DTC-Vergleich
+- UI `/vehicle-record`; Demo/Beispiel/Simulation gekennzeichnet
+- Tests: pytest **78 passed**
 
 **Nicht gemacht (bewusst)**
 
-- Keine Produktivdaten / keine Rechtsfreigabe DSGVO
-- **Phase 09 nicht gestartet**
+- Keine echten Historien als echt; keine Hardware-Daten
+- **Phase 10 nicht gestartet**
 - Kein Prod-Deploy
 
-**Nächster Schritt:** Coordinator orchestriert Phase 09.
+**Nächster Schritt:** Coordinator orchestriert Phase 10.
+
+### 2026-11-27 – Phase 08 Werkstatt- und Kundenverwaltung
+
+Details: `docs/phase-08-abschluss.md`.
 
 ### 2026-11-27 – Phase 07 Automatische Diagnosedaten-Updates
 
@@ -94,6 +100,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)
 - Phase-08-Abschluss: [docs/phase-08-abschluss.md](docs/phase-08-abschluss.md)
 - Phase-07-Abschluss: [docs/phase-07-abschluss.md](docs/phase-07-abschluss.md)
 - Phase-06-Abschluss: [docs/phase-06-abschluss.md](docs/phase-06-abschluss.md)

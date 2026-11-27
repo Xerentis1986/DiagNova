@@ -10,6 +10,7 @@ const NAV = [
   { to: '/customers', label: 'Kunden', planned: false },
   { to: '/work-orders', label: 'Aufträge', planned: false },
   { to: '/vehicles', label: 'Fahrzeuge', planned: false },
+  { to: '/vehicle-record', label: 'Fahrzeugakte', planned: false },
   { to: '/diagnostics', label: 'Diagnose', planned: false },
   { to: '/reports', label: 'Berichte', planned: false },
   { to: '/ecu', label: 'Steuergeräte', planned: false },
