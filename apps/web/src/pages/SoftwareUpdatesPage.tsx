@@ -186,10 +186,10 @@ export function SoftwareUpdatesPage() {
               className="dn-btn dn-btn--primary text-sm"
               disabled={ingest.isPending}
               onClick={() =>
-                ingest.mutate({ fixture_name: 'phase14_web_0.14.1.json', channel_key: 'stable-fixture' })
+                ingest.mutate({ fixture_name: 'phase15_web_0.15.1.json', channel_key: 'stable-fixture' })
               }
             >
-              Web 0.14.1
+              Web 0.15.1
             </button>
             <button
               type="button"
@@ -197,12 +197,12 @@ export function SoftwareUpdatesPage() {
               disabled={ingest.isPending}
               onClick={() =>
                 ingest.mutate({
-                  fixture_name: 'phase14_connector_0.14.1.json',
+                  fixture_name: 'phase15_connector_0.15.1.json',
                   channel_key: 'stable-fixture',
                 })
               }
             >
-              Connector 0.14.1
+              Connector 0.15.1
             </button>
             <button
               type="button"
@@ -210,12 +210,12 @@ export function SoftwareUpdatesPage() {
               disabled={ingest.isPending}
               onClick={() =>
                 ingest.mutate({
-                  fixture_name: 'phase14_web_0.15.0_incompat.json',
+                  fixture_name: 'phase15_web_0.16.0_incompat.json',
                   channel_key: 'stable-fixture',
                 })
               }
             >
-              Web 0.15 (inkompatibel)
+              Web 0.16 (inkompatibel)
             </button>
             <button
               type="button"
@@ -223,7 +223,7 @@ export function SoftwareUpdatesPage() {
               disabled={ingest.isPending}
               onClick={() =>
                 ingest.mutate({
-                  fixture_name: 'phase14_web_0.14.1.json',
+                  fixture_name: 'phase15_web_0.15.1.json',
                   channel_key: 'stable-fixture',
                   tamper: true,
                 })
@@ -237,7 +237,7 @@ export function SoftwareUpdatesPage() {
               disabled={ingest.isPending}
               onClick={() =>
                 ingest.mutate({
-                  fixture_name: 'phase14_web_0.14.1.json',
+                  fixture_name: 'phase15_web_0.15.1.json',
                   channel_key: 'production-blocked',
                 })
               }

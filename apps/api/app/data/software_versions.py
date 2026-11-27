@@ -1,15 +1,16 @@
-"""Phase 14 – Komponentenversionen, Kompatibilitätsmatrix, Migrationsplan.
+"""Komponentenversionen, Kompatibilitätsmatrix, Migrationsplan.
 
 Software-Updates sind strikt getrennt von Diagnosedaten-Updates (Phase 07).
+Phase 15: Versionen 0.15.x (Security/Datenschutz/QA).
 """
 
 from __future__ import annotations
 
 # SemVer der aktuellen Build-Linie (simuliert / Demo).
 COMPONENT_VERSIONS: dict[str, str] = {
-    "api": "0.14.0",
-    "web": "0.14.0",
-    "connector": "0.14.0",
+    "api": "0.15.0",
+    "web": "0.15.0",
+    "connector": "0.15.0",
 }
 
 COMPONENT_LABELS_DE: dict[str, str] = {
@@ -19,7 +20,6 @@ COMPONENT_LABELS_DE: dict[str, str] = {
 }
 
 # Mindest-Kompatibilität: Zielkomponente → erforderliche Partnerversionen.
-# Format requires: { component: "x.y.z" } (exakt oder als Untergrenze via parse).
 COMPATIBILITY_MATRIX: list[dict] = [
     {
         "id": "web-0.14-requires-api",
@@ -40,20 +40,55 @@ COMPATIBILITY_MATRIX: list[dict] = [
         "component": "api",
         "version": "0.14.0",
         "requires": {"web": "0.13.0"},
-        "notes_de": "API 0.14 bleibt mit Web 0.13 lesekompatibel; Admin-UI Updates braucht 0.14.",
+        "notes_de": "API 0.14 bleibt mit Web 0.13 lesekompatibel.",
     },
     {
-        "id": "web-0.15-requires-api-0.15",
+        "id": "web-0.15-requires-api",
         "component": "web",
         "version": "0.15.0",
         "requires": {"api": "0.15.0"},
-        "notes_de": "Zukünftiges Demo-Paket – inkompatibel mit aktueller API 0.14.",
+        "notes_de": "Web 0.15 erwartet API 0.15 (Security-Dashboard).",
     },
     {
-        "id": "connector-0.15-requires-api-0.15",
+        "id": "web-0.15.1-requires-api",
+        "component": "web",
+        "version": "0.15.1",
+        "requires": {"api": "0.15.0"},
+        "notes_de": "Patch Web 0.15.1 kompatibel zu API 0.15.",
+    },
+    {
+        "id": "connector-0.15-requires-api",
         "component": "connector",
         "version": "0.15.0",
+        "requires": {"api": "0.14.0"},
+        "notes_de": "Connector 0.15 akzeptiert API ab 0.14.",
+    },
+    {
+        "id": "connector-0.15.1-requires-api",
+        "component": "connector",
+        "version": "0.15.1",
         "requires": {"api": "0.15.0"},
+        "notes_de": "Patch Connector 0.15.1.",
+    },
+    {
+        "id": "api-0.15-requires-web-min",
+        "component": "api",
+        "version": "0.15.0",
+        "requires": {"web": "0.14.0"},
+        "notes_de": "API 0.15 lesekompatibel mit Web ab 0.14; Security-UI braucht 0.15.",
+    },
+    {
+        "id": "web-0.16-requires-api-0.16",
+        "component": "web",
+        "version": "0.16.0",
+        "requires": {"api": "0.16.0"},
+        "notes_de": "Demo-Inkompatibilität für Abnahmetests (Phase 15).",
+    },
+    {
+        "id": "connector-0.16-requires-api-0.16",
+        "component": "connector",
+        "version": "0.16.0",
+        "requires": {"api": "0.16.0"},
         "notes_de": "Demo-Inkompatibilität für Abnahmetests.",
     },
 ]
@@ -77,6 +112,21 @@ DB_MIGRATION_PLAN: list[dict] = [
         ],
         "notes_de": "Phase-14-Tabellen für Software-Updates. Kein Prod-Deploy ohne Backup.",
     },
+    {
+        "revision": "012_phase15",
+        "from_revision": "011_phase14",
+        "backup_required": True,
+        "backup_steps_de": [
+            "pg_dump vor alembic upgrade.",
+            "Security-/Audit-Konfiguration (JWT_SECRET, CORS) separat sichern – nicht in Dump committen.",
+        ],
+        "restore_steps_de": [
+            "Restore DB-Dump.",
+            "JWT_SECRET und CORS_ORIGINS aus Secret-Store wiederherstellen.",
+            "GET /health und /api/security/dashboard prüfen.",
+        ],
+        "notes_de": "Phase 15: Audit-Metadaten optional; App-Logik primär. Backup vor Deploy.",
+    },
 ]
 
 UPDATE_CHANNELS_SEED: list[dict] = [
@@ -88,7 +138,7 @@ UPDATE_CHANNELS_SEED: list[dict] = [
         "enabled": True,
         "auto_install_allowed": False,
         "require_signature": True,
-        "require_signing_cert": False,  # Demo-HMAC reicht für Simulation
+        "require_signing_cert": False,
         "notes_de": (
             "Simulierter Stable-Kanal. Keine ungeprüften Auto-Installs. "
             "Admin-Freigabe Pflicht. Getrennt von Diagnosedaten-Updates."
@@ -99,7 +149,7 @@ UPDATE_CHANNELS_SEED: list[dict] = [
         "name": "Production (gesperrt ohne Zertifikat)",
         "channel_type": "production",
         "fetch_mode": "https",
-        "enabled": True,  # sichtbar, aber Install/Ingest ohne Zertifikat → rejected
+        "enabled": True,
         "auto_install_allowed": False,
         "require_signature": True,
         "require_signing_cert": True,

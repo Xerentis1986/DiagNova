@@ -32,7 +32,7 @@ def test_dashboard_and_separation_from_data_updates(client: TestClient, auth_hea
 
     ver = client.get("/version")
     assert ver.status_code == 200
-    assert ver.json()["api"] == "0.14.0"
+    assert ver.json()["api"] == "0.15.0"
 
 
 def test_reject_tampered_package(client: TestClient, auth_headers: dict[str, str]):
@@ -56,7 +56,7 @@ def test_reject_incompatible_version(client: TestClient, auth_headers: dict[str,
     check = client.post(
         "/api/software-updates/compatibility/check",
         headers=auth_headers,
-        json={"component": "web", "version": "0.15.0"},
+        json={"component": "web", "version": "0.16.0"},
     )
     assert check.status_code == 200
     assert check.json()["compatible"] is False
@@ -67,7 +67,7 @@ def test_reject_incompatible_version(client: TestClient, auth_headers: dict[str,
         headers=auth_headers,
         json={
             "channel_key": "stable-fixture",
-            "fixture_name": "phase14_web_0.15.0_incompat.json",
+            "fixture_name": "phase15_web_0.16.0_incompat.json",
         },
     )
     assert res.status_code == 200, res.text
@@ -101,7 +101,7 @@ def test_approve_install_and_rollback(client: TestClient, auth_headers: dict[str
         headers=auth_headers,
         json={
             "channel_key": "stable-fixture",
-            "fixture_name": "phase14_web_0.14.1.json",
+            "fixture_name": "phase15_web_0.15.1.json",
         },
     )
     assert ingest.status_code == 200, ingest.text
@@ -117,13 +117,13 @@ def test_approve_install_and_rollback(client: TestClient, auth_headers: dict[str
     assert run.status_code == 200, run.text
     body = run.json()
     assert body["status"] == "succeeded"
-    assert body["to_version"] == "0.14.1"
+    assert body["to_version"] == "0.15.1"
     assert body["healthcheck_ok"] is True
 
     comps = client.get("/api/software-updates/components", headers=auth_headers)
     web = next(c for c in comps.json() if c["key"] == "web")
-    assert web["current_version"] == "0.14.1"
-    assert web["previous_version"] == "0.14.0"
+    assert web["current_version"] == "0.15.1"
+    assert web["previous_version"] == "0.15.0"
 
     rb = client.post(
         "/api/software-updates/components/web/rollback",
@@ -131,7 +131,7 @@ def test_approve_install_and_rollback(client: TestClient, auth_headers: dict[str
     )
     assert rb.status_code == 200, rb.text
     assert rb.json()["status"] == "succeeded"
-    assert rb.json()["to_version"] == "0.14.0"
+    assert rb.json()["to_version"] == "0.15.0"
 
 
 def test_healthcheck_fail_triggers_rollback(client: TestClient, auth_headers: dict[str, str]):
@@ -140,7 +140,7 @@ def test_healthcheck_fail_triggers_rollback(client: TestClient, auth_headers: di
         headers=auth_headers,
         json={
             "channel_key": "stable-fixture",
-            "fixture_name": "phase14_connector_0.14.1.json",
+            "fixture_name": "phase15_connector_0.15.1.json",
         },
     )
     assert ingest.status_code == 200, ingest.text
@@ -158,7 +158,7 @@ def test_healthcheck_fail_triggers_rollback(client: TestClient, auth_headers: di
 
     comps = client.get("/api/software-updates/components", headers=auth_headers)
     conn = next(c for c in comps.json() if c["key"] == "connector")
-    assert conn["current_version"] == "0.14.0"
+    assert conn["current_version"] == "0.15.0"
 
 
 def test_busy_blocks_install_during_diagnosis(client: TestClient, auth_headers: dict[str, str]):
@@ -187,19 +187,18 @@ def test_busy_blocks_install_during_diagnosis(client: TestClient, auth_headers: 
         headers=auth_headers,
         json={
             "channel_key": "stable-fixture",
-            "fixture_name": "phase14_web_0.14.1.json",
+            "fixture_name": "phase15_web_0.15.1.json",
         },
     )
     assert ingest.status_code == 200
-    # Falls vorheriger Test bereits 0.14.1 installed hat, Version ggf. ok – awaiting oder rejected
+    # Falls vorheriger Test bereits 0.15.1 installed hat, Version ggf. ok – awaiting oder rejected
     if ingest.json()["status"] != "awaiting_approval":
-        # Noch einmal mit connector, der ggf. noch auf 0.14.0 ist
         ingest = client.post(
             "/api/software-updates/packages/ingest",
             headers=auth_headers,
             json={
                 "channel_key": "stable-fixture",
-                "fixture_name": "phase14_connector_0.14.1.json",
+                "fixture_name": "phase15_connector_0.15.1.json",
             },
         )
     assert ingest.json()["status"] == "awaiting_approval", ingest.text

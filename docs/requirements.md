@@ -101,10 +101,10 @@
 | REQ-13-ADMIN | Admin-Dashboard Nutzer/Abo/Audit | 13 | `simuliert getestet` | `/api/admin/*`, UI `/admin`; Einladungen/Registrierung; Audit/Support | `test_phase13_*` | Plattform-Admin; kein echter PSP |
 | REQ-14-UPD | Software-/Connector-Updates, Signatur | 14 | `simuliert getestet` | Versionierung API/Web/Connector; HMAC/Checksum; Staging; Admin-Freigabe; Busy-Gate; kein Auto-Install; Prod ohne Zertifikat gesperrt | `test_phase14_*` | BLK-CERT (Code-Signing) |
 | REQ-14-MIG | DB-Migrationen mit Backup-Plan | 14 | `simuliert getestet` | Alembic `011_phase14` + dokumentierter Backup/Restore-Plan in Admin-UI | `test_phase14_*` | Prod-Backup vor Deploy |
-| REQ-15-SEC | Threat Model, Rate Limits, IDOR, CSRF | 15 | `geplant` (Basis Auth vorhanden) | bcrypt/JWT/CORS/Audit | Auth-Tests | — |
-| REQ-15-BACKUP | Backup/Restore, Monitoring | 15 | `geplant` | — | — | — |
-| REQ-15-QA | E2E, Last, Security-Regression | 15 | `geplant` | nur Unit/API | keine E2E | — |
-| REQ-16-DEP | World4You Ubuntu/Plesk Deploy | 16 | `geplant` (Infra vorbereitet außerhalb Repo) | Compose + nginx-Skizze | Compose hier nicht | BLK-DEPLOY, BLK-DOCKER |
+| REQ-15-SEC | Threat Model, Rate Limits, IDOR, CSRF | 15 | `simuliert getestet` | Threat Model, Login-Rate-Limit, Security-Header, Audit-Redaction, Origin-Check, JWT iat/typ, UI `/security` | `test_phase15_*` | Default-JWT in Tests; Prod-Secret Pflicht |
+| REQ-15-BACKUP | Backup/Restore, Monitoring | 15 | `simuliert getestet` | Docs + `/api/security/backup`; Phase-16-Checkliste ergänzt | manuell / Docs | Prod-Alerting offen |
+| REQ-15-QA | E2E, Last, Security-Regression | 15 | `simuliert getestet` | Security-Regression (Rate-Limit, IDOR, Redaction, RBAC); Last = Rate-Limit-Stress | `test_phase15_*` | Volle E2E/Last optional später |
+| REQ-16-DEP | World4You Ubuntu/Plesk Deploy | 16 | `geplant` (Deploy weitgehend live; Checkliste ergänzt) | `docs/phase-16-deploy-checklist.md` | Compose hier nicht | BLK-DEPLOY – Phase 16 nicht gestartet |
 | REQ-16-TLS | HTTPS Reverse Proxy, WS | 16 | `geplant` | nginx nur HTTP-Skizze | — | DNS/TLS |
 | REQ-17-ACC | Gesamtabnahme, Abdeckungsmatrix, Go/No-Go | 17 | `geplant` | — | — | alle vorgelagerten Blocker |
 | REQ-18-TUNE | Optionales Chiptuning (gesperrt) | 18 | `geplant` | bewusst nicht aktiv | — | Rechtlich/technisch |
@@ -122,8 +122,8 @@
 | Readiness | REQ-01-LIVE, REQ-04-RDY | |
 | DTC-Löschung | REQ-04-CLR | simuliert + Connector-Gate; Live-HW nicht freigegeben |
 | CSV | REQ-10-CSV | MVP vorhanden |
-| Audit | REQ-01-AUDIT, REQ-15-SEC | Basis vorhanden |
-| Backups | REQ-15-BACKUP | geplant |
+| Audit | REQ-01-AUDIT, REQ-15-SEC | Redaction + outcome/ip_hash |
+| Backups | REQ-15-BACKUP | dokumentiert + API |
 | Lizenzherkunft | REQ-06-LIC | geplant; keine OEM-Daten im Repo |
 
 ## Nicht enthalten / ausgeschlossen
