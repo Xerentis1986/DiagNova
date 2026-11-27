@@ -75,10 +75,10 @@
 | REQ-05-CAP-MAT | Capability-Matrix pro Adapter | 05 | `simuliert getestet` | `capability_matrix.py` + Connector | API + Unit | BLK-ADAPTER (Vgate/Delphi) |
 | REQ-05-LAYERS | Transport/Protokoll/Adapter/Fahrzeugdef. getrennt | 05 | `implementiert` | `docs/protocol-architecture.md` | Review | — |
 | REQ-05-NO-BLIND | Kein Blindscan unbekannter Netze | 05 | `simuliert getestet` | Flags + Connector 403 | API + Connector | — |
-| REQ-06-MODEL | Versioniertes Diagnosedatenmodell | 06 | `geplant` | nur Demo-Seed-Fahrzeuge | — | BLK-OEM |
-| REQ-06-IMPORT | JSON/CSV-Import, Quarantäne, Rollback | 06 | `geplant` | — | — | — |
-| REQ-06-ODX | ODX/PDX nur mit Lizenz | 06 | `geplant` | — | — | BLK-OEM |
-| REQ-06-LIC | Lizenzherkunft / Attribution | 06 | `geplant` | — | — | BLK-OEM |
+| REQ-06-MODEL | Versioniertes Diagnosedatenmodell | 06 | `simuliert getestet` | `diagnostic_data.py` + Alembic 003 | Phase-06-API-Tests | BLK-OEM (OEM-Inhalte fehlen) |
+| REQ-06-IMPORT | JSON/CSV-Import, Quarantäne, Rollback | 06 | `simuliert getestet` | `import_pipeline.py` + `/api/diagnostic-data/import/*` | `test_phase06_diagnostic_data` | — |
+| REQ-06-ODX | ODX/PDX nur mit Lizenz | 06 | `implementiert` (gesperrt) | POST `/import/odx` → 403 | API-Test | BLK-OEM |
+| REQ-06-LIC | Lizenzherkunft / Attribution | 06 | `simuliert getestet` | `data_license_sources` + UI/Lookup Provenance | API + Docs | DTC-Volltexte nicht redistribuierbar |
 | REQ-07-SCHED | Scheduler Diagnosedaten-Updates | 07 | `geplant` | — | — | Quellenrechte |
 | REQ-07-SAFE | SSRF-/Integritäts-/Staging-Schutz | 07 | `geplant` | — | — | — |
 | REQ-07-PUB | Atomare Veröffentlichung + Rollback | 07 | `geplant` | — | — | — |

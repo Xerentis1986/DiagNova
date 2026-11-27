@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 05 abgeschlossen (simuliert getestet). **Phase 06 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-04-Branch `cursor/diagnova-phase-04-obd-606d`; Arbeit auf `cursor/diagnova-phase-05-multiprotocol-dd50`.
+**Aktuelle Arbeitsphase:** 06 abgeschlossen (simuliert getestet). **Phase 07 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-05-Branch `cursor/diagnova-phase-05-multiprotocol-dd50`; Arbeit auf `cursor/diagnova-phase-06-database-80ce`.
 
 ## Phasenübersicht
 
@@ -14,7 +14,7 @@
 | **03** | Windows-Connector & Bluetooth | **Simuliert getestet** | Discovery, Auth, Fake-Port, ELM-Prep |
 | **04** | Echte OBD-II/EOBD | **Simuliert getestet** | Parser/Allowlist/Clear-Gate; **keine HW-Freigabe** |
 | **05** | Multiprotokoll / Mehr-ECU | **Simuliert getestet** | Schichten, Matrix, ISO-TP/UDS-NRC, OBD-ECUs; DoIP/J2534 Prep |
-| 06 | Diagnosedatenbank & Importe | Offen | |
+| **06** | Diagnosedatenbank & Importe | **Simuliert getestet** | Modell/Import/Quarantäne/Rollback; DTC unbekannt; ODX 403 |
 | 07 | Automatische Daten-Updates | Offen | |
 | 08 | Werkstatt- & Kundenverwaltung | Offen | |
 | 09 | Fahrzeug-History / Akte | Offen | |
@@ -29,19 +29,22 @@
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
 
-## Phase 05 – Kurzfazit
+## Phase 06 – Kurzfazit
 
 | Bereich | Ergebnis |
 |---------|----------|
-| Schichten | Transport / Protokoll / Adapter / Fahrzeugdefinition getrennt |
-| Capability-Matrix | Pro Adapter; ELM ≠ DoIP/CAN-FD |
-| ISO-TP / UDS | Parser + Testvektoren; Write/Security aus |
-| Mehr-ECU | 7E8/7E9 aus beobachteten Antworten; kein Blindscan |
-| OEM | ABS/Airbag/Komfort unavailable (BLK-OEM) |
-| Prep-Docs | J2534 / DoIP / J1939 |
-| Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER |
+| Datenmodell | Versioniert + Herkunft (`003_phase06`) |
+| Import | JSON/CSV Preview → Quarantäne/Apply/Rollback |
+| DTC | Unbekannt ohne Text; keine Bosch/Gutmann/Delphi |
+| ODX | 403 bis Lizenz |
+| UI | `/diagnostic-data` mit Provenance |
+| Blocker | BLK-OEM, BLK-HW, BLK-DOCKER |
 
-Details: [phase-05-abschluss.md](./phase-05-abschluss.md), [protocol-architecture.md](./protocol-architecture.md), [requirements.md](./requirements.md).
+Details: [phase-06-abschluss.md](./phase-06-abschluss.md), [free-data-sources.md](./free-data-sources.md), [diagnostic-data-model.md](./diagnostic-data-model.md).
+
+## Phase 05 – Kurzfazit
+
+Details: [phase-05-abschluss.md](./phase-05-abschluss.md).
 
 ## Nicht ausgeführt (weiterhin)
 

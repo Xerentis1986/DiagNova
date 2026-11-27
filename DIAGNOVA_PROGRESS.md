@@ -14,6 +14,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-03-Branch | `cursor/diagnova-phase-03-connector-90c7` |
 | Phase-04-Branch | `cursor/diagnova-phase-04-obd-606d` |
 | Phase-05-Branch | `cursor/diagnova-phase-05-multiprotocol-dd50` |
+| Phase-06-Branch | `cursor/diagnova-phase-06-database-80ce` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -25,36 +26,38 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 02 Marken-Kacheln | 🟢 Simuliert getestet | Katalog, Theme, Wizard, E2E |
 | 03 Windows-Connector | 🟢 Simuliert getestet | Discovery/Auth/Fake-Port |
 | 04 OBD-II/EOBD | 🟢 Simuliert getestet | Parser/Allowlist/Clear-Gate – **keine HW-Freigabe** |
-| 05 Multiprotokoll / Mehr-ECU | 🟢 Simuliert getestet | Schichten/Matrix/ISO-TP/UDS; OEM unavailable; **Phase 06 nicht gestartet** |
-| 06–15 | ⚪ Offen | |
+| 05 Multiprotokoll / Mehr-ECU | 🟢 Simuliert getestet | Schichten/Matrix/ISO-TP/UDS |
+| 06 Diagnosedatenbank | 🟢 Simuliert getestet | Modell/Import/Quarantäne; DTC unbekannt; **Phase 07 nicht gestartet** |
+| 07–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
 
-### 2026-11-27 – Phase 05 Multiprotokoll und Mehrsteuergerätediagnose
+### 2026-11-27 – Phase 06 Diagnosedatenbank und Datenimporte
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-04-obd-606d` (PR #8)
-- Schichtentrennung Transport/Protokoll/Adapter/Fahrzeugdefinition
-- Protokollkatalog + Adapter-Capability-Matrix; ISO-TP Framing; UDS NRC (Write/Security aus)
-- Mehr-ECU nur ISO 15765-4 (7E8/7E9 Simulator); kein Blindscan; ABS/Airbag/Komfort unavailable
-- J2534/DoIP/J1939 Vorbereitung dokumentiert
-- API `/api/protocols/*`, UI `/ecu`, Connector `/ecu/list`
-- Tests: `dotnet test` **29 passed**; pytest **40 passed**
-- Docs: `docs/phase-05-abschluss.md`, Architecture/Matrix/Prep, Progress/Requirements/Capabilities/Status
+- Branch von `origin/cursor/diagnova-phase-05-multiprotocol-dd50` (PR #9)
+- Versioniertes Modell + Alembic `003_phase06` + Herkunftsquellen
+- JSON/CSV-Import: Schema, Quarantäne, Konflikte, Apply, Rollback; ODX 403
+- DTC-Lookup → „unbekannt“ ohne erfundene Texte; Blocklist Bosch/Gutmann/Delphi
+- UI `/diagnostic-data`; Docs `free-data-sources.md`, `diagnostic-data-model.md`
+- Tests: pytest **50 passed** (`dotnet` hier nicht verfügbar; Connector unverändert)
 
 **Nicht gemacht (bewusst)**
 
-- Keine erfundenen OEM-Adressen / kein Blindscan
-- Keine DoIP/J2534/CAN-FD-Live-Implementierung
-- Keine Hardwarefreigabe
-- **Phase 06 nicht gestartet**
+- Keine OEM-/Bosch-/Gutmann-/Delphi-Daten
+- Kein ODX-Live-Import
+- **Phase 07 nicht gestartet**
 - Kein Prod-Deploy
 
-**Nächster Schritt:** Coordinator orchestriert Phase 06.
+**Nächster Schritt:** Coordinator orchestriert Phase 07.
+
+### 2026-11-27 – Phase 05 Multiprotokoll und Mehrsteuergerätediagnose
+
+Details: `docs/phase-05-abschluss.md`.
 
 ### 2026-11-27 – Phase 04 Echte OBD-II/EOBD-Diagnose
 
@@ -81,7 +84,6 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-06-Abschluss: [docs/phase-06-abschluss.md](docs/phase-06-abschluss.md)
 - Phase-05-Abschluss: [docs/phase-05-abschluss.md](docs/phase-05-abschluss.md)
-- Phase-04-Abschluss: [docs/phase-04-abschluss.md](docs/phase-04-abschluss.md)
-- Phase-03-Abschluss: [docs/phase-03-abschluss.md](docs/phase-03-abschluss.md)
-- Phase-02-Abschluss: [docs/phase-02-abschluss.md](docs/phase-02-abschluss.md)
+- Freie Quellen: [docs/free-data-sources.md](docs/free-data-sources.md)

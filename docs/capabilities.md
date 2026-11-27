@@ -85,7 +85,8 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | OEM-Service / Codierung / Flash / Stellglieder | UI „Geplant“, keine Logik |
 | Mandantenfähigkeit / Kundenverwaltung | fehlt |
 | Abo/Zahlungen | fehlt |
-| Diagnosedaten-Import/Updates | fehlt |
+| Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
+| Automatische Daten-Updates | fehlt (Phase 07) |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
@@ -102,8 +103,11 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `diagnostic_sessions` | Sitzungen mit `data_source`, DTC-Snapshot JSON |
 | `diagnostic_reports` | Berichtsinhalt JSON |
 | `audit_logs` | Aktion/Resource/Detail |
+| `data_license_sources` | Lizenz/Attribution/Prüfdatum |
+| `diag_*` | Versionierte Hersteller/Modelle/ECU/DTC/PID/Units/Service |
+| `import_*` | Batches, Quarantäne, Applied-Records für Rollback |
 
-Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial`, `002_phase02`, `003_phase06`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -131,6 +135,11 @@ Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Se
 | GET | `/api/reports/{id}` | JWT |
 | GET | `/api/reports/{id}/export.csv` | JWT |
 | GET | `/api/reports/{id}/export.pdf` | JWT |
+| GET | `/api/diagnostic-data/sources|versions|pids|ecus|coverage` | JWT |
+| GET | `/api/diagnostic-data/dtcs/{code}` | JWT |
+| POST | `/api/diagnostic-data/import/preview` · `preview-csv` · `preview-file` | JWT admin/technician |
+| POST | `/api/diagnostic-data/import/{id}/apply` · `rollback` | JWT admin/technician |
+| POST | `/api/diagnostic-data/import/odx` | JWT → 403 |
 
 **Hinweis:** WebSocket-Endpunkte sind im MVP **nicht** implementiert (README erwähnt REST + WebSocket als Zielarchitektur; aktuell nur REST).
 
@@ -146,6 +155,7 @@ Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Se
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
 | `/reports` | ReportsPage | Berichte / Export |
 | `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
+| `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/planned/:moduleId` | PlannedPage | service, coding, … |
 
 ## Test-Inventar
@@ -154,9 +164,10 @@ Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Se
 |-------|-------|-----------|
 | API | `tests/api/test_auth_and_demo.py` | Health, Login, Seed, Simulator, Session, CSV/PDF |
 | API Phase 02 | `tests/api/test_phase02_catalog.py` | Katalog, Theme, Favoriten, VIN, Capabilities |
+| API Phase 06 | `tests/api/test_phase06_diagnostic_data.py` | Quellen, Lookup, Import/Quarantäne/Rollback, ODX 403 |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
-| Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – 14 passed |
+| Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |
 | Docker | — | in dieser Umgebung nicht ausgeführt |
 
 ## Fehlende Herstellerdaten / Lizenzen / Hardware (explizit)

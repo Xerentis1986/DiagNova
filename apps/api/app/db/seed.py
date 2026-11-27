@@ -4,9 +4,26 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
+from sqlalchemy import select
+
 from app.core.config import get_settings
 from app.core.security import hash_password
+from app.data.phase06_sources import (
+    BASELINE_DTC_CODES_UNKNOWN,
+    BASELINE_ECUS,
+    BASELINE_PIDS,
+    BASELINE_UNITS,
+    DOCUMENTED_SOURCES,
+)
 from app.models import User, Vehicle
+from app.models.diagnostic_data import (
+    DataLicenseSource,
+    DiagDatasetVersion,
+    DiagDtcDefinition,
+    DiagEcuDefinition,
+    DiagPidDefinition,
+    DiagUnitDefinition,
+)
 from app.services.simulator import simulated_vin
 
 EXAMPLE_VEHICLES = [
@@ -157,3 +174,77 @@ def seed_all(db: Session) -> None:
                 )
             )
         db.commit()
+
+    seed_phase06_baseline(db)
+
+
+def seed_phase06_baseline(db: Session) -> None:
+    """Lizenzquellen + generische Baseline (PIDs/ECUs/Units/DTC-Codes ohne erfundene Texte)."""
+    if db.scalar(select(DataLicenseSource).limit(1)) is None:
+        for src in DOCUMENTED_SOURCES:
+            db.add(DataLicenseSource(**src))
+        db.commit()
+
+    if db.scalar(select(DiagDatasetVersion).where(DiagDatasetVersion.version_label == "baseline-06")):
+        return
+
+    structural = db.scalar(select(DataLicenseSource).where(DataLicenseSource.key == "diagnova-structural"))
+    pid_src = db.scalar(select(DataLicenseSource).where(DataLicenseSource.key == "sae-j1979-pid-subset"))
+    ecu_src = db.scalar(select(DataLicenseSource).where(DataLicenseSource.key == "iso-15765-4-obd-addresses"))
+    dtc_src = db.scalar(
+        select(DataLicenseSource).where(DataLicenseSource.key == "dtc-descriptions-unavailable")
+    )
+    if not all([structural, pid_src, ecu_src, dtc_src]):
+        return
+
+    version = DiagDatasetVersion(
+        version_label="baseline-06",
+        status="published",
+        source_id=structural.id,  # type: ignore[union-attr]
+        notes_de="Phase-06 Baseline: generische PIDs/ECUs/Units; DTC-Codes ohne Beschreibungstext.",
+    )
+    db.add(version)
+    db.flush()
+
+    for u in BASELINE_UNITS:
+        db.add(
+            DiagUnitDefinition(
+                dataset_version_id=version.id,
+                source_id=structural.id,  # type: ignore[union-attr]
+                **u,
+            )
+        )
+    for p in BASELINE_PIDS:
+        db.add(
+            DiagPidDefinition(
+                dataset_version_id=version.id,
+                source_id=pid_src.id,  # type: ignore[union-attr]
+                data_scope="generic",
+                kind="pid",
+                **p,
+            )
+        )
+    for e in BASELINE_ECUS:
+        db.add(
+            DiagEcuDefinition(
+                dataset_version_id=version.id,
+                source_id=ecu_src.id,  # type: ignore[union-attr]
+                data_scope="generic",
+                software_variant=None,
+                **e,
+            )
+        )
+    for code in BASELINE_DTC_CODES_UNKNOWN:
+        db.add(
+            DiagDtcDefinition(
+                dataset_version_id=version.id,
+                source_id=dtc_src.id,  # type: ignore[union-attr]
+                code=code,
+                description_de=None,
+                description_status="unknown",
+                data_scope="generic",
+                system=code[0],
+                notes_de="Nur Code; keine kommerzielle Beschreibungstexte übernommen.",
+            )
+        )
+    db.commit()

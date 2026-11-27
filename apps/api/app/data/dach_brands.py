@@ -65,6 +65,18 @@ MVP_SIMULATED_CAPABILITIES = [
         "status": "simulated",
         "phase": 5,
     },
+    {
+        "id": "diagnostic_data_import",
+        "label_de": "Diagnosedaten JSON/CSV-Import (Validierung, Quarantäne, Rollback)",
+        "status": "simulated",
+        "phase": 6,
+    },
+    {
+        "id": "dtc_lookup_provenance",
+        "label_de": "DTC-Lookup mit Herkunft; unbekannte Codes → „unbekannt“",
+        "status": "simulated",
+        "phase": 6,
+    },
 ]
 
 PLANNED_CAPABILITIES = [
@@ -72,6 +84,12 @@ PLANNED_CAPABILITIES = [
         "id": "oem_ecu_abs_airbag_comfort",
         "label_de": "OEM-Steuergeräte ABS/Airbag/Komfort (verifizierte Definitionen)",
         "status": "planned",
+        "phase": 6,
+    },
+    {
+        "id": "odx_pdx_licensed_import",
+        "label_de": "ODX/PDX-Import (nur mit Lizenz/Spezifikation)",
+        "status": "unavailable",
         "phase": 6,
     },
     {
@@ -731,8 +749,8 @@ def capabilities_for_selection() -> dict[str, Any]:
     return {
         "disclaimer_de": (
             "Ein Katalogeintrag bedeutet keine Diagnoseabdeckung. "
-            "Simuliert: OBD-II und Mehr-ECU über ISO-15765-4-Standardadressen. "
-            "Kein Blindscan. OEM ABS/Airbag/Komfort und DoIP/CAN-FD/J2534 Live fehlen."
+            "Simuliert: OBD-II, Mehr-ECU (ISO-15765-4) und Diagnosedaten-Import (JSON/CSV). "
+            "Unbekannte DTCs → „unbekannt“. Kein Blindscan. ODX und OEM-Texte fehlen."
         ),
         "available": MVP_SIMULATED_CAPABILITIES,
         "unavailable": PLANNED_CAPABILITIES,

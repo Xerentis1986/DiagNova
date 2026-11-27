@@ -203,6 +203,97 @@ export interface Report {
   content: Record<string, unknown>
 }
 
+export interface DataLicenseSource {
+  key: string
+  name: string
+  url: string | null
+  version: string | null
+  license_name: string
+  commercial_use: string
+  attribution: string | null
+  scope: string
+  notes_de: string | null
+  checked_at: string
+  redistributable: boolean
+}
+
+export interface Provenance {
+  source_key: string
+  source_name: string
+  license_name: string
+  commercial_use: string
+  attribution: string | null
+  checked_at: string
+  redistributable: boolean
+  url: string | null
+  version: string | null
+}
+
+export interface DtcLookup {
+  code: string
+  known: boolean
+  description_de: string
+  description_status: 'known' | 'unknown' | 'withheld'
+  data_scope: string | null
+  provenance: Provenance | null
+  message_de: string
+}
+
+export interface DiagPid {
+  id: string
+  pid_hex: string
+  name: string
+  description_de: string
+  unit: string
+  bytes_needed: number
+  conversion_formula: string | null
+  data_scope: string
+  kind: string
+  provenance: Provenance
+}
+
+export interface DiagEcu {
+  id: string
+  code: string
+  name_de: string
+  category: string
+  protocol_id: string
+  request_address: string | null
+  response_address: string | null
+  verified: boolean
+  data_scope: string
+  provenance: Provenance
+}
+
+export interface DiagnosticCoverage {
+  disclaimer_de: string
+  generic_pids: number
+  ecu_count: number
+  manufacturer_count: number
+  odx_import: string
+  blocked_vendors: string[]
+  phase_07: string
+}
+
+export interface ImportPreview {
+  batch_id: string
+  status: string
+  format: string
+  summary: Record<string, unknown>
+  conflicts: { entity_type: string; key: string; reason_de: string }[]
+  quarantine: { entity_type: string; row_index: number; reason_de: string }[]
+  can_apply: boolean
+  message_de: string
+}
+
+export interface ImportBatch {
+  id: string
+  format: string
+  status: string
+  applied_count: number
+  quarantine_count: number
+}
+
 export interface VehicleConfirmPayload {
   brand_slug: string
   model_id: string
@@ -400,6 +491,33 @@ export const api = {
     a.download = `diagnova-report-${reportId}.${kind}`
     a.click()
     URL.revokeObjectURL(url)
+  },
+  diagnosticSources() {
+    return request<DataLicenseSource[]>('/api/diagnostic-data/sources')
+  },
+  diagnosticCoverage() {
+    return request<DiagnosticCoverage>('/api/diagnostic-data/coverage')
+  },
+  diagnosticEcus() {
+    return request<DiagEcu[]>('/api/diagnostic-data/ecus')
+  },
+  diagnosticPids() {
+    return request<DiagPid[]>('/api/diagnostic-data/pids')
+  },
+  lookupDtc(code: string) {
+    return request<DtcLookup>(`/api/diagnostic-data/dtcs/${encodeURIComponent(code)}`)
+  },
+  importPreview(payload: Record<string, unknown>) {
+    return request<ImportPreview>('/api/diagnostic-data/import/preview', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+  importApply(batchId: string) {
+    return request<ImportBatch>(`/api/diagnostic-data/import/${batchId}/apply`, { method: 'POST' })
+  },
+  importRollback(batchId: string) {
+    return request<ImportBatch>(`/api/diagnostic-data/import/${batchId}/rollback`, { method: 'POST' })
   },
 }
 
