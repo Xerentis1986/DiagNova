@@ -107,12 +107,15 @@ public class AuthAndInventoryTests
         await manager.ConnectFakeAsync();
         status = manager.GetStatus();
         Assert.True(status.AdapterConnected);
-        Assert.False(status.VehicleConnected);
+        Assert.False(status.VehicleConnected); // vor OBD-Init
         Assert.Equal("simulated", manager.DataSource);
+
+        await manager.InitObdAsync();
+        Assert.True(manager.GetStatus().VehicleConnected);
 
         await manager.SelectSimulatorAsync();
         Assert.True(manager.IsSimulator);
-        Assert.False(manager.GetStatus().VehicleConnected);
+        Assert.False(manager.GetStatus().VehicleConnected); // Simulator neu, noch ohne Init
 
         await manager.DisconnectAsync();
         Assert.False(manager.GetStatus().AdapterConnected);

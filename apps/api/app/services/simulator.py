@@ -53,21 +53,94 @@ def simulated_vin(make: str, vehicle_id: str) -> str:
     return f"{wmi}ZZZ{digest}DEMO"[:17]
 
 
+CLEAR_PHRASE = "FEHLERCODES LOESCHEN"
+
+# Simulierter Clear-State: gelöschte stored/pending pro vehicle (permanent bleibt)
+_cleared_nonpermanent: set[str] = set()
+
+
+def clear_dtc_warnings() -> dict:
+    return {
+        "data_source": "simulated",
+        "warnings_de": [
+            "Mode 04 löscht gespeicherte und pending DTCs sowie Freeze-Frame-Daten.",
+            "Readiness-Monitore werden zurückgesetzt – AU kann betroffen sein.",
+            "Permanente DTCs (Mode 0A) werden NICHT gelöscht und sind nicht als löschbar darzustellen.",
+            "Vorher-Bericht speichern, bestätigen, nach dem Löschen erneut auslesen.",
+            "Dieser API-Pfad ist simuliert – keine echte Fahrzeugkommunikation.",
+        ],
+        "permanent_dtcs_clearable": False,
+        "requires_confirmation_phrase": CLEAR_PHRASE,
+        "hardware_live": False,
+    }
+
+
+def clear_dtcs_simulated(
+    vehicle_id: str,
+    *,
+    confirmation_phrase: str,
+    acknowledge_freeze_frame_loss: bool,
+    acknowledge_readiness_reset: bool,
+    acknowledge_permanent_remain: bool,
+    pre_report_saved: bool,
+) -> dict:
+    """Freigabegeschützte simulierte Fehlerlöschung – permanente DTCs bleiben."""
+    if confirmation_phrase.strip() != CLEAR_PHRASE:
+        return {
+            "success": False,
+            "data_source": "simulated",
+            "message_de": f"Bestätigungsphrase muss exakt „{CLEAR_PHRASE}“ lauten.",
+        }
+    if not (
+        acknowledge_freeze_frame_loss
+        and acknowledge_readiness_reset
+        and acknowledge_permanent_remain
+        and pre_report_saved
+    ):
+        return {
+            "success": False,
+            "data_source": "simulated",
+            "message_de": "Alle Warnhinweise und Vorher-Bericht müssen bestätigt werden.",
+        }
+
+    before = [d.model_dump() for d in list_dtcs(vehicle_id)]
+    _cleared_nonpermanent.add(vehicle_id)
+    after_raw = list_dtcs(vehicle_id)
+    # list_dtcs respektiert Clear-State
+    after = [d.model_dump() for d in after_raw]
+    return {
+        "success": True,
+        "data_source": "simulated",
+        "message_de": "Simulierte Mode-04-Löschung. Permanente DTCs bleiben. Kein Hardwarezugriff.",
+        "before": before,
+        "after": after,
+        "permanent_remain": [d for d in after if d["status"] == "permanent"],
+        "note_de": "Live-Clear nur über Windows-Connector mit Freigabe-Token und Hardware.",
+    }
+
+
 def list_dtcs(vehicle_id: str) -> list[DtcOut]:
-    """Deterministic-ish DTC set based on vehicle id hash."""
+    """Deterministic-ish DTC set; nach simuliertem Clear ohne stored/pending."""
     seed = sum(ord(c) for c in vehicle_id)
     rng = random.Random(seed)
     codes = list(DTC_CATALOG.keys())
     pick = rng.sample(codes, k=rng.randint(1, 3))
     pending_pool = [c for c in codes if c not in pick]
     pending = rng.sample(pending_pool, k=1) if pending_pool else []
+    permanent_pool = [c for c in codes if c not in pick and c not in pending]
+    permanent = rng.sample(permanent_pool, k=1) if permanent_pool else []
     result: list[DtcOut] = []
-    for code in pick:
+    cleared = vehicle_id in _cleared_nonpermanent
+    if not cleared:
+        for code in pick:
+            desc, sev = DTC_CATALOG[code]
+            result.append(DtcOut(code=code, status="stored", description_de=desc, severity=sev))  # type: ignore[arg-type]
+        for code in pending:
+            desc, sev = DTC_CATALOG[code]
+            result.append(DtcOut(code=code, status="pending", description_de=desc, severity=sev))  # type: ignore[arg-type]
+    for code in permanent:
         desc, sev = DTC_CATALOG[code]
-        result.append(DtcOut(code=code, status="stored", description_de=desc, severity=sev))  # type: ignore[arg-type]
-    for code in pending:
-        desc, sev = DTC_CATALOG[code]
-        result.append(DtcOut(code=code, status="pending", description_de=desc, severity=sev))  # type: ignore[arg-type]
+        result.append(DtcOut(code=code, status="permanent", description_de=desc, severity=sev))  # type: ignore[arg-type]
     return result
 
 

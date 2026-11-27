@@ -190,6 +190,15 @@ class DashboardOut(BaseModel):
     planned_modules: list[dict]
 
 
+class ClearDtcRequest(BaseModel):
+    confirmation_phrase: str = Field(min_length=3, max_length=64)
+    acknowledge_freeze_frame_loss: bool
+    acknowledge_readiness_reset: bool
+    acknowledge_permanent_remain: bool
+    pre_report_saved: bool
+    operator_note: str | None = Field(default=None, max_length=500)
+
+
 class ReportCreate(BaseModel):
     session_id: str
     title: str = Field(min_length=3, max_length=255)

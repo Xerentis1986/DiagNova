@@ -3,8 +3,8 @@ using System.Text;
 namespace DiagNova.Connector.Transport;
 
 /// <summary>
-/// Fake-Port für Unit-/IntegrationsTests. Simuliert ELM327-ähnliche AT-Antworten.
-/// Keine Hardware, keine Fahrzeugbefehle.
+/// Fake-Port für Unit-/IntegrationsTests. Simuliert ELM327 AT- und OBD-Antworten
+/// über <see cref="Obd.ObdSimulatorResponses"/> (klar simulated).
 /// </summary>
 public sealed class FakeSerialTransport : ISerialTransport
 {
@@ -118,8 +118,12 @@ public sealed class FakeSerialTransport : ISerialTransport
                     sb.Append(_rxBuffer);
                     _rxBuffer.Clear();
                     var soFar = sb.ToString();
-                    if (soFar.Contains('>') || soFar.Contains("OK", StringComparison.Ordinal) ||
-                        soFar.Contains("ELM", StringComparison.OrdinalIgnoreCase))
+                    if (soFar.Contains('>') ||
+                        soFar.Contains("OK", StringComparison.Ordinal) ||
+                        soFar.Contains("ELM", StringComparison.OrdinalIgnoreCase) ||
+                        soFar.Contains("NO DATA", StringComparison.OrdinalIgnoreCase) ||
+                        soFar.Contains("STOPPED", StringComparison.OrdinalIgnoreCase) ||
+                        soFar.Contains("UNABLE TO CONNECT", StringComparison.OrdinalIgnoreCase))
                     {
                         return soFar;
                     }
@@ -149,22 +153,8 @@ public sealed class FakeSerialTransport : ISerialTransport
         }
     }
 
-    private static string DefaultElmResponse(string cmd)
-    {
-        var c = cmd.ToUpperInvariant();
-        return c switch
-        {
-            "ATZ" => "\r\rELM327 v1.5\r\n>",
-            "ATE0" => "ATE0\rOK\r\n>",
-            "ATL0" => "OK\r\n>",
-            "ATH0" => "OK\r\n>",
-            "ATSP0" => "OK\r\n>",
-            "ATI" => "ELM327 v1.5\r\n>",
-            _ when c.StartsWith("AT", StringComparison.Ordinal) => "OK\r\n>",
-            // Keine OBD-PID-Antworten in Phase 03 – bewusst ablehnen.
-            _ => "?\r\n>"
-        };
-    }
+    private static string DefaultElmResponse(string cmd) =>
+        Obd.ObdSimulatorResponses.ForCommand(cmd);
 
     private void EnsureOpen(CancellationToken cancellationToken)
     {

@@ -4,13 +4,13 @@ using DiagNova.Connector.Transport;
 namespace DiagNova.Connector.Adapters;
 
 /// <summary>
-/// ELM327 / Vgate-Treiber-Vorbereitung: nur dokumentierte AT-Initialisierungssequenzen
-/// über <see cref="ISerialTransport"/>. Keine Mode-01/03/04-Fahrzeugbefehle.
+/// ELM327 / Vgate-Treiber-Vorbereitung: dokumentierte AT-Initialisierungssequenzen
+/// über <see cref="ISerialTransport"/>. OBD-Services laufen über <c>Obd.ObdSession</c> (Allowlist).
 /// Vgate vLinker MC+ Windows-SPP-Variante muss vor Hardwarefreigabe verifiziert werden.
 /// </summary>
 public sealed class Elm327DriverPrep
 {
-    /// <summary>Nur Adapter-AT-Init – keine OBD-Service-Requests.</summary>
+    /// <summary>Adapter-AT-Init (Basis).</summary>
     public static readonly string[] SafeAtInitSequence =
     {
         "ATZ",
@@ -58,29 +58,29 @@ public sealed class Elm327DriverPrep
             allOk,
             responses,
             allOk
-                ? "AT-Init (Vorbereitung) erfolgreich – keine Fahrzeugbefehle gesendet."
+                ? "AT-Init erfolgreich – OBD-Services nur über ObdSession/Allowlist."
                 : "AT-Init teilweise fehlgeschlagen – siehe Exchanges."
         );
     }
 
-    /// <summary>
-    /// Blockiert bewusst OBD-Rohbefehle (z. B. "0100", "03", "04") in Phase 03.
-    /// </summary>
+    /// <summary>Erkennt Hex-OBD-Service-Requests (ohne AT-Prefix).</summary>
     public static bool IsVehicleObdCommand(string command)
     {
         var c = command.Trim().ToUpperInvariant();
         if (c.StartsWith("AT", StringComparison.Ordinal)) return false;
-        // Hex-Service-Request ohne AT-Prefix
         return c.Length >= 2 && c.All(ch => Uri.IsHexDigit(ch) || char.IsWhiteSpace(ch));
     }
 
+    /// <summary>
+    /// Rohbefehle außerhalb der ObdSession bleiben verboten – Allowlist erzwingen.
+    /// </summary>
     public Task RejectVehicleCommandAsync(string command)
     {
         if (IsVehicleObdCommand(command))
         {
-            _log.Warn("elm327-prep", "Fahrzeugbefehl in Phase 03 blockiert", command);
+            _log.Warn("elm327-prep", "Direkter OBD-Rohbefehl abgelehnt – ObdSession nutzen", command);
             throw new InvalidOperationException(
-                "Phase 03 erlaubt keine OBD-/Fahrzeugbefehle. Nur AT-Init-Vorbereitung.");
+                "OBD-Befehle nur über ObdSession mit Allowlist (Phase 04), nicht als freier Rohbefehl.");
         }
         return Task.CompletedTask;
     }

@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 03 abgeschlossen (simuliert getestet). **Phase 04 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-02-Branch `cursor/diagnova-phase-02-brands-c4de`; Arbeit auf `cursor/diagnova-phase-03-connector-90c7`.
+**Aktuelle Arbeitsphase:** 04 abgeschlossen (simuliert getestet). **Phase 05 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-03-Branch `cursor/diagnova-phase-03-connector-90c7`; Arbeit auf `cursor/diagnova-phase-04-obd-606d`.
 
 ## Phasenübersicht
 
@@ -11,8 +11,8 @@
 | **00** | Bestandsaufnahme & Anforderungskatalog | **Erledigt (Docs)** | Matrix/Baseline |
 | **01** | MVP Basis | **Erledigt (simuliert)** | Web/API/Simulator/Berichte/Connector-Skelett |
 | **02** | Marken-Kacheln & Fahrzeugauswahl | **Simuliert getestet** | Katalog, Theme, Wizard, E2E |
-| **03** | Windows-Connector & Bluetooth | **Simuliert getestet** | Discovery, Auth, Fake-Port, ELM-Prep; keine Fahrzeugbefehle |
-| 04 | Echte OBD-II/EOBD | Offen | Parser-Basis vorhanden; Hardware fehlt |
+| **03** | Windows-Connector & Bluetooth | **Simuliert getestet** | Discovery, Auth, Fake-Port, ELM-Prep |
+| **04** | Echte OBD-II/EOBD | **Simuliert getestet** | Parser/Allowlist/Clear-Gate; **keine HW-Freigabe** |
 | 05 | Multiprotokoll / Mehr-ECU | Offen | |
 | 06 | Diagnosedatenbank & Importe | Offen | |
 | 07 | Automatische Daten-Updates | Offen | |
@@ -29,25 +29,27 @@
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | |
 
-## Phase 03 – Kurzfazit
+## Phase 04 – Kurzfazit
 
 | Bereich | Ergebnis |
 |---------|----------|
-| Discovery | COM, USB (Linux/Limitation Windows), Bluetooth (Win32/Limitation), Simulator-Eintrag |
-| Transport | `ISerialTransport` System + Fake; exklusiv, Timeout, Cancel, Dispose |
-| ELM327 | AT-Init-Vorbereitung; OBD-Befehle blockiert |
-| Auth | Pairing-Code, Session-Token, Origin-Allowlist, Loopback-only |
-| Status | Adapter- vs. Fahrzeugverbindung getrennt (Fahrzeug = false) |
-| Tests | `dotnet test` **14 passed**; pytest Regression **18 passed** |
-| Blocker | BLK-HW, BLK-ADAPTER (Delphi/Autocom, Vgate-SPP) |
+| Init/Protokoll | AT-Init + 0100/ATDP/ATDPN; Fahrzeuglink nach Erfolg |
+| PID/Live | Bitmap + Mode-01 Live mit Einheiten/Zeitstempel |
+| DTC | stored/pending/permanent; Multi-ECU |
+| FF/Readiness/VIN | Mode 02/01-01/09-02 |
+| Fehlerbehandlung | NO DATA, Timeout, Negativ, Abbruch – Status explizit |
+| Clear | Freigabe-Phrase + Acks + Token; permanente nicht löschbar |
+| Live vs Demo | `data_source` simulated\|live strikt |
+| Tests | `dotnet test` **23 passed**; pytest **27 passed** |
+| Blocker | BLK-HW (keine Live-Freigabe), BLK-ADAPTER |
 
-Details: [phase-03-abschluss.md](./phase-03-abschluss.md), [requirements.md](./requirements.md), [capabilities.md](./capabilities.md).
+Details: [phase-04-abschluss.md](./phase-04-abschluss.md), [requirements.md](./requirements.md), [capabilities.md](./capabilities.md).
 
 ## Nicht ausgeführt (weiterhin)
 
 | Check | Grund |
 |-------|-------|
 | `docker compose up --build` | Docker nicht installiert (BLK-DOCKER) |
-| Echte BT/COM-Hardwareerkennung | Keine Hardware (BLK-HW); Fake-Port getestet |
-| Hardware-/Fahrzeugtests | Schreib-/OBD-Tests untersagt in Phase 03 |
+| Echter Fahrzeug-/OBD-Hardwaretest | Keine Hardware (BLK-HW); Fake/Simulator getestet |
+| Live-Freigabe | Explizit ausstehend bis Hardware + Zustimmung |
 | Echte Markenlogos | Rechte ungeklärt (BLK-LOGO) |
