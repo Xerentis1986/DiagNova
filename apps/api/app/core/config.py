@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     update_hmac_demo_secret: str = "diagnova-phase07-demo-hmac-not-for-prod"
     # Phase 13 – Payment-Stub Webhook-HMAC (kein echter PSP)
     payment_webhook_demo_secret: str = "diagnova-phase13-payment-stub-hmac-not-for-prod"
+    # Phase 14 – Software-Updates (HMAC-Demo; produktives Code-Signing separat)
+    software_update_hmac_demo_secret: str = "diagnova-phase14-software-hmac-not-for-prod"
+    # Ohne echtes Signaturzertifikat: produktive Auto-Updates gesperrt
+    software_update_signing_cert_configured: bool = False
+    # Nie ungeprüfte Auto-Installs – Standard aus
+    software_update_auto_install_enabled: bool = False
 
     @property
     def cors_origin_list(self) -> list[str]:

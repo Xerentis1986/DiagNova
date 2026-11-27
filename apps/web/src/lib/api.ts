@@ -74,6 +74,108 @@ export interface Invitation {
   token?: string | null
 }
 
+export interface SoftwareComponentInfo {
+  key: string
+  label_de: string
+  current_version: string
+  previous_version: string | null
+  channel_key: string
+  health_status: string
+  last_healthcheck_at: string | null
+  last_error_de: string | null
+}
+
+export interface SoftwareChannel {
+  id: string
+  key: string
+  name: string
+  channel_type: string
+  fetch_mode: string
+  enabled: boolean
+  auto_install_allowed: boolean
+  require_signature: boolean
+  require_signing_cert: boolean
+  notes_de: string | null
+}
+
+export interface SoftwarePackage {
+  id: string
+  channel_id: string
+  channel_key?: string | null
+  component: string
+  version: string
+  package_filename: string
+  content_sha256: string
+  signature_ok: boolean | null
+  release_notes_de: string
+  migration_plan: unknown[]
+  status: string
+  error_de: string | null
+  created_at: string | null
+  approved_by: string | null
+  approved_at: string | null
+}
+
+export interface SoftwareRun {
+  id: string
+  package_id: string
+  component: string
+  action: string
+  status: string
+  from_version: string | null
+  to_version: string | null
+  healthcheck_ok: boolean | null
+  busy_reason_de: string | null
+  error_de: string | null
+  summary: Record<string, unknown>
+  started_at: string | null
+  finished_at: string | null
+}
+
+export interface SoftwareBusyGate {
+  allowed: boolean
+  reason_de: string | null
+  blockers: { kind: string; ref: string; detail_de: string }[]
+}
+
+export interface SoftwareUpdatesDashboard {
+  disclaimer_de: string
+  signing_cert_configured: boolean
+  auto_install_enabled: boolean
+  productive_auto_updates_blocked: boolean
+  components: SoftwareComponentInfo[]
+  channels: SoftwareChannel[]
+  pending_packages: SoftwarePackage[]
+  recent_packages: SoftwarePackage[]
+  recent_runs: SoftwareRun[]
+  recent_events: {
+    id: string
+    package_id: string | null
+    run_id: string | null
+    component: string | null
+    event: string
+    detail_de: string
+    created_at: string | null
+  }[]
+  compatibility_rules: {
+    id: string
+    component: string
+    version: string
+    requires: Record<string, string>
+    notes_de: string | null
+  }[]
+  migration_plan: {
+    revision: string
+    from_revision: string
+    backup_required: boolean
+    backup_steps_de: string[]
+    restore_steps_de: string[]
+    notes_de: string | null
+  }[]
+  busy: SoftwareBusyGate
+  data_updates_note_de: string
+}
+
 export interface AdminDashboard {
   payment_mode: string
   payment_note_de: string
@@ -910,6 +1012,8 @@ export const api = {
       demo_mode?: boolean
       data_source_default?: string
       message_de?: string
+      version?: string
+      components?: Record<string, string>
     }>('/health')
   },
   login(email: string, password: string) {
@@ -1571,6 +1675,61 @@ export const api = {
       payment_note_de: string
       legal_open_items_de: string[]
     }>('/api/admin/support')
+  },
+  softwareUpdatesDashboard() {
+    return request<SoftwareUpdatesDashboard>('/api/software-updates/dashboard')
+  },
+  softwareBusy() {
+    return request<SoftwareBusyGate>('/api/software-updates/busy')
+  },
+  ingestSoftwarePackage(body: {
+    channel_key?: string
+    fixture_name: string
+    claimed_sha256?: string | null
+    signature_hex?: string | null
+    tamper?: boolean
+  }) {
+    return request<SoftwarePackage>('/api/software-updates/packages/ingest', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  approveSoftwarePackage(packageId: string, force_healthcheck_fail = false) {
+    return request<SoftwareRun>(`/api/software-updates/packages/${packageId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ force_healthcheck_fail }),
+    })
+  },
+  rejectSoftwarePackage(packageId: string, reason_de?: string) {
+    return request<SoftwarePackage>(`/api/software-updates/packages/${packageId}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de }),
+    })
+  },
+  rollbackSoftwareComponent(component: string) {
+    return request<SoftwareRun>(`/api/software-updates/components/${encodeURIComponent(component)}/rollback`, {
+      method: 'POST',
+    })
+  },
+  abortSoftwareRun(runId: string, reason_de?: string) {
+    return request<SoftwareRun>(`/api/software-updates/runs/${runId}/abort`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de }),
+    })
+  },
+  checkSoftwareCompatibility(component: string, version: string) {
+    return request<{
+      compatible: boolean
+      warnings_de: string[]
+      violations: Record<string, unknown>[]
+      installed: Record<string, string>
+    }>('/api/software-updates/compatibility/check', {
+      method: 'POST',
+      body: JSON.stringify({ component, version }),
+    })
+  },
+  softwareInstallerDocs() {
+    return request<Record<string, unknown>>('/api/software-updates/installer-docs')
   },
 }
 

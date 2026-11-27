@@ -36,6 +36,7 @@ const SIDEBAR_PRIMARY: NavItem[] = [
   { to: '/work-orders', label: 'Werkstatt & Aufträge', icon: <IconWorkshop /> },
   { to: '/diagnostic-data', label: 'Diagnosedatenbank', icon: <IconDatabase /> },
   { to: '/data-updates', label: 'Updates & Datenquellen', icon: <IconUpdates /> },
+  { to: '/software-updates', label: 'Software-Updates', icon: <IconUpdates /> },
   { to: '/settings', label: 'Einstellungen', icon: <IconSettings /> },
 ]
 
@@ -58,7 +59,8 @@ const QUICK: { to: string; label: string; end?: boolean }[] = [
   { to: '/diagnostics', label: 'Diagnose' },
   { to: '/workshop', label: 'Werkstatt' },
   { to: '/diagnostic-data', label: 'Datenbank' },
-  { to: '/data-updates', label: 'Updates' },
+  { to: '/data-updates', label: 'Daten-Updates' },
+  { to: '/software-updates', label: 'SW-Updates' },
 ]
 
 function navClass(active: boolean) {

@@ -96,6 +96,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Abo/Zahlungen | Phase 13 Stub/Simulation (HMAC-Webhooks); **kein** echter PSP (BLK-PAY) |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
 | Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
+| Software-/Connector-Updates | Phase 14 simuliert (Versionen/Signatur/Staging/Admin-Freigabe/Rollback/Busy-Gate); Prod-Auto ohne Zertifikat gesperrt |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
@@ -134,8 +135,14 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `update_job_locks` | Sperre gegen parallele Jobs |
 | `service_runs` | Phase-11 Gate-/Audit-Läufe (kein Live-Schreiben) |
 | `coding_runs` | Phase-12 Gate-/Identifikationsläufe (kein Flash/Schreiben) |
+| `software_components` | Installierte API/Web/Connector-Versionen (Phase 14) |
+| `software_update_channels` | Software-Updatekanäle (stable/production) |
+| `software_update_packages` | Staging-Pakete inkl. Checksum/Signatur |
+| `software_update_runs` | Install-/Rollback-Läufe + Healthcheck |
+| `software_compatibility_rules` | Kompatibilitätsmatrix |
+| `software_update_events` | Update-Ereignisprotokoll |
 
-Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -178,6 +185,11 @@ Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich
 | PATCH | `/api/data-updates/channels/{key}` | JWT admin |
 | POST | `/api/data-updates/channels/{key}/run` · `/runs/{id}/approve|reject|rollback` | JWT admin |
 | POST | `/api/data-updates/ssrf-check` · `/run-due` | JWT admin |
+| GET | `/api/software-updates/dashboard` · `/components` · `/busy` · `/installer-docs` | JWT admin |
+| POST | `/api/software-updates/packages/ingest` · `…/approve` · `…/reject` | JWT admin |
+| POST | `/api/software-updates/components/{key}/rollback` · `/runs/{id}/abort` | JWT admin |
+| POST | `/api/software-updates/compatibility/check` | JWT admin |
+| GET | `/version` · `/health` (inkl. Komponentenversionen) | öffentlich |
 
 **Hinweis:** WebSocket-Endpunkte sind im MVP **nicht** implementiert (README erwähnt REST + WebSocket als Zielarchitektur; aktuell nur REST).
 
@@ -200,7 +212,8 @@ Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich
 | `/subscriptions` | SubscriptionsPage | Tarife, Stub-Zahlung, Geräte, Einladungen |
 | `/admin` | AdminPage | Plattform-Admin: Nutzer, Abos, Audit, Support |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
-| `/data-updates` | DataUpdatesPage | Admin: Kanäle, Läufe, Freigabe, Rollback |
+| `/data-updates` | DataUpdatesPage | Admin: Diagnosedaten-Kanäle, Läufe, Freigabe, Rollback |
+| `/software-updates` | SoftwareUpdatesPage | Admin: Software/Connector-Versionen, Signatur, Freigabe, Rollback |
 | `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
 
 ## Test-Inventar
@@ -214,6 +227,7 @@ Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich
 | API Phase 11 | `tests/api/test_phase11_service.py` | Servicekatalog, Gates, Guided |
 | API Phase 12 | `tests/api/test_phase12_coding.py` | Identifikation, Spannungs-/VIN-Gates, Flash 403 |
 | API Phase 13 | `tests/api/test_phase13_subscriptions.py` | Abos, Webhook-Stub, Kündigung, Mandanten, Admin |
+| API Phase 14 | `tests/api/test_phase14_software_updates.py` | Signatur, Inkompatibilität, Busy, Install/Rollback, Zertifikat-Sperre |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

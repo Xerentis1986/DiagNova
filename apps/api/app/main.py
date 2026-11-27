@@ -8,6 +8,7 @@ from app.core.config import get_settings
 from app.db.base import Base
 from app.db.seed import seed_all
 from app.db.session import SessionLocal, engine
+from app.data.software_versions import COMPONENT_VERSIONS
 from app.services.data_updates.scheduler import start_background_scheduler, stop_background_scheduler
 import app.models  # noqa: F401
 
@@ -29,7 +30,7 @@ async def lifespan(_app: FastAPI):
 settings = get_settings()
 app = FastAPI(
     title=settings.app_name,
-    version="0.1.0",
+    version=COMPONENT_VERSIONS["api"],
     description="DiagNova API – MVP mit simuliertem OBD. Keine echte Fahrzeugdiagnose.",
     lifespan=lifespan,
 )
@@ -51,5 +52,18 @@ def health() -> dict:
         "status": "ok",
         "demo_mode": settings.demo_mode,
         "data_source_default": "simulated",
+        "version": COMPONENT_VERSIONS["api"],
+        "components": COMPONENT_VERSIONS,
         "message_de": "API bereit. Fahrzeugdaten im MVP sind simuliert.",
+    }
+
+
+@app.get("/version")
+def version() -> dict:
+    return {
+        "api": COMPONENT_VERSIONS["api"],
+        "web_expected": COMPONENT_VERSIONS["web"],
+        "connector_expected": COMPONENT_VERSIONS["connector"],
+        "components": COMPONENT_VERSIONS,
+        "note_de": "Software-Versionen (Phase 14). Diagnosedaten-Versionen separat unter /api/data-updates.",
     }

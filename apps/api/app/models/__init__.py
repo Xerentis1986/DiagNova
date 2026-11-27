@@ -45,6 +45,14 @@ from app.models.subscriptions import (
     TenantRegistration,
     WorkshopInvitation,
 )
+from app.models.software_updates import (
+    SoftwareCompatibilityRule,
+    SoftwareComponent,
+    SoftwareUpdateChannel,
+    SoftwareUpdateEvent,
+    SoftwareUpdatePackage,
+    SoftwareUpdateRun,
+)
 
 __all__ = [
     "AuditLog",
@@ -73,6 +81,12 @@ __all__ = [
     "SessionDtcResult",
     "SessionEcuResult",
     "SessionMeasurementSample",
+    "SoftwareCompatibilityRule",
+    "SoftwareComponent",
+    "SoftwareUpdateChannel",
+    "SoftwareUpdateEvent",
+    "SoftwareUpdatePackage",
+    "SoftwareUpdateRun",
     "Subscription",
     "TenantRegistration",
     "UpdateChangelog",

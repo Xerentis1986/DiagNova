@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from sqlalchemy.orm import Session
 
 from sqlalchemy import select
@@ -16,6 +18,12 @@ from app.data.phase06_sources import (
     DOCUMENTED_SOURCES,
 )
 from app.data.phase07_channels import PHASE07_CHANNELS
+from app.data.software_versions import (
+    COMPATIBILITY_MATRIX,
+    COMPONENT_LABELS_DE,
+    COMPONENT_VERSIONS,
+    UPDATE_CHANNELS_SEED,
+)
 from app.models import Customer, User, Vehicle, WorkOrder, Workshop
 from app.models.data_updates import UpdateChannel, UpdateJobLock
 from app.models.diagnostic_data import (
@@ -25,6 +33,11 @@ from app.models.diagnostic_data import (
     DiagEcuDefinition,
     DiagPidDefinition,
     DiagUnitDefinition,
+)
+from app.models.software_updates import (
+    SoftwareCompatibilityRule,
+    SoftwareComponent,
+    SoftwareUpdateChannel,
 )
 from app.services.simulator import simulated_vin
 from app.services.subscriptions import ensure_demo_subscription
@@ -298,6 +311,48 @@ def seed_all(db: Session) -> None:
 
     seed_phase06_baseline(db)
     seed_phase07_channels(db)
+    seed_phase14_software_updates(db)
+
+
+def seed_phase14_software_updates(db: Session) -> None:
+    """Komponentenversionen, Updatekanäle und Kompatibilitätsmatrix (Phase 14)."""
+    existing_comp = {c.key for c in db.scalars(select(SoftwareComponent)).all()}
+    for key, version in COMPONENT_VERSIONS.items():
+        if key in existing_comp:
+            continue
+        db.add(
+            SoftwareComponent(
+                key=key,
+                label_de=COMPONENT_LABELS_DE.get(key, key),
+                current_version=version,
+                previous_version=None,
+                channel_key="stable-fixture",
+                health_status="ok",
+            )
+        )
+    db.commit()
+
+    existing_ch = {c.key for c in db.scalars(select(SoftwareUpdateChannel)).all()}
+    for ch in UPDATE_CHANNELS_SEED:
+        if ch["key"] in existing_ch:
+            continue
+        db.add(SoftwareUpdateChannel(**ch))
+    db.commit()
+
+    existing_rules = {r.id for r in db.scalars(select(SoftwareCompatibilityRule)).all()}
+    for rule in COMPATIBILITY_MATRIX:
+        if rule["id"] in existing_rules:
+            continue
+        db.add(
+            SoftwareCompatibilityRule(
+                id=rule["id"],
+                component=rule["component"],
+                version=rule["version"],
+                requires_json=json.dumps(rule.get("requires") or {}, ensure_ascii=False),
+                notes_de=rule.get("notes_de"),
+            )
+        )
+    db.commit()
 
 
 def seed_phase07_channels(db: Session) -> None:
