@@ -5,19 +5,16 @@ from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from app.api.deps import CurrentUser, DbSession, require_roles
-from app.models import DiagnosticReport, DiagnosticSession, User, Vehicle, WorkOrder
+from app.models import DiagnosticSession, User, Vehicle, WorkOrder
 from app.schemas.api import (
     ClearDtcRequest,
     ConnectionStatusOut,
     DiagnosticSessionOut,
     DtcOut,
     LiveDataOut,
-    ReportCreate,
-    ReportOut,
 )
 from app.schemas.vehicle_history import (
     SessionAbortRequest,
@@ -28,7 +25,7 @@ from app.schemas.vehicle_history import (
 from app.services import simulator
 from app.services import vehicle_history as vh
 from app.services.audit import write_audit
-from app.services.reports import create_report, report_to_csv, report_to_pdf
+from app.services.reports import create_report
 from app.services.tenant import require_workshop_id
 
 router = APIRouter(tags=["diagnostics"])
@@ -306,7 +303,15 @@ def refresh_snapshot(session_id: str, user: Technician, db: DbSession) -> Sessio
 
 
 @router.post("/sessions/{session_id}/close", response_model=DiagnosticSessionOut)
-def close_session(session_id: str, user: Technician, db: DbSession) -> DiagnosticSessionOut:
+def close_session(
+    session_id: str,
+    user: Technician,
+    db: DbSession,
+    auto_pdf: bool = Query(
+        default=False,
+        description="Optional: unveränderlichen PDF-Berichtssnapshot automatisch erzeugen",
+    ),
+) -> DiagnosticSessionOut:
     wid = require_workshop_id(user)
     session, vehicle = _tenant_session(db, user, session_id)
     if session.status != "open":
@@ -314,13 +319,22 @@ def close_session(session_id: str, user: Technician, db: DbSession) -> Diagnosti
     vh.close_session(db, session, vehicle)
     db.commit()
     db.refresh(session)
+    if auto_pdf:
+        create_report(
+            db,
+            session,
+            title=f"Auto-Bericht {vehicle.make} {vehicle.model}",
+            notes=session.notes,
+            recommendations=None,
+            auto_generated=True,
+        )
     write_audit(
         db,
         user_id=user.id,
         workshop_id=wid,
         action="session.close",
         resource=f"session:{session.id}",
-        detail="auto_saved",
+        detail="auto_saved" + (";auto_pdf" if auto_pdf else ""),
     )
     return _session_out(session, vehicle)
 
@@ -348,77 +362,3 @@ def abort_session(
         detail=body.reason,
     )
     return SessionDetailOut(**vh.session_detail(db, session, vehicle))
-
-
-def _tenant_report(db: DbSession, user: User, report_id: str) -> DiagnosticReport:
-    wid = require_workshop_id(user)
-    report = db.get(DiagnosticReport, report_id)
-    if report is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
-    session = db.get(DiagnosticSession, report.session_id)
-    if session is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
-    vehicle = db.get(Vehicle, session.vehicle_id)
-    if vehicle is None or vehicle.workshop_id != wid:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
-    return report
-
-
-@router.post("/reports", response_model=ReportOut)
-def create_diagnostic_report(body: ReportCreate, user: Technician, db: DbSession) -> ReportOut:
-    wid = require_workshop_id(user)
-    session = db.get(DiagnosticSession, body.session_id)
-    if session is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
-    vehicle = db.get(Vehicle, session.vehicle_id)
-    if vehicle is None or vehicle.workshop_id != wid:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
-    report = create_report(db, session, body.title)
-    write_audit(
-        db,
-        user_id=user.id,
-        workshop_id=wid,
-        action="report.create",
-        resource=f"report:{report.id}",
-    )
-    return ReportOut(
-        id=report.id,
-        session_id=report.session_id,
-        title=report.title,
-        created_at=report.created_at,
-        content=json.loads(report.content_json),
-    )
-
-
-@router.get("/reports/{report_id}", response_model=ReportOut)
-def get_report(report_id: str, user: CurrentUser, db: DbSession) -> ReportOut:
-    report = _tenant_report(db, user, report_id)
-    return ReportOut(
-        id=report.id,
-        session_id=report.session_id,
-        title=report.title,
-        created_at=report.created_at,
-        content=json.loads(report.content_json),
-    )
-
-
-@router.get("/reports/{report_id}/export.csv")
-def export_csv(report_id: str, user: CurrentUser, db: DbSession) -> Response:
-    report = _tenant_report(db, user, report_id)
-    csv_text = report_to_csv(report)
-    return Response(
-        content=csv_text,
-        media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f'attachment; filename="diagnova-report-{report_id}.csv"'},
-    )
-
-
-@router.get("/reports/{report_id}/export.pdf")
-def export_pdf(report_id: str, user: CurrentUser, db: DbSession) -> Response:
-    report = _tenant_report(db, user, report_id)
-    pdf = report_to_pdf(report)
-    return Response(
-        content=pdf,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="diagnova-report-{report_id}.pdf"'},
-    )

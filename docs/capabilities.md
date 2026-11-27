@@ -34,8 +34,9 @@
 | Live-PIDs + Diagramm | DiagnosticsPage | `GET /api/diagnostics/{id}/live` | — | simulated |
 | Freeze-Frame / Readiness / VIN | DiagnosticsPage | Live-Payload | — | simulated |
 | Sitzung starten/schließen | Diagnose | `POST /api/sessions`, `…/close` | `diagnostic_sessions` | `data_source=simulated` |
-| Bericht erzeugen | ReportsPage | `POST /api/reports` | `diagnostic_reports` | Inhalt markiert |
-| CSV-/PDF-Export | ReportsPage | `…/export.csv`, `…/export.pdf` | — | Text enthält Hinweis |
+| Bericht erzeugen | ReportsPage | `POST /api/reports` | `diagnostic_reports` Snapshot+Hash | Demo/Simulation markiert |
+| CSV-/PDF-Export | ReportsPage | `…/export.csv`, `…/export.pdf` | — | A4 Unicode, Demo-WM |
+| Berichtsarchiv | ReportsPage | `GET /api/reports`, `…/archive`, Purge | `007_phase10` | Mandant 404 |
 | Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
@@ -144,10 +145,14 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`, `005_ph
 | POST | `/api/sessions/{id}/close` · `/abort` · `/snapshot` | JWT admin/technician |
 | GET | `/api/vehicle-records/lookup` · `/{id}` · `/{id}/timeline` · `/{id}/measurements` | JWT |
 | POST | `/api/vehicle-records/{id}/notes` | JWT admin/technician |
+| GET | `/api/reports` | JWT (Suche/Archiv) |
 | POST | `/api/reports` | JWT admin/technician |
 | GET | `/api/reports/{id}` | JWT |
 | GET | `/api/reports/{id}/export.csv` | JWT |
 | GET | `/api/reports/{id}/export.pdf` | JWT |
+| POST | `/api/reports/{id}/archive` | JWT admin/technician |
+| DELETE | `/api/reports/{id}` | JWT admin |
+| POST | `/api/reports/purge-expired` | JWT admin |
 | GET | `/api/diagnostic-data/sources|versions|pids|ecus|coverage` | JWT |
 | GET | `/api/diagnostic-data/dtcs/{code}` | JWT |
 | POST | `/api/diagnostic-data/import/preview` · `preview-csv` · `preview-file` | JWT admin/technician |
@@ -171,7 +176,7 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`, `005_ph
 | `/vehicles` | VehiclesPage | Fahrzeugliste |
 | `/vehicle-record` | VehicleRecordPage | Digitale Akte, Zeitstrahl, Vergleich, Messwerte |
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
-| `/reports` | ReportsPage | Berichte / Export |
+| `/reports` | ReportsPage | Berichte, Vorschau, Archiv, PDF/CSV |
 | `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/data-updates` | DataUpdatesPage | Admin: Kanäle, Läufe, Freigabe, Rollback |

@@ -381,6 +381,41 @@ export interface Report {
   title: string
   created_at: string
   content: Record<string, unknown>
+  report_number?: string | null
+  workshop_id?: string | null
+  vehicle_id?: string | null
+  customer_id?: string | null
+  data_source?: string | null
+  data_version?: string | null
+  content_sha256?: string | null
+  auto_generated?: boolean
+  frozen_at?: string | null
+  archived_at?: string | null
+  deleted_at?: string | null
+  notes?: string | null
+  recommendations?: string | null
+}
+
+export interface ReportSummary {
+  id: string
+  session_id: string
+  workshop_id?: string | null
+  vehicle_id?: string | null
+  customer_id?: string | null
+  report_number?: string | null
+  title: string
+  data_source?: string | null
+  data_version?: string | null
+  content_sha256?: string | null
+  auto_generated: boolean
+  demo_watermark: boolean
+  created_at: string
+  frozen_at?: string | null
+  archived_at?: string | null
+  deleted_at?: string | null
+  vehicle_label: string
+  vin?: string | null
+  dtc_count: number
 }
 
 export interface DataLicenseSource {
@@ -717,11 +752,35 @@ export const api = {
   sessions() {
     return request<SessionSummary[]>('/api/sessions')
   },
-  createReport(sessionId: string, title: string) {
+  createReport(
+    sessionId: string,
+    title: string,
+    opts?: { notes?: string; recommendations?: string; auto_generate?: boolean },
+  ) {
     return request<Report>('/api/reports', {
       method: 'POST',
-      body: JSON.stringify({ session_id: sessionId, title }),
+      body: JSON.stringify({
+        session_id: sessionId,
+        title,
+        notes: opts?.notes,
+        recommendations: opts?.recommendations,
+        auto_generate: opts?.auto_generate ?? false,
+      }),
     })
+  },
+  listReports(params?: { q?: string; vin?: string; include_archived?: boolean }) {
+    const sp = new URLSearchParams()
+    if (params?.q) sp.set('q', params.q)
+    if (params?.vin) sp.set('vin', params.vin)
+    if (params?.include_archived) sp.set('include_archived', 'true')
+    const qs = sp.toString()
+    return request<ReportSummary[]>(`/api/reports${qs ? `?${qs}` : ''}`)
+  },
+  getReport(reportId: string) {
+    return request<Report>(`/api/reports/${reportId}`)
+  },
+  archiveReport(reportId: string) {
+    return request<Report>(`/api/reports/${reportId}/archive`, { method: 'POST' })
   },
   exportUrl(reportId: string, kind: 'csv' | 'pdf') {
     const token = localStorage.getItem('dn_token')

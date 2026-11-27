@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 09 abgeschlossen (simuliert getestet). **Phase 10 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-08-Branch `cursor/diagnova-phase-08-workshop-d09b` (PR #13); Arbeit auf `cursor/diagnova-phase-09-history-f3fe`.
+**Aktuelle Arbeitsphase:** 10 abgeschlossen (simuliert getestet). **Phase 11 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-09-Branch `cursor/diagnova-phase-09-history-f3fe` (PR #14); Arbeit auf `cursor/diagnova-phase-10-pdf-7d82`.
 
 ## Phasenübersicht
 
@@ -18,7 +18,7 @@
 | **07** | Automatische Daten-Updates | **Simuliert getestet** | Scheduler/SSRF/Signatur/Staging/Freigabe/Rollback; keine echten Feeds |
 | **08** | Werkstatt- & Kundenverwaltung | **Simuliert getestet** | Mandant/Rollen/Kunden/Aufträge/DSGVO; keine Produktivdaten |
 | **09** | Fahrzeug-History / Akte | **Simuliert getestet** | Zeitstrahl, Vergleich, Messwerte; Demo getrennt |
-| 10 | PDF-Berichte & Archiv | Offen | MVP-PDF rudimentär |
+| **10** | PDF-Berichte & Archiv | **Simuliert getestet** | A4/Unicode/Archiv/Snapshot; Demo-WM |
 | 11 | Erweiterte Diagnose / Service | Offen | UI-Platzhalter |
 | 12 | Codierung / Programmierung | Offen | UI-Platzhalter; Schreibpfade gesperrt |
 | 13 | Abos & Administration | Offen | |
@@ -28,6 +28,19 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 10 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| PDF | A4 ReportLab, Werkstattlogo, Unicode, Kopf/Fuß, Demo-Wasserzeichen |
+| Snapshot | `content_sha256` + `data_version`; keine Auto-Reparaturdiagnose |
+| Archiv | Suche/VIN, Archivieren, Soft-Delete, Purge nach Retention |
+| Auto-PDF | optional bei Session-Close `?auto_pdf=true` |
+| UI | `/reports` Vorschau/Download/Druck |
+| Blocker | BLK-HW, BLK-LEGAL |
+
+Details: [phase-10-abschluss.md](./phase-10-abschluss.md).
 
 ## Phase 09 – Kurzfazit
 

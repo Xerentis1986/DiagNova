@@ -130,12 +130,32 @@ class DiagnosticSession(Base):
 
 
 class DiagnosticReport(Base):
+    """Unveränderlicher Berichtssnapshot (Phase 10). Inhalt nach Create nicht mehr ändern."""
+
     __tablename__ = "diagnostic_reports"
+    __table_args__ = (
+        UniqueConstraint("workshop_id", "report_number", name="uq_diagnostic_reports_workshop_number"),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     session_id: Mapped[str] = mapped_column(String(36), ForeignKey("diagnostic_sessions.id"), index=True)
+    workshop_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    vehicle_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    customer_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    # z. B. DN-2026-000042 – pro Mandant eindeutig
+    report_number: Mapped[str | None] = mapped_column(String(32), nullable=True, index=True)
     title: Mapped[str] = mapped_column(String(255))
     content_json: Mapped[str] = mapped_column(Text)
+    data_source: Mapped[str] = mapped_column(String(16), default="simulated")
+    data_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    content_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Nur manuell; keine automatisch erfundene Reparaturdiagnose
+    recommendations: Mapped[str | None] = mapped_column(Text, nullable=True)
+    auto_generated: Mapped[bool] = mapped_column(Boolean, default=False)
+    frozen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     session: Mapped[DiagnosticSession] = relationship(back_populates="reports")

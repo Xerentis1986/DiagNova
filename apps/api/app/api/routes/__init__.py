@@ -10,6 +10,7 @@ from app.api.routes import (
     diagnostics,
     preferences,
     protocols,
+    reports,
     vehicle_history,
     vehicles,
     work_orders,
@@ -25,6 +26,7 @@ api_router.include_router(vehicles.router)
 api_router.include_router(vehicle_history.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(diagnostics.router)
+api_router.include_router(reports.router)
 api_router.include_router(catalog.router)
 api_router.include_router(preferences.router)
 api_router.include_router(protocols.router)

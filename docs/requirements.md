@@ -89,9 +89,9 @@
 | REQ-09-HIST | Fahrzeugakte / Zeitstrahl | 09 | `simuliert getestet` | `/api/vehicle-records/*`, UI `/vehicle-record`; Authentizität markiert | `test_phase09_*` | Keine erfundenen Historien als echt |
 | REQ-09-CMP | Vorher/Nachher DTC-Vergleich | 09 | `simuliert getestet` | `/api/sessions/compare`; nicht beobachtet ≠ behoben ohne ECU-Check | Incomplete-Scan-Test | — |
 | REQ-09-TREND | Messwertverlauf begrenzt speichern | 09 | `simuliert getestet` | `session_measurement_samples`; 500/Sitzung, 5000/Fahrzeug | Phase-09-Tests | — |
-| REQ-10-PDF | A4-PDF Werkstattlayout, Wasserzeichen Demo | 10 | `geplant` (MVP-PDF rudimentär) | `report_to_pdf` ReportLab | Export-Test | Layout/Archiv fehlen |
-| REQ-10-ARCH | Archiv, Suche, unveränderlicher Snapshot | 10 | `geplant` | Reports in DB | — | — |
-| REQ-10-CSV | CSV-Export | 10 / 01 | `simuliert getestet` | Export-Endpoint | API-Test | — |
+| REQ-10-PDF | A4-PDF Werkstattlayout, Wasserzeichen Demo | 10 | `simuliert getestet` | ReportLab A4, DejaVu-Unicode, Kopf/Fuß, Demo-WM | `test_phase10_*` | Keine Live-HW-Berichte |
+| REQ-10-ARCH | Archiv, Suche, unveränderlicher Snapshot | 10 | `simuliert getestet` | `007_phase10`, Hash/frozen_at, Liste/Archiv/Purge | Phase-10-Tests | BLK-LEGAL Aufbewahrung |
+| REQ-10-CSV | CSV-Export | 10 / 01 | `simuliert getestet` | Export inkl. ECU/DTC/Messwerte/Hash | API-Test | — |
 | REQ-11-SVC | Servicekatalog (Öl, EPB, DPF, …) | 11 | `geplant` | UI „Geplant“ | — | BLK-OEM; DPF-Off ausgeschlossen |
 | REQ-11-GUIDED | Geführte Diagnose | 11 | `geplant` | — | — | BLK-OEM |
 | REQ-11-ACT | Stellgliedtests | 11 | `geplant` | UI „Geplant“ | — | Freigabe + Hardware |
