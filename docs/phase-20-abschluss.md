@@ -2,6 +2,7 @@
 
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-20-readiness-e3f2`  
+**PR:** https://github.com/Xerentis1986/DiagNova/pull/30  
 **Basis:** Merge Phase 18 (`cursor/diagnova-phase-18-chiptuning-c46a`, PR #29) + Phase 19 (`cursor/diagnova-phase-19-lkw-arch-9892`, PR #27) auf Phase-17-Tip (PR #26)  
 **Live:** https://diagnova.codekreativ.at/ – nur read-only Smoke; **kein** Redeploy
 

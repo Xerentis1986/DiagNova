@@ -66,7 +66,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 
 **Erledigt**
 
-- Basis: Merge Phase 18 (PR #29) + Phase 19 (PR #27) auf Phase-17-Tip (PR #26) → `cursor/diagnova-phase-20-readiness-e3f2`
+- Basis: Merge Phase 18 (PR #29) + Phase 19 (PR #27) auf Phase-17-Tip (PR #26) → `cursor/diagnova-phase-20-readiness-e3f2` / [PR #30](https://github.com/Xerentis1986/DiagNova/pull/30)
 - Audit-Matrix implementiert / getestet / simuliert / nicht verifiziert
 - Fixes: doppelter Dashboard-`lkw`, `using Xunit` Phase14-Tests, csproj-Version 0.15.0, Publish-Doku, `.gitignore`
 - Tests: pytest **148 passed**, Web-Build OK, `dotnet test` **32 passed**
