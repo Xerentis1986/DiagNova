@@ -18,6 +18,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-07-Branch | `cursor/diagnova-phase-07-updates-4111` |
 | Phase-08-Branch | `cursor/diagnova-phase-08-workshop-d09b` |
 | Phase-09-Branch | `cursor/diagnova-phase-09-history-f3fe` |
+| Branding-Branch | `cursor/diagnova-branding-1a2e` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -40,6 +41,22 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Logo-/Brand-Paket integriert
+
+**Erledigt**
+
+- Basis: `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14); Branding-PR separat
+- Web: Favicons, PWA-Icons, Apple-Touch, Manifest → `apps/web/public/`
+- Brand-Tokens Teal/Charcoal/White in `index.css`; Theme-aware `BrandMark`
+- Login hero-level Wordmark; Header Lockup Symbol+Wordmark
+- Windows-Connector: `ApplicationIcon` aus `Assets/DiagNova_app.ico`
+- Doku: [docs/branding.md](docs/branding.md)
+
+**Nicht gemacht (bewusst)**
+
+- Keine Phase-Prompts geändert; kein zwingendes Live-Deploy
+- Keine echten Vektor-Logos (Paket ist Raster)
 
 ### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
 
@@ -99,6 +116,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
+- Branding: [docs/branding.md](docs/branding.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
 - Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)
 - Phase-08-Abschluss: [docs/phase-08-abschluss.md](docs/phase-08-abschluss.md)
