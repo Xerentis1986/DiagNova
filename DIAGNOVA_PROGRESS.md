@@ -18,6 +18,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-07-Branch | `cursor/diagnova-phase-07-updates-4111` |
 | Phase-08-Branch | `cursor/diagnova-phase-08-workshop-d09b` |
 | Phase-09-Branch | `cursor/diagnova-phase-09-history-f3fe` |
+| Phase-10-Branch | `cursor/diagnova-phase-10-pdf-7d82` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -33,31 +34,37 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 06 Diagnosedatenbank | 🟢 Simuliert getestet | Modell/Import/Quarantäne; DTC unbekannt |
 | 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe |
 | 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
-| 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte; **Phase 10 nicht gestartet** |
-| 10–15 | ⚪ Offen | |
+| 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
+| 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv; **STOP – 10B startet Coordinator** |
+| 10B | ⚪ Coordinator | Automatisch nach Phase 10 |
+| 11–15 | ⚪ Offen | nicht vor 10B |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
 
-### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
+### 2026-11-27 – Phase 10 PDF-Diagnoseberichte und Archiv
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-08-workshop-d09b` (PR #13)
-- Alembic `006_phase09` + Sitzungsdetails/ECU/DTC/Messwerte/Notizen
-- Lookup VIN/Kennzeichen, Zeitstrahl, Abort, Idempotenz, DTC-Vergleich
-- UI `/vehicle-record`; Demo/Beispiel/Simulation gekennzeichnet
-- Tests: pytest **78 passed**
+- Branch von `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14)
+- Alembic `007_phase10` + Snapshot-Felder, Berichtsnummer, Archiv/Löschung
+- A4-PDF mit Werkstattlogo, Unicode, Demo-Wasserzeichen, Kopf/Fuß
+- Suche/Archiv/Auto-PDF; keine Auto-Reparaturdiagnose
+- UI `/reports`; Tests: pytest **83 passed**
 
 **Nicht gemacht (bewusst)**
 
-- Keine echten Historien als echt; keine Hardware-Daten
-- **Phase 10 nicht gestartet**
-- Kein Prod-Deploy
+- Keine echten Live-Berichte als echt; keine erfundenen Testergebnisse
+- **Phase 10B / Phase 11 nicht gestartet**
+- Kein Prod-Deploy; bestehende Funktionen nicht zerstört
 
-**Nächster Schritt:** Coordinator orchestriert Phase 10.
+**STOP.** Nächster Schritt: Coordinator startet Phase 10B automatisch.
+
+### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
+
+Details: `docs/phase-09-abschluss.md`.
 
 ### 2026-11-27 – Phase 08 Werkstatt- und Kundenverwaltung
 
@@ -100,6 +107,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-10-Abschluss: [docs/phase-10-abschluss.md](docs/phase-10-abschluss.md)
 - Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)
 - Phase-08-Abschluss: [docs/phase-08-abschluss.md](docs/phase-08-abschluss.md)
 - Phase-07-Abschluss: [docs/phase-07-abschluss.md](docs/phase-07-abschluss.md)

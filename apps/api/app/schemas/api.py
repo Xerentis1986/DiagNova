@@ -207,6 +207,10 @@ class ClearDtcRequest(BaseModel):
 class ReportCreate(BaseModel):
     session_id: str
     title: str = Field(min_length=3, max_length=255)
+    notes: str | None = Field(default=None, max_length=4000)
+    # Nur manuelle Empfehlungen – keine Auto-Diagnose
+    recommendations: str | None = Field(default=None, max_length=4000)
+    auto_generate: bool = False
 
 
 class ReportOut(BaseModel):
@@ -215,5 +219,45 @@ class ReportOut(BaseModel):
     title: str
     created_at: datetime
     content: dict
+    report_number: str | None = None
+    workshop_id: str | None = None
+    vehicle_id: str | None = None
+    customer_id: str | None = None
+    data_source: str | None = None
+    data_version: str | None = None
+    content_sha256: str | None = None
+    auto_generated: bool = False
+    frozen_at: datetime | None = None
+    archived_at: datetime | None = None
+    deleted_at: datetime | None = None
+    notes: str | None = None
+    recommendations: str | None = None
 
     model_config = {"from_attributes": True}
+
+
+class ReportSummaryOut(BaseModel):
+    id: str
+    session_id: str
+    workshop_id: str | None = None
+    vehicle_id: str | None = None
+    customer_id: str | None = None
+    report_number: str | None = None
+    title: str
+    data_source: str | None = None
+    data_version: str | None = None
+    content_sha256: str | None = None
+    auto_generated: bool = False
+    demo_watermark: bool = False
+    created_at: datetime
+    frozen_at: datetime | None = None
+    archived_at: datetime | None = None
+    deleted_at: datetime | None = None
+    vehicle_label: str
+    vin: str | None = None
+    dtc_count: int = 0
+
+
+class ReportPurgeOut(BaseModel):
+    purged: int
+    retention_days: int
