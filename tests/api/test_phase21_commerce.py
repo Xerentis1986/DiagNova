@@ -21,6 +21,9 @@ def test_commerce_overview(client: TestClient, auth_headers: dict[str, str]):
     assert body["live_payments"] is False
     assert "b2b" in body["supports"]
     assert body["tax_review_status"] == "draft_needs_review"
+    assert "stripe" in body
+    assert body["stripe"]["live_charges_allowed"] is False
+    assert any("PDF" in x for x in body["missing_de"])
 
 
 def test_tax_preview_scenarios():

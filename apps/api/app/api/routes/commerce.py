@@ -68,9 +68,19 @@ class CreditNoteIn(BaseModel):
 
 @router.get("/overview")
 def overview(_user: CurrentUser) -> dict[str, Any]:
+    from app.services.payments.stripe_provider import stripe_status
+
+    stripe = stripe_status()
     return {
         "phase": 21,
         "live_payments": False,
+        "stripe": {
+            "configured": stripe.get("configured"),
+            "test_mode": stripe.get("test_mode"),
+            "live_charges_allowed": stripe.get("live_charges_allowed"),
+            "status_path": "/api/billing/stripe/status",
+            "note_de": stripe.get("message_de"),
+        },
         "payment_note_de": billing_svc.PAYMENT_NOTE,
         "supports": ["b2b", "b2c"],
         "features": [
@@ -82,12 +92,20 @@ def overview(_user: CurrentUser) -> dict[str, Any]:
             "credit_notes",
             "cancel",
             "license_list",
+            "stripe_checkout_when_keys_set",
+        ],
+        "missing_de": [
+            "Rechnung PDF (nur JSON-Download)",
+            "E-Mail-Versand Rechnungen (nur dry_run ohne SMTP)",
+            "Produktive Steuerfreigabe (draft_needs_review)",
+            "Stripe Live-Charges (gesperrt ohne Freigabe)",
         ],
         "consumer_disclaimers_de": CONSUMER_DISCLAIMERS_DE,
         "tax_review_status": "draft_needs_review",
         "message_de": (
-            "Kaufmännisches Backend B2B/B2C (Simulation). "
-            "Steuerkonfiguration vor Prod fachlich prüfen. Kein echter PSP."
+            "Kaufmännisches Backend B2B/B2C. Commerce-Abo erzeugt Stub-Rechnung. "
+            "Stripe-Testmodus-Code vorhanden – ohne Keys kein Checkout-Erfolg. "
+            "Steuerkonfiguration vor Prod fachlich prüfen."
         ),
     }
 
