@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 16 abgeschlossen (Docs/Ops; Live Smoke). **STOP** – Phase 17 nicht starten (Freigabeprüfung Coordinator).  
-**Basis:** Phase-15-Branch `cursor/diagnova-phase-15-security-4381` (PR #24); Arbeit auf `cursor/diagnova-phase-16-deploy-8876`.
+**Aktuelle Arbeitsphase:** 17 abgeschlossen (Abnahme Docs; **NO-GO** Voll-Launch). **STOP** vor Prod-Rollout. Phase 18/19 nicht starten.  
+**Basis:** Phase-16-Branch `cursor/diagnova-phase-16-deploy-8876` (PR #25); Arbeit auf `cursor/diagnova-phase-17-acceptance-8ffe`.
 
 ## Phasenübersicht
 
@@ -26,9 +26,22 @@
 | **14** | Software-/Connector-Updates | **Simuliert getestet** | Versionierung/Signatur/Staging/Freigabe/Rollback; getrennt von Daten-Updates; kein Auto-Install |
 | **15** | Sicherheit / Datenschutz / QA | **Simuliert getestet** | Threat Model, Rate-Limits, Audit-Redaction, DSGVO-Docs, Backup; UI `/security` |
 | **16** | World4You Ubuntu/Plesk Deploy | **Implementiert (Docs/Ops)** | Install/Compose/Proxy/Backup/Rollback; Live Smoke; kein destruktives Redeploy |
-| 17 | Gesamtabnahme | Offen | **nicht gestartet** |
-| 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
-| 19 | LKW (optional) | Später | J1939/RP1210 |
+| **17** | Gesamtabnahme | **Erledigt (Docs/Abnahme)** | Checkliste + Go/No-Go; **NO-GO** Voll-Launch; STOP Prod-Rollout |
+| 18 | Chiptuning (optional) | Später | **nicht gestartet**; standardmäßig gesperrt |
+| 19 | LKW (optional) | Später | **nicht gestartet**; J1939/RP1210 |
+
+## Phase 17 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Abnahme-Checkliste | `docs/phase-17-acceptance-checklist.md` |
+| Go/No-Go | **NO-GO** Voll-Launch; Live-OBD/Service/Flash **NO-GO**; Pilot Demo bedingt |
+| Smoke | pytest **126 passed**; Web-Build OK; Live `/`+`/health` 200 |
+| Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER, BLK-LEGAL, BLK-PAY, BLK-CERT, BLK-DEPLOY |
+| Prod-Rollout | **STOP** – nur nach Betreiber- + Coordinator-Freigabe |
+| Nächste Phase | **18/19 nicht gestartet** |
+
+Details: [phase-17-abschluss.md](./phase-17-abschluss.md).
 
 ## Phase 16 – Kurzfazit
 

@@ -1,7 +1,7 @@
 # DiagNova – Anforderungsmatrix (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna)  
-**Basis:** MVP `6adfcc4` + Phase 00; Phase 02–04 Feature-Branches; Phase 05 `cursor/diagnova-phase-05-multiprotocol-dd50`  
+**Stand:** 2026-11-27 (Europe/Vienna) – Phase 17 Abnahme  
+**Basis:** Phase 16 `cursor/diagnova-phase-16-deploy-8876` (PR #25); Arbeit `cursor/diagnova-phase-17-acceptance-8ffe`  
 **Quelle:** Master-Prompt 00 sowie Promptpaket Phasen 02–19
 
 ## Statuslegende
@@ -14,7 +14,7 @@
 | `hardwaregetestet` | Mit realer Adapter-/Fahrzeughardware geprüft |
 | `freigegeben` | Explizit für produktiven Einsatz freigegeben |
 
-**Hinweis:** Nichts in diesem Repo ist `hardwaregetestet` oder `freigegeben`. Alle Fahrzeugdiagnosedaten im MVP sind **simuliert**.
+**Hinweis:** Nichts in diesem Repo ist `hardwaregetestet` oder `freigegeben`. Alle Fahrzeugdiagnosedaten im MVP sind **simuliert**. Phase-17-Verdict: **NO-GO** Voll-Launch; siehe `docs/phase-17-abschluss.md`.
 
 ## Blocker (übergreifend)
 
@@ -106,9 +106,9 @@
 | REQ-15-QA | E2E, Last, Security-Regression | 15 | `simuliert getestet` | Security-Regression (Rate-Limit, IDOR, Redaction, RBAC); Last = Rate-Limit-Stress | `test_phase15_*` | Volle E2E/Last optional später |
 | REQ-16-DEP | World4You Ubuntu/Plesk Deploy | 16 | `implementiert` (Docs/Ops; Live Ist) | Install + Compose Prod + Deploy/Backup-Skripte; Live `/`+`/health` 200 | manuell / Smoke | BLK-DEPLOY – Redeploy nur mit Freigabe |
 | REQ-16-TLS | HTTPS Reverse Proxy, WS | 16 | `implementiert` (Ist + Conf) | LE via Plesk; `web.conf` + `plesk-proxy.conf` mit Upgrade-Headern | manuell | Staging optional nicht angelegt |
-| REQ-17-ACC | Gesamtabnahme, Abdeckungsmatrix, Go/No-Go | 17 | `geplant` | — | — | alle vorgelagerten Blocker |
-| REQ-18-TUNE | Optionales Chiptuning (gesperrt) | 18 | `geplant` | bewusst nicht aktiv | — | Rechtlich/technisch |
-| REQ-19-LKW | LKW/J1939/RP1210 | 19 | `geplant` | — | — | Hardware 24 V, Spezifikationen |
+| REQ-17-ACC | Gesamtabnahme, Abdeckungsmatrix, Go/No-Go | 17 | `implementiert` (Docs/Abnahme; **NO-GO** Voll-Launch) | `docs/phase-17-abschluss.md`, `docs/phase-17-acceptance-checklist.md` | pytest 126; Web-Build; Live Smoke | BLK-HW, BLK-OEM, BLK-DEPLOY, BLK-LEGAL, BLK-PAY, … – STOP vor Prod-Rollout |
+| REQ-18-TUNE | Optionales Chiptuning (gesperrt) | 18 | `geplant` | bewusst nicht aktiv; Phase nicht gestartet | — | Rechtlich/technisch |
+| REQ-19-LKW | LKW/J1939/RP1210 | 19 | `geplant` | bewusst nicht aktiv; Phase nicht gestartet | — | Hardware 24 V, Spezifikationen |
 
 ---
 

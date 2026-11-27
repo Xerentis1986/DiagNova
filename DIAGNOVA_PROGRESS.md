@@ -27,6 +27,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-14-Branch | `cursor/diagnova-phase-14-software-updates-8f1e` |
 | Phase-15-Branch | `cursor/diagnova-phase-15-security-4381` |
 | Phase-16-Branch | `cursor/diagnova-phase-16-deploy-8876` |
+| Phase-17-Branch | `cursor/diagnova-phase-17-acceptance-8ffe` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -50,11 +51,30 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 13 Abos/Administration | 🟢 Simuliert getestet | Stub-Zahlung; Entitlements; Admin |
 | 14 Software-/Connector-Updates | 🟢 Simuliert getestet | Signatur/Staging/Freigabe/Rollback |
 | 15 Sicherheit/QA | 🟢 Simuliert getestet | Threat Model, Rate-Limits, Audit, DSGVO-Docs |
-| 16 World4You/Plesk Deploy | 🟢 Docs/Ops | Install/Compose/Proxy/Backup; Live Smoke; **Phase 17 nicht gestartet** |
-| 17 Abnahme | ⚪ Offen | Freigabeprüfung Coordinator |
-| 18–19 Optional | ⚪ Später | J1939 in 19 |
+| 16 World4You/Plesk Deploy | 🟢 Docs/Ops | Install/Compose/Proxy/Backup; Live Smoke |
+| 17 Abnahme | 🟢 Docs/Abnahme | Checkliste + **NO-GO** Voll-Launch; **STOP** Prod-Rollout |
+| 18–19 Optional | ⚪ Später | **nicht gestartet**; J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 17 Gesamtabnahme und Freigabeprüfung
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-16-deploy-8876` (PR #25)
+- Abnahme-Checkliste + Go/No-Go-Bericht; Abdeckung implementiert vs. simuliert vs. blockiert
+- Smoke: pytest **126 passed**, Web-Build OK, Live `/` + `/health` 200
+- Matrix/Capabilities/phase-status/Progress aktualisiert (REQ-17-ACC)
+
+**Nicht gemacht (bewusst)**
+
+- **Kein** produktiver Voll-Rollout / kein Server-Redeploy
+- **Keine** Flash-/Service-Freigaben; nichts als `hardwaregetestet`/`freigegeben`
+- **Phase 18/19 nicht gestartet**
+
+**Verdict:** NO-GO Voll-Launch; Pilot Demo nur nach Betreiberfreigabe.
+
+Details: [docs/phase-17-abschluss.md](docs/phase-17-abschluss.md), [docs/phase-17-acceptance-checklist.md](docs/phase-17-acceptance-checklist.md)
 
 ### 2026-11-27 – Phase 16 World4You Ubuntu/Plesk Deployment
 
