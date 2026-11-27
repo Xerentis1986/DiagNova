@@ -2,6 +2,7 @@
 
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-19-lkw-arch-9892`  
+**PR:** https://github.com/Xerentis1986/DiagNova/pull/27  
 **Basis:** Phase 17 `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26) – kein Phase-18-Branch vorhanden  
 **Nächste Phase:** **nicht** gestartet – kein J1939-Parser/HW ohne Freigabe; Phase 18 optional separat.
 
