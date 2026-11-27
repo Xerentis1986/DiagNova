@@ -31,4 +31,4 @@ Vollständige DTC-Beschreibungskataloge (SAE J2012-Texte, OEM-Listen, Werkstattk
 
 - Lizenzierte ODX/PDX-Pakete (REQ-06-ODX)
 - OEM-ECU-Definitionen ABS/Airbag/Komfort (BLK-OEM)
-- Automatische Updates (Phase 07 – **nicht** gestartet)
+- Automatische Updates: Phase 07 implementiert (simuliert); HTTPS-Kanäle nur nach Rechteprüfung; keine kommerziellen Feeds aktiv

@@ -7,6 +7,7 @@ import { BrandsPage } from './pages/BrandsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { DiagnosticsPage } from './pages/DiagnosticsPage'
 import { LoginPage } from './pages/LoginPage'
+import { DataUpdatesPage } from './pages/DataUpdatesPage'
 import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
 import { EcuPage } from './pages/EcuPage'
 import { PlannedPage } from './pages/PlannedPage'
@@ -57,6 +58,7 @@ export default function App() {
               <Route path="reports" element={<ReportsPage />} />
               <Route path="ecu" element={<EcuPage />} />
               <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
+              <Route path="data-updates" element={<DataUpdatesPage />} />
               <Route path="planned/:moduleId" element={<PlannedPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

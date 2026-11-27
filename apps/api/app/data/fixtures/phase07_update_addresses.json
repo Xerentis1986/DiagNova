@@ -1,0 +1,26 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "phase07-sim-addr-v1",
+  "source_key": "diagnova-structural",
+  "license_name": "DiagNova structural",
+  "manufacturers": [],
+  "models": [],
+  "variants": [],
+  "ecus": [
+    {
+      "code": "demo-abs",
+      "name_de": "Demo ABS (nicht verifiziert)",
+      "category": "chassis",
+      "protocol_id": "iso_15765_4",
+      "request_address": "7E2",
+      "response_address": "7EA",
+      "data_scope": "generic",
+      "verified": false,
+      "notes_de": "Demo-Adresse – erfordert manuelle Freigabe"
+    }
+  ],
+  "dtcs": [],
+  "pids": [],
+  "units": [],
+  "service_procedures": []
+}

@@ -280,5 +280,6 @@ def coverage_summary(_user: CurrentUser, db: DbSession) -> dict:
         "sources": [_src_out(s) for s in db.scalars(select(DataLicenseSource)).all()],
         "odx_import": "disabled",
         "blocked_vendors": ["Bosch", "Gutmann", "Delphi"],
-        "phase_07": "not_started",
+        "phase_07": "implemented_simulated",
+        "data_updates": "/api/data-updates/dashboard",
     }

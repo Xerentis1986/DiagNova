@@ -4,6 +4,7 @@ from app.api.routes import (
     auth,
     catalog,
     dashboard,
+    data_updates,
     diagnostic_data,
     diagnostics,
     preferences,
@@ -20,3 +21,4 @@ api_router.include_router(catalog.router)
 api_router.include_router(preferences.router)
 api_router.include_router(protocols.router)
 api_router.include_router(diagnostic_data.router)
+api_router.include_router(data_updates.router)

@@ -77,6 +77,12 @@ MVP_SIMULATED_CAPABILITIES = [
         "status": "simulated",
         "phase": 6,
     },
+    {
+        "id": "diagnostic_data_auto_updates",
+        "label_de": "Automatische Diagnosedaten-Updates (Scheduler, Staging, Freigabe, Rollback)",
+        "status": "simulated",
+        "phase": 7,
+    },
 ]
 
 PLANNED_CAPABILITIES = [

@@ -1,3 +1,9 @@
+from app.models.data_updates import (
+    UpdateChangelog,
+    UpdateChannel,
+    UpdateJobLock,
+    UpdateRun,
+)
 from app.models.diagnostic_data import (
     DataLicenseSource,
     DiagDatasetVersion,
@@ -40,6 +46,10 @@ __all__ = [
     "ImportAppliedRecord",
     "ImportBatch",
     "ImportQuarantineItem",
+    "UpdateChangelog",
+    "UpdateChannel",
+    "UpdateJobLock",
+    "UpdateRun",
     "User",
     "UserBrandFavorite",
     "UserRecentSelection",

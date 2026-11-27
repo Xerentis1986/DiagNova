@@ -18,6 +18,17 @@ class Settings(BaseSettings):
     app_name: str = "DiagNova API"
     demo_mode: bool = True
 
+    # Phase 07 – Diagnosedaten-Updates (Standard: Scheduler aus, Intervall täglich)
+    update_scheduler_enabled: bool = False
+    update_interval_hours: int = 24
+    update_fetch_timeout_sec: int = 30
+    update_max_bytes: int = 2_000_000
+    update_max_retries: int = 3
+    update_retry_backoff_sec: float = 1.0
+    update_scheduler_poll_sec: int = 60
+    # HMAC-Schlüssel nur für Demo/Tests (nie Produktion-Secret committen)
+    update_hmac_demo_secret: str = "diagnova-phase07-demo-hmac-not-for-prod"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

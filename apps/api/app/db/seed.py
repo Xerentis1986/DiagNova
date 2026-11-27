@@ -15,7 +15,9 @@ from app.data.phase06_sources import (
     BASELINE_UNITS,
     DOCUMENTED_SOURCES,
 )
+from app.data.phase07_channels import PHASE07_CHANNELS
 from app.models import User, Vehicle
+from app.models.data_updates import UpdateChannel, UpdateJobLock
 from app.models.diagnostic_data import (
     DataLicenseSource,
     DiagDatasetVersion,
@@ -176,6 +178,21 @@ def seed_all(db: Session) -> None:
         db.commit()
 
     seed_phase06_baseline(db)
+    seed_phase07_channels(db)
+
+
+def seed_phase07_channels(db: Session) -> None:
+    """Update-Kanäle Phase 07 – standardmäßig deaktiviert."""
+    if db.get(UpdateJobLock, "global") is None:
+        db.add(UpdateJobLock(id="global", locked=False))
+        db.commit()
+
+    existing = {c.key for c in db.scalars(select(UpdateChannel)).all()}
+    for ch in PHASE07_CHANNELS:
+        if ch["key"] in existing:
+            continue
+        db.add(UpdateChannel(**ch))
+    db.commit()
 
 
 def seed_phase06_baseline(db: Session) -> None:

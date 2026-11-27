@@ -147,7 +147,7 @@ def test_coverage_no_completeness_claim(client, auth_headers):
     body = res.json()
     assert "unvollständig" in body["disclaimer_de"].lower() or "unbekannt" in body["disclaimer_de"].lower()
     assert body["odx_import"] == "disabled"
-    assert body["phase_07"] == "not_started"
+    assert body["phase_07"] == "implemented_simulated"
     assert "Bosch" in body["blocked_vendors"]
 
 

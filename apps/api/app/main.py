@@ -8,6 +8,7 @@ from app.core.config import get_settings
 from app.db.base import Base
 from app.db.seed import seed_all
 from app.db.session import SessionLocal, engine
+from app.services.data_updates.scheduler import start_background_scheduler, stop_background_scheduler
 import app.models  # noqa: F401
 
 
@@ -20,7 +21,9 @@ async def lifespan(_app: FastAPI):
         seed_all(db)
     finally:
         db.close()
+    start_background_scheduler(SessionLocal)
     yield
+    stop_background_scheduler()
 
 
 settings = get_settings()

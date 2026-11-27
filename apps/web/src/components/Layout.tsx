@@ -11,6 +11,7 @@ const NAV = [
   { to: '/reports', label: 'Berichte', planned: false },
   { to: '/ecu', label: 'Steuergeräte', planned: false },
   { to: '/diagnostic-data', label: 'Datenbank', planned: false },
+  { to: '/data-updates', label: 'Updates', planned: false },
   { to: '/planned/service', label: 'Service', planned: true },
   { to: '/planned/coding', label: 'Codierung', planned: true },
 ]
