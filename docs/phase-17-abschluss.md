@@ -2,6 +2,7 @@
 
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-17-acceptance-8ffe`  
+**PR:** https://github.com/Xerentis1986/DiagNova/pull/26  
 **Basis:** Phase 16 `cursor/diagnova-phase-16-deploy-8876` (PR #25)  
 **Nächste Phase:** **18/19 nicht gestartet** – optional nur durch Coordinator.
 
