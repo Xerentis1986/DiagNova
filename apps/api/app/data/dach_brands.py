@@ -706,7 +706,7 @@ def capabilities_for_selection() -> dict[str, Any]:
         ),
         "available": MVP_SIMULATED_CAPABILITIES,
         "unavailable": PLANNED_CAPABILITIES,
-        "adapter_next_step_de": "Adapter verbinden (Phase 03) – im MVP nur Simulator.",
+        "adapter_next_step_de": "Adapter: lokaler Windows-Connector (Phase 03 Inventar/Pairing) oder MVP-Simulator – keine OBD-Fahrzeugbefehle vor Phase 04.",
     }
 
 

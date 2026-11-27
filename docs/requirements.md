@@ -1,7 +1,7 @@
 # DiagNova – Anforderungsmatrix (Phase 00)
 
 **Stand:** 2026-11-27 (Europe/Vienna)  
-**Basis:** MVP `6adfcc4` + Phase 00; Phase 02 auf Branch `cursor/diagnova-phase-02-brands-c4de`  
+**Basis:** MVP `6adfcc4` + Phase 00; Phase 02 `cursor/diagnova-phase-02-brands-c4de`; Phase 03 `cursor/diagnova-phase-03-connector-90c7`  
 **Quelle:** Master-Prompt 00 sowie Promptpaket Phasen 02–19
 
 ## Statuslegende
@@ -23,7 +23,7 @@
 | BLK-HW | Keine verifizierte OBD-/Bluetooth-/COM-Hardware in dieser Umgebung |
 | BLK-OEM | Keine lizenzierten OEM-/ODX-/Herstellerdaten |
 | BLK-ADAPTER | Delphi/Autocom-Modell und Vgate-SPP-Variante unklar / undokumentiert |
-| BLK-DOTNET | .NET 8 SDK in Cloud-Agent-Umgebung nicht verfügbar → Connector-Build hier nicht ausführbar |
+| BLK-DOTNET | .NET 8 SDK war in Snapshot zunächst fehlend; für Phase 03 lokal per `dotnet-install` nachinstalliert und Tests ausgeführt |
 | BLK-DOCKER | Docker Engine in dieser Cloud-Umgebung nicht verfügbar → Compose-Build hier nicht ausgeführt |
 | BLK-PAY | Zahlungsanbieter erst nach Zustimmung |
 | BLK-LEGAL | Rechtliche Prüfung DACH (Abo/Rechnung/DSGVO-AV) offen |
@@ -47,7 +47,7 @@
 | REQ-01-LIVE | Simulierte Live-PIDs, Freeze-Frame, Readiness, VIN | 01 | `simuliert getestet` | Simulator + `diagnova_protocols` | API + Protocol-Tests | BLK-HW |
 | REQ-01-SESS | Diagnosesitzungen speichern/schließen | 01 | `simuliert getestet` | `routes/diagnostics.py` | `test_session_and_report_export` | — |
 | REQ-01-RPT | Berichte CSV/PDF (simulierter Inhalt) | 01 | `simuliert getestet` | `services/reports.py` | Export-Tests | — |
-| REQ-01-CONN-SKEL | Windows-Connector Skelett + Stub-Adapter | 01/03 | `implementiert` | `apps/windows-connector` | Quellcode-Review; Build hier nicht | BLK-DOTNET, BLK-HW |
+| REQ-01-CONN-SKEL | Windows-Connector Skelett + Stub-Adapter | 01/03 | `simuliert getestet` | `apps/windows-connector` | Connector xUnit 14 passed | BLK-HW |
 | REQ-01-AUDIT | Audit-Log Login/Session/Report | 01 | `implementiert` | `services/audit.py` | indirekt über API-Flows | — |
 | REQ-02-TILES | Marken-Kacheln, Logos, Suche, Favoriten | 02 | `simuliert getestet` | `BrandsPage`, Text-Fallback, Favoriten-API | API + E2E | BLK-LOGO |
 | REQ-02-SELECT | Marke→Modell→Baureihe→Motor→Bestätigen | 02 | `simuliert getestet` | `VehicleSelectPage`, `POST /vehicles/confirm` | API + E2E | — |
@@ -55,10 +55,13 @@
 | REQ-02-VIN | VIN-Erkennung + manuelle Korrektur | 02 | `simuliert getestet` | Formatprüfung + PATCH; keine Hardware-VIN | API | BLK-HW |
 | REQ-02-CAP | Verfügbare Funktionen pro Fahrzeug anzeigen | 02 | `simuliert getestet` | `/catalog/capabilities` (MVP simuliert vs. geplant) | API + UI | BLK-OEM |
 | REQ-02-A11Y | Kontrast, Tastatur, mobil | 02 | `implementiert` | Focus-Styles, Labels, responsive Grid | E2E Desktop | manuelle Kontrastprüfung offen |
-| REQ-03-BT | Bluetooth-Geräteerkennung / SPP | 03 | `geplant` | Connector-Skelett | — | BLK-HW, BLK-ADAPTER |
-| REQ-03-COM | COM-/USB-Inventar, exklusiver Portzugriff | 03 | `geplant` | — | Fake-Port geplant | BLK-DOTNET |
-| REQ-03-PAIR | Browser↔Connector Auth, Loopback, Origin | 03 | `implementiert` (Skelett) | `LocalAuthService`, `docs/windows-connector-auth.md` | nicht automatisiert | Pairing-Flow unvollständig |
-| REQ-03-SEP | Adapter- vs. Fahrzeugverbindungsstatus getrennt | 03 | `geplant` | nur Simulator-Status | — | — |
+| REQ-03-BT | Bluetooth gekoppelte Geräte (Win32) / Limitation sonst | 03 | `implementiert` | `BluetoothScanner`, Fake-Injektion | Unit + Inventar-Tests | BLK-HW, BLK-ADAPTER |
+| REQ-03-COM | COM-/USB-Inventar, exklusiver Portzugriff | 03 | `simuliert getestet` | `ComPortScanner`, `SystemSerialTransport`, `FakeSerialTransport` | Fake-Port xUnit | BLK-HW |
+| REQ-03-PAIR | Browser↔Connector Auth, Loopback, Origin | 03 | `simuliert getestet` | `PairingService`, `OriginGuard`, Loopback-Bindung | Auth-Unit-Tests | HTTPS-Mixed-Content Hinweis |
+| REQ-03-SEP | Adapter- vs. Fahrzeugverbindungsstatus getrennt | 03 | `simuliert getestet` | `AdapterConnectionManager`, `/status` | Unit-Tests | Fahrzeug immer false in P03 |
+| REQ-03-LOG | Diagnoseprotokoll (Transport/Status) | 03 | `simuliert getestet` | `DiagnosticProtocolLog`, `GET /log` | Unit-Tests | — |
+| REQ-03-ELM | ELM327/Vgate Treiber-Vorbereitung (nur AT) | 03 | `simuliert getestet` | `Elm327DriverPrep` | Fake-Port AT-Sequenz | BLK-ADAPTER |
+| REQ-03-DELPHI | Delphi/Autocom nur dokumentierte Schnittstellen | 03 | `implementiert` (Blocker dokumentiert) | `docs/delphi-autocom-interface.md` | Review | BLK-ADAPTER |
 | REQ-04-INIT | Adapter-Init + Protokollerkennung (echt) | 04 | `geplant` | nur Simulator | — | BLK-HW |
 | REQ-04-PID | Supported-PID-Bitmap, Live mit Einheiten | 04 | `geplant` (Parser-Teil MVP) | `pids.py` + Simulator | Unit-Tests Parser | BLK-HW |
 | REQ-04-DTC-R | Stored/pending/permanent DTCs echt | 04 | `geplant` | Decoder vorhanden | Unit-Tests Decoder | BLK-HW |

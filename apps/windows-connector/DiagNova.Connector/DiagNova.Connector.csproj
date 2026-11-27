@@ -6,4 +6,7 @@
     <RootNamespace>DiagNova.Connector</RootNamespace>
     <AssemblyName>DiagNova.Connector</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+  </ItemGroup>
 </Project>

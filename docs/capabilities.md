@@ -1,8 +1,8 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02  
-**Datenmodus MVP:** ausschließlich **simuliert** (`data_source: "simulated"`).  
-**Echte Fahrzeugkommunikation:** **nicht** vorhanden.  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02 + 03  
+**Datenmodus MVP/API:** ausschließlich **simuliert** (`data_source: "simulated"`).  
+**Echte Fahrzeugkommunikation:** **nicht** vorhanden (Phase 03: nur Inventar/Transport/AT-Prep).  
 **Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.
 
 ## Architekturüberblick
@@ -12,7 +12,7 @@
 | Web-UI | React 19, TypeScript, Vite 8, Tailwind 4, React Router, TanStack Query, Recharts | `apps/web` | MVP lauffähig (Build OK) |
 | API | Python 3.12, FastAPI, SQLAlchemy, Alembic, Pydantic, JWT/bcrypt, ReportLab | `apps/api` | MVP lauffähig (12 Tests OK) |
 | DB | PostgreSQL 16 (Compose) / SQLite für lokale Tests | Models + `001_initial` | Schema MVP |
-| Connector | .NET 8, Loopback `127.0.0.1:8765`, Stub-Adapter | `apps/windows-connector` | Skelett; Build hier nicht verifiziert |
+| Connector | .NET 8, Loopback `127.0.0.1:8765`, Discovery/Auth/Transport | `apps/windows-connector` | Phase 03; `dotnet test` 14 passed |
 | Shared TS | Typen Web↔API | `packages/shared-types` | MVP |
 | Protocols | OBD-II DTC-/PID-Parser (Python) | `packages/diagnostic-protocols` | Unit-getestet |
 | Infra | Docker Compose (postgres, api, web), nginx-Skizze | `docker-compose.yml`, `infrastructure/` | Compose hier nicht ausgeführt |
@@ -44,13 +44,29 @@
 
 Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jeweils ein Demo-Modell mit Demo-VIN (`…DEMO…` / Seed-Suffix).
 
-## Was nur als Skelett existiert
+## Windows-Connector Phase 03 (lokal)
+
+| Fähigkeit | Status | Hinweis |
+|-----------|--------|---------|
+| COM-Inventar | implementiert | `SerialPort.GetPortNames` |
+| USB-Inventar | implementiert (Linux sysfs) / Windows eingeschränkt | COM deckt USB-Serial ab |
+| Bluetooth gekoppelt | Win32 APIs / sonst Limitation | Fake-Injektion testbar |
+| Fake-Port + AT-Init | simuliert getestet | keine OBD-Services |
+| Simulator separat | ja | `POST /adapter/simulator` |
+| Pairing + Origin + Loopback | simuliert getestet | siehe `docs/windows-connector-auth.md` |
+| Adapter vs. Fahrzeugstatus | getrennt | Fahrzeug in P03 immer `false` |
+| Diagnoseprotokoll | Ringpuffer `/log` | Transport/Status |
+| Delphi/Autocom | **blocked** | `docs/delphi-autocom-interface.md` |
+| Vgate SPP | **blocked** / ELM prep | `docs/vgate-elm327-prep.md` |
+
+## Was nur als Skelett / geplant existiert
 
 | Fähigkeit | Details | Fehlend |
 |-----------|---------|---------|
-| Windows Connector | `IDiagnosticAdapter`, `StubDiagnosticAdapter`, `LocalAuthService`, Health/Status auf Loopback | Bluetooth/COM, Pairing-UI, echte Adapter, Allowlist-Fahrzeugbefehle |
-| Protocol-Package | DTC-Decode, PID-Scale für gängige Mode-01-PIDs | Transport, Multiprotokoll, UDS/DoIP, J1939 |
+| Echte OBD über Connector | Transport vorbereitet | Fahrzeugbefehle → Phase 04; Allowlist |
+| Protocol-Package | DTC-Decode, PID-Scale für gängige Mode-01-PIDs | Multiprotokoll, UDS/DoIP, J1939 |
 | nginx-Conf | Proxy `/api` + SPA | TLS, WebSocket, Plesk-Integration |
+| Browser-Pairing-UI | Connector-API fertig | Web-UI Pairing-Seite optional später |
 
 ## Was bewusst nicht vorhanden / deaktiviert ist
 
@@ -131,7 +147,7 @@ Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Se
 | API Phase 02 | `tests/api/test_phase02_catalog.py` | Katalog, Theme, Favoriten, VIN, Capabilities |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
-| Connector | — | keine automatisierten Tests |
+| Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – 14 passed |
 | Docker | — | in dieser Umgebung nicht ausgeführt |
 
 ## Fehlende Herstellerdaten / Lizenzen / Hardware (explizit)
