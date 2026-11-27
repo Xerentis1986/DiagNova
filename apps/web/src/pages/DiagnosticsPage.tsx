@@ -132,7 +132,7 @@ export function DiagnosticsPage() {
             type="button"
             disabled={!vehicleId || createReport.isPending}
             onClick={() => createReport.mutate()}
-            className="rounded-md bg-blue-600 px-3 py-2 text-sm hover:bg-blue-500 disabled:opacity-50"
+            className="dn-btn-primary px-3 py-2 text-sm disabled:opacity-50"
           >
             Vorher-Bericht speichern
           </button>

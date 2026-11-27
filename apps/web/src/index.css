@@ -1,40 +1,49 @@
 @import "tailwindcss";
 
+/* DiagNova Brand Tokens (media/brand/web/brand-tokens.css) */
+:root {
+  --diagnova-charcoal: #1f2d36;
+  --diagnova-teal: #00a99b;
+  --diagnova-white: #ffffff;
+}
+
 :root,
 html[data-theme="light"] {
-  --dn-bg: #f4f7fb;
-  --dn-bg-accent: #e8eef8;
+  --dn-bg: #f3f7f7;
+  --dn-bg-accent: #e6f2f0;
   --dn-panel: #ffffff;
-  --dn-border: #c5d0e0;
-  --dn-accent: #1d4ed8;
-  --dn-accent-2: #2563eb;
+  --dn-border: #c5d4d2;
+  --dn-accent: var(--diagnova-teal);
+  --dn-accent-2: #008f83;
   --dn-warn: #b45309;
   --dn-danger: #dc2626;
   --dn-ok: #15803d;
-  --dn-text: #0f172a;
-  --dn-muted: #64748b;
-  --dn-hover: #eef2f7;
-  --dn-logo-bg: #dbeafe;
-  --dn-logo-fg: #1e3a8a;
+  --dn-text: var(--diagnova-charcoal);
+  --dn-muted: #5a6b72;
+  --dn-hover: #e8f1ef;
+  --dn-logo-bg: color-mix(in srgb, var(--diagnova-teal) 16%, #ffffff);
+  --dn-logo-fg: var(--diagnova-charcoal);
   --dn-header: rgba(255, 255, 255, 0.92);
+  --dn-login-glow: color-mix(in srgb, var(--diagnova-teal) 22%, transparent);
 }
 
 html[data-theme="dark"] {
-  --dn-bg: #0b1220;
-  --dn-bg-accent: #111b2e;
-  --dn-panel: #111b2e;
-  --dn-border: #1e3a5f;
-  --dn-accent: #3b82f6;
-  --dn-accent-2: #60a5fa;
+  --dn-bg: #121a1f;
+  --dn-bg-accent: #1a242b;
+  --dn-panel: #1a242b;
+  --dn-border: #2c3c44;
+  --dn-accent: var(--diagnova-teal);
+  --dn-accent-2: #33c2b5;
   --dn-warn: #f59e0b;
   --dn-danger: #ef4444;
   --dn-ok: #22c55e;
-  --dn-text: #e2e8f0;
-  --dn-muted: #94a3b8;
-  --dn-hover: #1a2740;
-  --dn-logo-bg: #1e3a5f;
-  --dn-logo-fg: #bfdbfe;
-  --dn-header: rgba(10, 20, 36, 0.95);
+  --dn-text: #e8eef0;
+  --dn-muted: #9aadb4;
+  --dn-hover: #243239;
+  --dn-logo-bg: color-mix(in srgb, var(--diagnova-teal) 22%, #1a242b);
+  --dn-logo-fg: #d7f5f1;
+  --dn-header: rgba(18, 26, 31, 0.95);
+  --dn-login-glow: color-mix(in srgb, var(--diagnova-teal) 28%, transparent);
 }
 
 html,
@@ -46,8 +55,8 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--dn-accent) 14%, transparent), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--dn-accent-2) 10%, transparent), transparent 55%),
+    radial-gradient(1200px 600px at 10% -10%, var(--dn-login-glow), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--dn-accent-2) 12%, transparent), transparent 55%),
     linear-gradient(180deg, var(--dn-bg-accent), var(--dn-bg));
   font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   color: var(--dn-text);
@@ -82,6 +91,21 @@ body {
   outline-offset: 1px;
 }
 
+.dn-btn-primary {
+  background: var(--dn-accent);
+  color: var(--diagnova-white);
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.dn-btn-primary:hover:not(:disabled) {
+  background: var(--dn-accent-2);
+}
+
+.dn-btn-primary:disabled {
+  opacity: 0.6;
+}
+
 .dn-brand-tile {
   background: var(--dn-panel);
   border: 1px solid var(--dn-border);
@@ -103,6 +127,28 @@ body {
   border-radius: 9999px;
   background: var(--dn-logo-bg);
   color: var(--dn-logo-fg);
+}
+
+.dn-brand-mark {
+  display: block;
+  object-fit: contain;
+}
+
+.dn-login-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--dn-login-glow), transparent 70%),
+    linear-gradient(165deg, var(--dn-bg-accent) 0%, var(--dn-bg) 55%, color-mix(in srgb, var(--diagnova-charcoal) 8%, var(--dn-bg)) 100%);
+}
+
+.dn-login-hero::before {
+  content: "";
+  position: absolute;
+  inset: -20% 20% auto;
+  height: 40%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--diagnova-teal) 18%, transparent), transparent 70%);
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

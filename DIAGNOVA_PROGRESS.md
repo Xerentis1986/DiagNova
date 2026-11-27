@@ -19,6 +19,8 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-08-Branch | `cursor/diagnova-phase-08-workshop-d09b` |
 | Phase-09-Branch | `cursor/diagnova-phase-09-history-f3fe` |
 | Phase-10-Branch | `cursor/diagnova-phase-10-pdf-7d82` |
+| Branding-Branch | `cursor/diagnova-branding-1a2e` |
+| Phase-10B-Branch | `cursor/diagnova-phase-10b-brand-4bc4` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -36,12 +38,33 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
 | 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
 | 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv; **Phase 11 nicht gestartet** |
+| 10B Premium-Branding | 🟡 In Arbeit | Designsystem + Logo + Theme |
 | 11–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 10B Premium-Branding und Designsystem (in Arbeit)
+
+Basis: Phase 10 (`cursor/diagnova-phase-10-pdf-7d82`) + Branding (`cursor/diagnova-branding-1a2e`). Siehe Abschlussbericht nach Fertigstellung.
+
+### 2026-11-27 – Logo-/Brand-Paket integriert
+
+**Erledigt**
+
+- Basis: `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14); Branding-PR separat
+- Web: Favicons, PWA-Icons, Apple-Touch, Manifest → `apps/web/public/`
+- Brand-Tokens Teal/Charcoal/White in `index.css`; Theme-aware `BrandMark`
+- Login hero-level Wordmark; Header Lockup Symbol+Wordmark
+- Windows-Connector: `ApplicationIcon` aus `Assets/DiagNova_app.ico`
+- Doku: [docs/branding.md](docs/branding.md)
+
+**Nicht gemacht (bewusst)**
+
+- Keine Phase-Prompts geändert; kein zwingendes Live-Deploy
+- Keine echten Vektor-Logos (Paket ist Raster)
 
 ### 2026-11-27 – Phase 10 PDF-Diagnoseberichte und Archiv
 
@@ -59,7 +82,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 - **Phase 11 nicht gestartet**
 - Kein Prod-Deploy
 
-**Nächster Schritt:** Coordinator orchestriert Phase 11.
+**Nächster Schritt:** Coordinator orchestriert Phase 11 (nach 10B).
 
 ### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
 
@@ -105,6 +128,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
+- Branding: [docs/branding.md](docs/branding.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
 - Phase-10-Abschluss: [docs/phase-10-abschluss.md](docs/phase-10-abschluss.md)
 - Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)

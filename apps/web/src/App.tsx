@@ -32,47 +32,45 @@ function Protected({ children }: { children: ReactNode }) {
 }
 
 function AuthedShell({ children }: { children: ReactNode }) {
-  return (
-    <Protected>
-      <ThemeProvider>{children}</ThemeProvider>
-    </Protected>
-  )
+  return <Protected>{children}</Protected>
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={qc}>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <AuthedShell>
-                  <Layout />
-                </AuthedShell>
-              }
-            >
-              <Route index element={<BrandsPage />} />
-              <Route path="select/:brandSlug" element={<VehicleSelectPage />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="workshop" element={<WorkshopPage />} />
-              <Route path="customers" element={<CustomersPage />} />
-              <Route path="work-orders" element={<WorkOrdersPage />} />
-              <Route path="vehicles" element={<VehiclesPage />} />
-              <Route path="vehicle-record" element={<VehicleRecordPage />} />
-              <Route path="vehicle-record/:vehicleId" element={<VehicleRecordPage />} />
-              <Route path="diagnostics" element={<DiagnosticsPage />} />
-              <Route path="reports" element={<ReportsPage />} />
-              <Route path="ecu" element={<EcuPage />} />
-              <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
-              <Route path="data-updates" element={<DataUpdatesPage />} />
-              <Route path="planned/:moduleId" element={<PlannedPage />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <ThemeProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/"
+                element={
+                  <AuthedShell>
+                    <Layout />
+                  </AuthedShell>
+                }
+              >
+                <Route index element={<BrandsPage />} />
+                <Route path="select/:brandSlug" element={<VehicleSelectPage />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="workshop" element={<WorkshopPage />} />
+                <Route path="customers" element={<CustomersPage />} />
+                <Route path="work-orders" element={<WorkOrdersPage />} />
+                <Route path="vehicles" element={<VehiclesPage />} />
+                <Route path="vehicle-record" element={<VehicleRecordPage />} />
+                <Route path="vehicle-record/:vehicleId" element={<VehicleRecordPage />} />
+                <Route path="diagnostics" element={<DiagnosticsPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="ecu" element={<EcuPage />} />
+                <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
+                <Route path="data-updates" element={<DataUpdatesPage />} />
+                <Route path="planned/:moduleId" element={<PlannedPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   )
