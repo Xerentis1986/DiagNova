@@ -3,7 +3,7 @@
 **Datum:** 2026-11-27 (Europe/Vienna)  
 **Branch:** `cursor/diagnova-phase-10-pdf-7d82`  
 **Basis:** `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14)  
-**Nächste Phase:** **nicht** gestartet – Coordinator orchestriert Phase 11.
+**Nächste Phase:** **nicht** gestartet – Coordinator startet **Phase 10B** automatisch. Phase 11 nicht starten.
 
 ## Auftrag (Master-Prompt 10)
 
@@ -44,8 +44,8 @@ Serverseitige A4-PDFs mit Werkstattlogo, Berichtsnummer, Datum, Kunden-/Fahrzeug
 
 - Keine echten Live-Fahrzeugberichte als echt
 - Keine automatisch erfundenen Reparaturempfehlungen
-- **Phase 11 nicht gestartet**
-- Kein Prod-Deploy
+- **Phase 10B / Phase 11 nicht gestartet** (Coordinator orchestriert 10B)
+- Kein Prod-Deploy; bestehende Diagnose-/Historie-Funktionen unverändert nutzbar
 
 ## Tests (ausgeführt)
 
@@ -74,4 +74,5 @@ UI: `/reports`. Migration: `alembic upgrade head` (Revision `007_phase10`).
 |----|-------|
 | BLK-HW | Keine echten Live-Berichte ohne Hardware |
 | BLK-LEGAL | Aufbewahrung/Löschung rechtlich freigeben |
-| Phase 11 | Erweiterte Diagnose / Service – nächster orchestrated Schritt |
+| Phase 10B | Nächster Schritt – startet der Coordinator automatisch |
+| Phase 11 | Nicht starten bis nach 10B |

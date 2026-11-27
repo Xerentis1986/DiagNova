@@ -35,8 +35,9 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe |
 | 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
 | 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
-| 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv; **Phase 11 nicht gestartet** |
-| 11–15 | ⚪ Offen | |
+| 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv; **STOP – 10B startet Coordinator** |
+| 10B | ⚪ Coordinator | Automatisch nach Phase 10 |
+| 11–15 | ⚪ Offen | nicht vor 10B |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
@@ -56,10 +57,10 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 **Nicht gemacht (bewusst)**
 
 - Keine echten Live-Berichte als echt; keine erfundenen Testergebnisse
-- **Phase 11 nicht gestartet**
-- Kein Prod-Deploy
+- **Phase 10B / Phase 11 nicht gestartet**
+- Kein Prod-Deploy; bestehende Funktionen nicht zerstört
 
-**Nächster Schritt:** Coordinator orchestriert Phase 11.
+**STOP.** Nächster Schritt: Coordinator startet Phase 10B automatisch.
 
 ### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
 

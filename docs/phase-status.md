@@ -1,7 +1,7 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 10 abgeschlossen (simuliert getestet). **Phase 11 nicht gestartet** – Coordinator orchestriert.  
+**Aktuelle Arbeitsphase:** 10 abgeschlossen (simuliert getestet). **STOP** – Coordinator startet Phase 10B. Phase 11 nicht starten.  
 **Basis:** Phase-09-Branch `cursor/diagnova-phase-09-history-f3fe` (PR #14); Arbeit auf `cursor/diagnova-phase-10-pdf-7d82`.
 
 ## Phasenübersicht
