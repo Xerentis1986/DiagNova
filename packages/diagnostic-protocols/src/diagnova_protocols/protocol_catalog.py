@@ -141,9 +141,12 @@ PROTOCOLS: list[dict[str, Any]] = [
         "id": "sae_j1939",
         "name": "SAE J1939",
         "layer": "protocol",
-        "status": "planned_later",
+        "status": "documented_prep",
         "phase": 19,
-        "notes_de": "LKW-Erweiterung Phase 19; 24-V/RP1210-Hardware erforderlich.",
+        "notes_de": (
+            "Phase 19 Architektur: Capability-Flags + Docs. "
+            "Kein Parser/SPN-FMI-Stack – 24-V/RP1210-Hardware und Spec erforderlich."
+        ),
         "source": "SAE J1939",
         "blocker": "BLK-HW",
     },
@@ -151,10 +154,23 @@ PROTOCOLS: list[dict[str, Any]] = [
         "id": "rp1210",
         "name": "RP1210",
         "layer": "adapter",
-        "status": "planned_later",
+        "status": "documented_prep",
         "phase": 19,
-        "notes_de": "LKW-Adapter-API; bewusst später.",
+        "notes_de": (
+            "Phase 19 Architektur: Adapter-Eintrag planned. "
+            "Keine DLL-Bindung; PKW-ELM ersetzt RP1210 nicht."
+        ),
         "source": "TMC RP1210",
+        "blocker": "BLK-HW",
+    },
+    {
+        "id": "sae_j1708_j1587",
+        "name": "SAE J1708 / J1587",
+        "layer": "protocol",
+        "status": "documented_prep",
+        "phase": 19,
+        "notes_de": "Ältere US-Nutzfahrzeuge – nur Prep; keine Implementierung ohne Hardware.",
+        "source": "SAE J1708 / J1587",
         "blocker": "BLK-HW",
     },
 ]

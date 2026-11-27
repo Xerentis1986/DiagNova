@@ -88,6 +88,7 @@ export const PLANNED_MODULES = [
   { id: "ecu", label: "Steuergeräte", status: "simulated" as const },
   { id: "service", label: "Servicefunktionen", status: "simulated" as const },
   { id: "coding", label: "Codierung / Programmierung", status: "simulated" as const },
+  { id: "lkw", label: "LKW / Nutzfahrzeug (J1939/RP1210)", status: "planned" as const },
   { id: "actuator", label: "Stellglieddiagnose", status: "planned" as const },
   { id: "flash", label: "Flash Live", status: "planned" as const },
 ] as const;

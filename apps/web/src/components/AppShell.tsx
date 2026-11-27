@@ -50,6 +50,7 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/service', label: 'Service', icon: <IconWorkshop /> },
   { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
   { to: '/subscriptions', label: 'Abos & Lizenzen', icon: <IconUpdates /> },
+  { to: '/lkw', label: 'LKW / Nutzfahrzeug', icon: <IconFleet />, planned: true },
   { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
   { to: '/admin', label: 'Administration', icon: <IconSettings /> },
 ]

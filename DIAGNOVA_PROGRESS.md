@@ -28,6 +28,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-15-Branch | `cursor/diagnova-phase-15-security-4381` |
 | Phase-16-Branch | `cursor/diagnova-phase-16-deploy-8876` |
 | Phase-17-Branch | `cursor/diagnova-phase-17-acceptance-8ffe` |
+| Phase-19-Branch | `cursor/diagnova-phase-19-lkw-arch-9892` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -53,9 +54,25 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 15 Sicherheit/QA | 🟢 Simuliert getestet | Threat Model, Rate-Limits, Audit, DSGVO-Docs |
 | 16 World4You/Plesk Deploy | 🟢 Docs/Ops | Install/Compose/Proxy/Backup; Live Smoke |
 | 17 Abnahme | 🟢 Docs/Abnahme | Checkliste + **NO-GO** Voll-Launch; **STOP** Prod-Rollout |
-| 18–19 Optional | ⚪ Später | **nicht gestartet**; J1939 in 19 |
+| 18 Tuning (optional) | ⚪ Später | **nicht gestartet**; gesperrt |
+| 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 19 LKW/Nutzfahrzeug Architektur
+
+**Erledigt**
+
+- Basis: Phase 17 `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26); kein Phase-18-Branch
+- Architektur-Docs, Capability-Flags, Markennavigation, UI `/lkw` „Geplant“
+- Diagnose-POSTs bewusst 403; kein Parser/Fake-Simulator
+
+**Nicht gemacht (bewusst)**
+
+- Kein J1939-SPN/FMI-Stack, keine RP1210-DLL, keine LKW-Live-Diagnose
+- Phase 18 nicht gestartet
+
+Details: [docs/phase-19-abschluss.md](docs/phase-19-abschluss.md)
 
 ### 2026-11-27 – Phase 17 Gesamtabnahme und Freigabeprüfung
 

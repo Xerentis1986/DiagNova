@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 17 abgeschlossen (Abnahme Docs; **NO-GO** Voll-Launch). **STOP** vor Prod-Rollout. Phase 18/19 nicht starten.  
-**Basis:** Phase-16-Branch `cursor/diagnova-phase-16-deploy-8876` (PR #25); Arbeit auf `cursor/diagnova-phase-17-acceptance-8ffe`.
+**Aktuelle Arbeitsphase:** 19 Architektur abgeschlossen (optional). Phase 17 Abnahme bleibt **NO-GO** Voll-Launch. Phase 18 (Tuning) nicht gestartet.  
+**Basis:** Phase-17-Branch `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26); Arbeit auf `cursor/diagnova-phase-19-lkw-arch-9892`.
 
 ## Phasenübersicht
 
@@ -28,7 +28,21 @@
 | **16** | World4You Ubuntu/Plesk Deploy | **Implementiert (Docs/Ops)** | Install/Compose/Proxy/Backup/Rollback; Live Smoke; kein destruktives Redeploy |
 | **17** | Gesamtabnahme | **Erledigt (Docs/Abnahme)** | Checkliste + Go/No-Go; **NO-GO** Voll-Launch; STOP Prod-Rollout |
 | 18 | Chiptuning (optional) | Später | **nicht gestartet**; standardmäßig gesperrt |
-| 19 | LKW (optional) | Später | **nicht gestartet**; J1939/RP1210 |
+| **19** | LKW (optional, Architektur) | **Architektur (Docs/Flags/UI)** | J1939/RP1210 Prep; Diagnose bewusst aus; UI „Geplant“ |
+
+## Phase 19 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Scope | Architektur only – keine vorgetäuschte LKW-Diagnose |
+| API | `/api/lkw/architecture|brands|capabilities`; Diagnose-POSTs **403** |
+| Caps | Capability-Flags + Adapter `rp1210-commercial` (`planned`) |
+| UI | `/lkw`, Nav/Dashboard Badge „Geplant“ |
+| Marken | MAN, MB Trucks, Scania, Volvo Trucks, DAF, Iveco, Renault Trucks (Nav only) |
+| Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER |
+| Nächste Phase | **keine** automatische; Parser/HW nur nach Freigabe |
+
+Details: [phase-19-abschluss.md](./phase-19-abschluss.md), [lkw-j1939-architecture.md](./lkw-j1939-architecture.md).
 
 ## Phase 17 – Kurzfazit
 
@@ -39,7 +53,7 @@
 | Smoke | pytest **126 passed**; Web-Build OK; Live `/`+`/health` 200 |
 | Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER, BLK-LEGAL, BLK-PAY, BLK-CERT, BLK-DEPLOY |
 | Prod-Rollout | **STOP** – nur nach Betreiber- + Coordinator-Freigabe |
-| Nächste Phase | **18/19 nicht gestartet** |
+| Nächste Phase | optional 18/19; 19 Architektur erledigt |
 
 Details: [phase-17-abschluss.md](./phase-17-abschluss.md).
 
