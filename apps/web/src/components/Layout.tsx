@@ -6,6 +6,9 @@ import { ThemeToggle } from './ThemeToggle'
 const NAV = [
   { to: '/', label: 'Marken', planned: false },
   { to: '/dashboard', label: 'Dashboard', planned: false },
+  { to: '/workshop', label: 'Werkstatt', planned: false },
+  { to: '/customers', label: 'Kunden', planned: false },
+  { to: '/work-orders', label: 'Aufträge', planned: false },
   { to: '/vehicles', label: 'Fahrzeuge', planned: false },
   { to: '/diagnostics', label: 'Diagnose', planned: false },
   { to: '/reports', label: 'Berichte', planned: false },

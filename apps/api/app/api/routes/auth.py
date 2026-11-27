@@ -16,8 +16,18 @@ def login(body: LoginRequest, db: DbSession) -> LoginResponse:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="E-Mail oder Passwort falsch")
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Benutzer deaktiviert")
-    token = create_access_token(user.id, user.role)
-    write_audit(db, user_id=user.id, action="login", resource="auth")
+    token = create_access_token(
+        user.id,
+        user.role,
+        extra={"workshop_id": user.workshop_id} if user.workshop_id else None,
+    )
+    write_audit(
+        db,
+        user_id=user.id,
+        workshop_id=user.workshop_id,
+        action="login",
+        resource="auth",
+    )
     theme = user.theme_preference if getattr(user, "theme_preference", None) in {
         "light",
         "dark",
@@ -32,6 +42,7 @@ def login(body: LoginRequest, db: DbSession) -> LoginResponse:
             role=user.role,  # type: ignore[arg-type]
             is_active=user.is_active,
             theme_preference=theme,  # type: ignore[arg-type]
+            workshop_id=user.workshop_id,
         ),
     )
 
@@ -50,4 +61,5 @@ def me(user: CurrentUser) -> TokenUser:
         role=user.role,  # type: ignore[arg-type]
         is_active=user.is_active,
         theme_preference=theme,  # type: ignore[arg-type]
+        workshop_id=user.workshop_id,
     )

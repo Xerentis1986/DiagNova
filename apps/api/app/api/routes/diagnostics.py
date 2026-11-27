@@ -21,10 +21,19 @@ from app.schemas.api import (
 from app.services import simulator
 from app.services.audit import write_audit
 from app.services.reports import create_report, report_to_csv, report_to_pdf
+from app.services.tenant import require_workshop_id
 
 router = APIRouter(tags=["diagnostics"])
 
 Technician = Annotated[User, Depends(require_roles("admin", "technician"))]
+
+
+def _tenant_vehicle(db: DbSession, user: User, vehicle_id: str) -> Vehicle:
+    wid = require_workshop_id(user)
+    vehicle = db.get(Vehicle, vehicle_id)
+    if vehicle is None or vehicle.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+    return vehicle
 
 
 def _session_out(session: DiagnosticSession, vehicle: Vehicle) -> DiagnosticSessionOut:
@@ -52,18 +61,14 @@ def list_pids(_user: CurrentUser) -> dict:
 
 
 @router.get("/diagnostics/{vehicle_id}/dtcs", response_model=list[DtcOut])
-def get_dtcs(vehicle_id: str, _user: CurrentUser, db: DbSession) -> list[DtcOut]:
-    vehicle = db.get(Vehicle, vehicle_id)
-    if vehicle is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+def get_dtcs(vehicle_id: str, user: CurrentUser, db: DbSession) -> list[DtcOut]:
+    vehicle = _tenant_vehicle(db, user, vehicle_id)
     return simulator.list_dtcs(vehicle.id)
 
 
 @router.get("/diagnostics/{vehicle_id}/live", response_model=LiveDataOut)
-def get_live(vehicle_id: str, _user: CurrentUser, db: DbSession) -> LiveDataOut:
-    vehicle = db.get(Vehicle, vehicle_id)
-    if vehicle is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+def get_live(vehicle_id: str, user: CurrentUser, db: DbSession) -> LiveDataOut:
+    vehicle = _tenant_vehicle(db, user, vehicle_id)
     return simulator.live_data(vehicle.id, vehicle.vin)
 
 
@@ -84,9 +89,7 @@ def clear_dtcs(
     Freigabegeschützte DTC-Löschung im Simulator.
     Permanente DTCs bleiben. Kein Hardwarezugriff – data_source=simulated.
     """
-    vehicle = db.get(Vehicle, vehicle_id)
-    if vehicle is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+    vehicle = _tenant_vehicle(db, user, vehicle_id)
     result = simulator.clear_dtcs_simulated(
         vehicle.id,
         confirmation_phrase=body.confirmation_phrase,
@@ -100,6 +103,7 @@ def clear_dtcs(
     write_audit(
         db,
         user_id=user.id,
+        workshop_id=vehicle.workshop_id,
         action="dtc.clear.simulated",
         resource=f"vehicle:{vehicle.id}",
         detail=body.operator_note or "simulated clear",
@@ -113,9 +117,7 @@ def start_session(
     db: DbSession,
     vehicle_id: str = Query(...),
 ) -> DiagnosticSessionOut:
-    vehicle = db.get(Vehicle, vehicle_id)
-    if vehicle is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fahrzeug nicht gefunden")
+    vehicle = _tenant_vehicle(db, user, vehicle_id)
     dtcs = simulator.list_dtcs(vehicle.id)
     session = DiagnosticSession(
         vehicle_id=vehicle.id,
@@ -130,6 +132,7 @@ def start_session(
     write_audit(
         db,
         user_id=user.id,
+        workshop_id=vehicle.workshop_id,
         action="session.start",
         resource=f"session:{session.id}",
         detail=f"vehicle={vehicle.id}",
@@ -139,12 +142,15 @@ def start_session(
 
 @router.get("/sessions", response_model=list[DiagnosticSessionOut])
 def list_sessions(
-    _user: CurrentUser,
+    user: CurrentUser,
     db: DbSession,
     limit: int = Query(20, ge=1, le=100),
 ) -> list[DiagnosticSessionOut]:
+    wid = require_workshop_id(user)
     rows = (
         db.query(DiagnosticSession)
+        .join(Vehicle, Vehicle.id == DiagnosticSession.vehicle_id)
+        .filter(Vehicle.workshop_id == wid)
         .order_by(DiagnosticSession.started_at.desc())
         .limit(limit)
         .all()
@@ -160,26 +166,58 @@ def list_sessions(
 
 @router.post("/sessions/{session_id}/close", response_model=DiagnosticSessionOut)
 def close_session(session_id: str, user: Technician, db: DbSession) -> DiagnosticSessionOut:
+    wid = require_workshop_id(user)
     session = db.get(DiagnosticSession, session_id)
     if session is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    vehicle = db.get(Vehicle, session.vehicle_id)
+    if vehicle is None or vehicle.workshop_id != wid:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
     session.status = "closed"
     session.ended_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(session)
-    vehicle = db.get(Vehicle, session.vehicle_id)
-    assert vehicle is not None
-    write_audit(db, user_id=user.id, action="session.close", resource=f"session:{session.id}")
+    write_audit(
+        db,
+        user_id=user.id,
+        workshop_id=wid,
+        action="session.close",
+        resource=f"session:{session.id}",
+    )
     return _session_out(session, vehicle)
+
+
+def _tenant_report(db: DbSession, user: User, report_id: str) -> DiagnosticReport:
+    wid = require_workshop_id(user)
+    report = db.get(DiagnosticReport, report_id)
+    if report is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+    session = db.get(DiagnosticSession, report.session_id)
+    if session is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+    vehicle = db.get(Vehicle, session.vehicle_id)
+    if vehicle is None or vehicle.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+    return report
 
 
 @router.post("/reports", response_model=ReportOut)
 def create_diagnostic_report(body: ReportCreate, user: Technician, db: DbSession) -> ReportOut:
+    wid = require_workshop_id(user)
     session = db.get(DiagnosticSession, body.session_id)
     if session is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    vehicle = db.get(Vehicle, session.vehicle_id)
+    if vehicle is None or vehicle.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
     report = create_report(db, session, body.title)
-    write_audit(db, user_id=user.id, action="report.create", resource=f"report:{report.id}")
+    write_audit(
+        db,
+        user_id=user.id,
+        workshop_id=wid,
+        action="report.create",
+        resource=f"report:{report.id}",
+    )
     return ReportOut(
         id=report.id,
         session_id=report.session_id,
@@ -190,10 +228,8 @@ def create_diagnostic_report(body: ReportCreate, user: Technician, db: DbSession
 
 
 @router.get("/reports/{report_id}", response_model=ReportOut)
-def get_report(report_id: str, _user: CurrentUser, db: DbSession) -> ReportOut:
-    report = db.get(DiagnosticReport, report_id)
-    if report is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+def get_report(report_id: str, user: CurrentUser, db: DbSession) -> ReportOut:
+    report = _tenant_report(db, user, report_id)
     return ReportOut(
         id=report.id,
         session_id=report.session_id,
@@ -204,10 +240,8 @@ def get_report(report_id: str, _user: CurrentUser, db: DbSession) -> ReportOut:
 
 
 @router.get("/reports/{report_id}/export.csv")
-def export_csv(report_id: str, _user: CurrentUser, db: DbSession) -> Response:
-    report = db.get(DiagnosticReport, report_id)
-    if report is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+def export_csv(report_id: str, user: CurrentUser, db: DbSession) -> Response:
+    report = _tenant_report(db, user, report_id)
     csv_text = report_to_csv(report)
     return Response(
         content=csv_text,
@@ -217,10 +251,8 @@ def export_csv(report_id: str, _user: CurrentUser, db: DbSession) -> Response:
 
 
 @router.get("/reports/{report_id}/export.pdf")
-def export_pdf(report_id: str, _user: CurrentUser, db: DbSession) -> Response:
-    report = db.get(DiagnosticReport, report_id)
-    if report is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bericht nicht gefunden")
+def export_pdf(report_id: str, user: CurrentUser, db: DbSession) -> Response:
+    report = _tenant_report(db, user, report_id)
     pdf = report_to_pdf(report)
     return Response(
         content=pdf,

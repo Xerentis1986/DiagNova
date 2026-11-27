@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.routes import (
     auth,
     catalog,
+    customers,
     dashboard,
     data_updates,
     diagnostic_data,
@@ -10,10 +11,15 @@ from app.api.routes import (
     preferences,
     protocols,
     vehicles,
+    work_orders,
+    workshop,
 )
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth.router)
+api_router.include_router(workshop.router)
+api_router.include_router(customers.router)
+api_router.include_router(work_orders.router)
 api_router.include_router(vehicles.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(diagnostics.router)

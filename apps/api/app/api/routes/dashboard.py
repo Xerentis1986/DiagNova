@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.models import DiagnosticSession, Vehicle
 from app.schemas.api import DashboardOut, DiagnosticSessionOut, VehicleOut
 from app.services import simulator
+from app.services.tenant import require_workshop_id
 import json
 
 router = APIRouter(tags=["dashboard"])
@@ -20,19 +21,29 @@ PLANNED = [
 
 @router.get("/dashboard", response_model=DashboardOut)
 def dashboard(
-    _user: CurrentUser,
+    user: CurrentUser,
     db: DbSession,
     active_vehicle_id: str | None = Query(None),
 ) -> DashboardOut:
     settings = get_settings()
+    wid = require_workshop_id(user)
     active: Vehicle | None = None
     if active_vehicle_id:
-        active = db.get(Vehicle, active_vehicle_id)
+        candidate = db.get(Vehicle, active_vehicle_id)
+        if candidate is not None and candidate.workshop_id == wid:
+            active = candidate
     if active is None:
-        active = db.query(Vehicle).order_by(Vehicle.make).first()
+        active = (
+            db.query(Vehicle)
+            .filter(Vehicle.workshop_id == wid, Vehicle.archived_at.is_(None))
+            .order_by(Vehicle.make)
+            .first()
+        )
 
     sessions = (
         db.query(DiagnosticSession)
+        .join(Vehicle, Vehicle.id == DiagnosticSession.vehicle_id)
+        .filter(Vehicle.workshop_id == wid)
         .order_by(DiagnosticSession.started_at.desc())
         .limit(5)
         .all()

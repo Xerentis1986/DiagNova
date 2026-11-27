@@ -10,6 +10,15 @@ def write_audit(
     action: str,
     resource: str,
     detail: str | None = None,
+    workshop_id: str | None = None,
 ) -> None:
-    db.add(AuditLog(user_id=user_id, action=action, resource=resource, detail=detail))
+    db.add(
+        AuditLog(
+            user_id=user_id,
+            workshop_id=workshop_id,
+            action=action,
+            resource=resource,
+            detail=detail,
+        )
+    )
     db.commit()

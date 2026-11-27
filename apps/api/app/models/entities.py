@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,6 +21,10 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(255))
     hashed_password: Mapped[str] = mapped_column(String(255))
     role: Mapped[str] = mapped_column(String(32), default="technician")
+    # Mandanten-ID – serverseitig aus Sitzung, nie vom Client gesetzt
+    workshop_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("workshops.id"), nullable=True, index=True
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     theme_preference: Mapped[str] = mapped_column(String(16), default="system")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -30,12 +34,20 @@ class User(Base):
 
 class Vehicle(Base):
     __tablename__ = "vehicles"
+    __table_args__ = (UniqueConstraint("workshop_id", "vin", name="uq_vehicles_workshop_vin"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    workshop_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("workshops.id"), nullable=True, index=True
+    )
+    # Primärer Kunde (optional); weitere Zuordnungen über customer_vehicles
+    customer_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("customers.id"), nullable=True, index=True
+    )
     make: Mapped[str] = mapped_column(String(64), index=True)
     model: Mapped[str] = mapped_column(String(64))
     year: Mapped[int] = mapped_column(Integer)
-    vin: Mapped[str] = mapped_column(String(17), unique=True, index=True)
+    vin: Mapped[str] = mapped_column(String(17), index=True)
     license_plate: Mapped[str | None] = mapped_column(String(32), nullable=True)
     engine: Mapped[str | None] = mapped_column(String(64), nullable=True)
     fuel_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
@@ -46,6 +58,7 @@ class Vehicle(Base):
     catalog_variant_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     is_example_data: Mapped[bool] = mapped_column(Boolean, default=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     sessions: Mapped[list[DiagnosticSession]] = relationship(back_populates="vehicle")
@@ -112,6 +125,7 @@ class AuditLog(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     user_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    workshop_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     action: Mapped[str] = mapped_column(String(64))
     resource: Mapped[str] = mapped_column(String(128))
     detail: Mapped[str | None] = mapped_column(Text, nullable=True)

@@ -28,9 +28,12 @@ from app.models.entities import (
     UserRecentSelection,
     Vehicle,
 )
+from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
 
 __all__ = [
     "AuditLog",
+    "Customer",
+    "CustomerVehicleLink",
     "DataLicenseSource",
     "DiagDatasetVersion",
     "DiagDtcDefinition",
@@ -54,4 +57,6 @@ __all__ = [
     "UserBrandFavorite",
     "UserRecentSelection",
     "Vehicle",
+    "WorkOrder",
+    "Workshop",
 ]

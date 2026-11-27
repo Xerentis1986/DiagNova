@@ -16,7 +16,7 @@ from app.data.phase06_sources import (
     DOCUMENTED_SOURCES,
 )
 from app.data.phase07_channels import PHASE07_CHANNELS
-from app.models import User, Vehicle
+from app.models import Customer, User, Vehicle, WorkOrder, Workshop
 from app.models.data_updates import UpdateChannel, UpdateJobLock
 from app.models.diagnostic_data import (
     DataLicenseSource,
@@ -27,6 +27,30 @@ from app.models.diagnostic_data import (
     DiagUnitDefinition,
 )
 from app.services.simulator import simulated_vin
+
+DEMO_WORKSHOP_NAME = "Demo-Werkstatt DiagNova"
+
+# Klar als Beispieldaten – keine echten Personen/Kunden
+EXAMPLE_CUSTOMERS = [
+    {
+        "display_name": "Demo Kunde Alpha",
+        "email": "demo.kunde.alpha@example.com",
+        "phone": "+43 1 555 0101",
+        "city": "Wien",
+        "postal_code": "1010",
+        "country": "AT",
+        "notes": "Beispieldaten – keine echte Person.",
+    },
+    {
+        "display_name": "Demo Kunde Beta",
+        "email": "demo.kunde.beta@example.com",
+        "phone": "+43 1 555 0102",
+        "city": "Linz",
+        "postal_code": "4020",
+        "country": "AT",
+        "notes": "Beispieldaten – keine echte Person.",
+    },
+]
 
 EXAMPLE_VEHICLES = [
     {
@@ -131,8 +155,68 @@ EXAMPLE_VEHICLES = [
 ]
 
 
+def seed_phase08_workshop(db: Session) -> Workshop:
+    """Demo-Werkstatt + Beispielkunden (keine Produktivdaten)."""
+    workshop = db.query(Workshop).filter(Workshop.name == DEMO_WORKSHOP_NAME).first()
+    if workshop is None:
+        workshop = Workshop(
+            name=DEMO_WORKSHOP_NAME,
+            legal_name="DiagNova Demo GmbH (Beispiel)",
+            email="werkstatt.demo@example.com",
+            phone="+43 1 555 0000",
+            street="Demostrasse 1",
+            postal_code="1010",
+            city="Wien",
+            country="AT",
+            vat_id=None,
+            retention_days=365,
+            notes="Beispieldaten für Demo – keine echte Werkstatt / keine Produktivdaten.",
+            is_example_data=True,
+        )
+        db.add(workshop)
+        db.flush()
+
+    if db.query(Customer).filter(Customer.workshop_id == workshop.id).count() == 0:
+        for item in EXAMPLE_CUSTOMERS:
+            db.add(
+                Customer(
+                    workshop_id=workshop.id,
+                    display_name=item["display_name"],
+                    email=item["email"],
+                    phone=item["phone"],
+                    city=item["city"],
+                    postal_code=item["postal_code"],
+                    country=item["country"],
+                    notes=item["notes"],
+                    is_example_data=True,
+                )
+            )
+        db.flush()
+
+    if db.query(WorkOrder).filter(WorkOrder.workshop_id == workshop.id).count() == 0:
+        customers = (
+            db.query(Customer).filter(Customer.workshop_id == workshop.id).order_by(Customer.display_name).all()
+        )
+        if customers:
+            db.add(
+                WorkOrder(
+                    workshop_id=workshop.id,
+                    customer_id=customers[0].id,
+                    title="Demo: Inspektion / Fehlercodes prüfen",
+                    status="open",
+                    notes="Beispielauftrag – simuliert, keine echte Reparatur.",
+                    repair_summary=None,
+                    is_example_data=True,
+                )
+            )
+    db.commit()
+    return workshop
+
+
 def seed_all(db: Session) -> None:
     settings = get_settings()
+    workshop = seed_phase08_workshop(db)
+
     if db.query(User).count() == 0:
         db.add(
             User(
@@ -140,6 +224,7 @@ def seed_all(db: Session) -> None:
                 full_name="Admin Demo",
                 hashed_password=hash_password(settings.seed_admin_password),
                 role="admin",
+                workshop_id=workshop.id,
             )
         )
         db.add(
@@ -148,9 +233,20 @@ def seed_all(db: Session) -> None:
                 full_name="Techniker Demo",
                 hashed_password=hash_password(settings.seed_tech_password),
                 role="technician",
+                workshop_id=workshop.id,
             )
         )
         db.commit()
+    else:
+        # Bestehende Demo-User ohne Mandant nachziehen
+        for u in db.query(User).filter(User.workshop_id.is_(None)).all():
+            u.workshop_id = workshop.id
+            db.add(u)
+        db.commit()
+
+    customers = (
+        db.query(Customer).filter(Customer.workshop_id == workshop.id).order_by(Customer.display_name).all()
+    )
 
     if db.query(Vehicle).count() == 0:
         for idx, item in enumerate(EXAMPLE_VEHICLES):
@@ -159,8 +255,11 @@ def seed_all(db: Session) -> None:
             vin = simulated_vin(item["make"], temp_id)
             # ensure uniqueness
             vin = f"{vin[:14]}{idx:03d}"[:17]
+            customer_id = customers[idx % len(customers)].id if customers else None
             db.add(
                 Vehicle(
+                    workshop_id=workshop.id,
+                    customer_id=customer_id,
                     make=item["make"],
                     model=item["model"],
                     year=item["year"],
@@ -175,6 +274,11 @@ def seed_all(db: Session) -> None:
                     notes="Beispieldaten für Demo – keine echte Markenabdeckung / Fahrzeugdiagnose.",
                 )
             )
+        db.commit()
+    else:
+        for v in db.query(Vehicle).filter(Vehicle.workshop_id.is_(None)).all():
+            v.workshop_id = workshop.id
+            db.add(v)
         db.commit()
 
     seed_phase06_baseline(db)

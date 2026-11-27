@@ -18,6 +18,7 @@ class TokenUser(BaseModel):
     role: Literal["admin", "technician", "viewer"]
     is_active: bool
     theme_preference: Literal["light", "dark", "system"] = "system"
+    workshop_id: str | None = None
 
 
 class LoginResponse(BaseModel):
@@ -36,6 +37,8 @@ class PreferencesOut(BaseModel):
 
 class VehicleOut(BaseModel):
     id: str
+    workshop_id: str | None = None
+    customer_id: str | None = None
     make: str
     model: str
     year: int
@@ -50,6 +53,7 @@ class VehicleOut(BaseModel):
     catalog_variant_id: str | None = None
     is_example_data: bool
     notes: str | None
+    archived_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 

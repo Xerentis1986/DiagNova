@@ -7,6 +7,7 @@ import { BrandsPage } from './pages/BrandsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { DiagnosticsPage } from './pages/DiagnosticsPage'
 import { LoginPage } from './pages/LoginPage'
+import { CustomersPage } from './pages/CustomersPage'
 import { DataUpdatesPage } from './pages/DataUpdatesPage'
 import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
 import { EcuPage } from './pages/EcuPage'
@@ -14,6 +15,8 @@ import { PlannedPage } from './pages/PlannedPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { VehicleSelectPage } from './pages/VehicleSelectPage'
 import { VehiclesPage } from './pages/VehiclesPage'
+import { WorkOrdersPage } from './pages/WorkOrdersPage'
+import { WorkshopPage } from './pages/WorkshopPage'
 import type { ReactNode } from 'react'
 
 const qc = new QueryClient({
@@ -53,6 +56,9 @@ export default function App() {
               <Route index element={<BrandsPage />} />
               <Route path="select/:brandSlug" element={<VehicleSelectPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="workshop" element={<WorkshopPage />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="work-orders" element={<WorkOrdersPage />} />
               <Route path="vehicles" element={<VehiclesPage />} />
               <Route path="diagnostics" element={<DiagnosticsPage />} />
               <Route path="reports" element={<ReportsPage />} />
