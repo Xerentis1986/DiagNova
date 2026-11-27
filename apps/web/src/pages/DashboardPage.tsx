@@ -115,15 +115,20 @@ export function DashboardPage() {
         <SectionTitle>Schnellzugriff / Geplant</SectionTitle>
         <div className="flex flex-wrap gap-2">
           {data.planned_modules.map((m) => {
-            const isSimEcu = m.id === 'ecu' && m.status === 'simulated'
+            const simRoutes: Record<string, string> = {
+              ecu: '/ecu',
+              service: '/service',
+              guided: '/guided',
+            }
+            const isSim = m.status === 'simulated' && simRoutes[m.id]
             return (
               <Link
                 key={m.id}
-                to={isSimEcu ? '/ecu' : `/planned/${m.id}`}
+                to={isSim ? simRoutes[m.id] : `/planned/${m.id}`}
                 className="rounded-md border border-dashed border-[var(--dn-border)] px-3 py-2 text-sm text-[var(--dn-muted)] hover:border-[var(--dn-accent)] hover:text-[var(--dn-text)]"
               >
                 {m.label}{' '}
-                <span className="text-[10px] uppercase">{isSimEcu ? 'Simuliert' : 'Geplant'}</span>
+                <span className="text-[10px] uppercase">{isSim ? 'Simuliert' : 'Geplant'}</span>
               </Link>
             )
           })}

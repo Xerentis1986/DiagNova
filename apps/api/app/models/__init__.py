@@ -34,6 +34,7 @@ from app.models.vehicle_history import (
     SessionMeasurementSample,
     VehicleRecordNote,
 )
+from app.models.service import ServiceRun
 from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
 
 __all__ = [
@@ -55,6 +56,7 @@ __all__ = [
     "ImportAppliedRecord",
     "ImportBatch",
     "ImportQuarantineItem",
+    "ServiceRun",
     "SessionDtcResult",
     "SessionEcuResult",
     "SessionMeasurementSample",

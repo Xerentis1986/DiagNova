@@ -12,9 +12,10 @@ router = APIRouter(tags=["dashboard"])
 
 PLANNED = [
     {"id": "ecu", "label": "Steuergeräte (OBD simuliert)", "status": "simulated"},
-    {"id": "service", "label": "Servicefunktionen", "status": "planned"},
+    {"id": "service", "label": "Servicefunktionen (Gates, deaktiviert)", "status": "simulated"},
+    {"id": "guided", "label": "Geführte Diagnose", "status": "simulated"},
     {"id": "coding", "label": "Codierung", "status": "planned"},
-    {"id": "actuator", "label": "Stellglieddiagnose", "status": "planned"},
+    {"id": "actuator", "label": "Stellglieddiagnose (Gerüst)", "status": "planned"},
     {"id": "flash", "label": "Programmierung", "status": "planned"},
 ]
 

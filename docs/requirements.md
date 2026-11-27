@@ -92,9 +92,9 @@
 | REQ-10-PDF | A4-PDF Werkstattlayout, Wasserzeichen Demo | 10 | `simuliert getestet` | ReportLab A4, DejaVu-Unicode, Kopf/Fuß, Demo-WM | `test_phase10_*` | Keine Live-HW-Berichte |
 | REQ-10-ARCH | Archiv, Suche, unveränderlicher Snapshot | 10 | `simuliert getestet` | `007_phase10`, Hash/frozen_at, Liste/Archiv/Purge | Phase-10-Tests | BLK-LEGAL Aufbewahrung |
 | REQ-10-CSV | CSV-Export | 10 / 01 | `simuliert getestet` | Export inkl. ECU/DTC/Messwerte/Hash | API-Test | — |
-| REQ-11-SVC | Servicekatalog (Öl, EPB, DPF, …) | 11 | `geplant` | UI „Geplant“ | — | BLK-OEM; DPF-Off ausgeschlossen |
-| REQ-11-GUIDED | Geführte Diagnose | 11 | `geplant` | — | — | BLK-OEM |
-| REQ-11-ACT | Stellgliedtests | 11 | `geplant` | UI „Geplant“ | — | Freigabe + Hardware |
+| REQ-11-SVC | Servicekatalog (Öl, EPB, DPF, …) | 11 | `simuliert getestet` | Katalog + Gates `/api/service/*`, UI `/service`; Live/Schreiben deaktiviert | `test_phase11_*` | BLK-OEM, BLK-HW, BLK-RELEASE; DPF-Off ausgeschlossen |
+| REQ-11-GUIDED | Geführte Diagnose | 11 | `simuliert getestet` | `/api/guided/*`, UI `/guided`; ECU/Messgruppen/DTC-Hilfe | `test_phase11_*` | BLK-OEM (keine OEM-Texte) |
+| REQ-11-ACT | Stellgliedtests | 11 | `implementiert` (Gerüst, deaktiviert) | Katalog `ACTUATOR_TEST_GENERIC` ohne Routine-IDs | Gate-Tests | Freigabe + Hardware + OEM |
 | REQ-12-CODE | Steuergerätecodierung | 12 | `geplant` | UI „Geplant“ | — | BLK-OEM, Freigabe |
 | REQ-12-FLASH | Programmierung / J2534 | 12 | `geplant` | UI „Geplant“ | — | BLK-OEM, Hardware, Freigabe |
 | REQ-13-SUB | Abos, Entitlements, Tarife | 13 | `geplant` | — | — | BLK-PAY, BLK-LEGAL |

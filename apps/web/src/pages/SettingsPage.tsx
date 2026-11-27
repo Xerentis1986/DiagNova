@@ -64,8 +64,13 @@ export function SettingsPage() {
               </Link>
             </li>
             <li>
-              <Link className="dn-btn dn-btn--secondary" to="/planned/service">
-                Service (geplant)
+              <Link className="dn-btn dn-btn--secondary" to="/service">
+                Servicefunktionen
+              </Link>
+            </li>
+            <li>
+              <Link className="dn-btn dn-btn--secondary" to="/guided">
+                Geführte Diagnose
               </Link>
             </li>
             <li>

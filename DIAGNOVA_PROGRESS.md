@@ -21,6 +21,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-10-Branch | `cursor/diagnova-phase-10-pdf-7d82` |
 | Branding-Branch | `cursor/diagnova-branding-1a2e` |
 | Phase-10B-Branch | `cursor/diagnova-phase-10b-brand-4bc4` |
+| Phase-11-Branch | `cursor/diagnova-phase-11-service-8820` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -38,13 +39,34 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
 | 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
 | 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv |
-| 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens; **Phase 11 nicht gestartet** |
-| 11–15 | ⚪ Offen | |
+| 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens |
+| 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided; **Phase 12 nicht gestartet** |
+| 12–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 11 Erweiterte Diagnose und Servicefunktionen
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-10b-brand-4bc4` (PR #18)
+- Servicekatalog mit Specs/Voraussetzungen/Safety-Gates; DPF-Regen/EPB etc. deaktiviert
+- Gate-Simulation: fehlende Voraussetzungen, Abbruch, Kommunikationsverlust
+- Geführte Diagnose: ECU, Messwertgruppen, DTC-Hilfe; DPF-Off ausgeschlossen
+- UI `/service`, `/guided`; Alembic `008_phase11`
+- Tests: pytest **90 passed**, Frontend build OK
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 12 nicht gestartet**
+- Keine OEM-Schreibprozeduren; kein Live-Service; kein Prod-Deploy
+
+**Nächster Schritt:** Coordinator orchestriert Phase 12.
+
+Details: [docs/phase-11-abschluss.md](docs/phase-11-abschluss.md)
 
 ### 2026-11-27 – Phase 10B Premium-Branding und Designsystem
 
@@ -132,6 +154,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Branding: [docs/branding.md](docs/branding.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-11-Abschluss: [docs/phase-11-abschluss.md](docs/phase-11-abschluss.md)
 - Phase-10B-Abschluss: [docs/phase-10b-abschluss.md](docs/phase-10b-abschluss.md)
 - Phase-10-Abschluss: [docs/phase-10-abschluss.md](docs/phase-10-abschluss.md)
 - Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)
