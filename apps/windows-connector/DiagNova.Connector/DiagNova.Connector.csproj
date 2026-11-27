@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DiagNova.Connector</RootNamespace>
+    <AssemblyName>DiagNova.Connector</AssemblyName>
+    <Version>0.15.0</Version>
+    <InformationalVersion>0.15.0</InformationalVersion>
+    <ApplicationIcon>Assets\DiagNova_app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\DiagNova_app.ico" />
+    <None Include="Assets\DiagNova_windows_256.png" />
+  </ItemGroup>
+</Project>

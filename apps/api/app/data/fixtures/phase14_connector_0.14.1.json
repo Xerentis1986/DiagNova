@@ -1,0 +1,9 @@
+{
+  "component": "connector",
+  "version": "0.14.1",
+  "release_notes_de": "Connector: /version und Busy-Gate für Updates. Installer-Dokumentation.",
+  "migration_plan": [],
+  "channel": "stable-fixture",
+  "kind": "software",
+  "note_de": "Simuliertes Connector-Paket. Produktive Auto-Updates ohne Zertifikat gesperrt."
+}
