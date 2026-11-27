@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 11 abgeschlossen (simuliert getestet). **STOP** – Phase 12 nicht starten (Coordinator).  
-**Basis:** Phase-10B-Branch `cursor/diagnova-phase-10b-brand-4bc4` (PR #18); Arbeit auf `cursor/diagnova-phase-11-service-8820`.
+**Aktuelle Arbeitsphase:** 12 abgeschlossen (simuliert getestet). **STOP** – Phase 13 nicht starten (Coordinator).  
+**Basis:** Phase-11-Branch `cursor/diagnova-phase-11-service-8820` (PR #19); Arbeit auf `cursor/diagnova-phase-12-coding-2dd5`.
 
 ## Phasenübersicht
 
@@ -21,7 +21,7 @@
 | **10** | PDF-Berichte & Archiv | **Simuliert getestet** | A4/Unicode/Archiv/Snapshot; Demo-WM |
 | **10B** | Premium-Branding | **Simuliert getestet** | Designsystem/Shell |
 | **11** | Erweiterte Diagnose / Service | **Simuliert getestet** | Katalog/Gates/Guided; Live deaktiviert; DPF-Off excluded |
-| 12 | Codierung / Programmierung | Offen | UI-Platzhalter; Schreibpfade gesperrt |
+| **12** | Codierung / Programmierung | **Simuliert getestet** | Identifikation + Gates; Flash/Schreiben DEAKTIVIERT; J2534 Prep |
 | 13 | Abos & Administration | Offen | |
 | 14 | Software-/Connector-Updates | Offen | |
 | 15 | Sicherheit / Datenschutz / QA | Offen | Auth-Basis vorhanden |
@@ -29,6 +29,20 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 12 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Identifikation | Lesend simuliert; OEM-Codierprofil unavailable |
+| Gates | VIN-Mismatch, Spannungsabfall, fehlende Spec/Berechtigung, Abbruch, Comm-Loss |
+| Codierung/Flash | Katalog vorhanden; `enabled/write/flash=false`; Live+Flash 403 |
+| J2534/D-PDU | documented_prep; keine Vendor-DLL |
+| UI | `/coding` – Designsystem 10B |
+| Tests | pytest **97 passed**; Build OK |
+| Blocker | BLK-OEM, BLK-HW, BLK-J2534, BLK-RELEASE |
+
+Details: [phase-12-abschluss.md](./phase-12-abschluss.md).
 
 ## Phase 11 – Kurzfazit
 

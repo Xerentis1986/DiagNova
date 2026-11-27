@@ -119,6 +119,7 @@ export function DashboardPage() {
               ecu: '/ecu',
               service: '/service',
               guided: '/guided',
+              coding: '/coding',
             }
             const isSim = m.status === 'simulated' && simRoutes[m.id]
             return (

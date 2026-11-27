@@ -95,8 +95,8 @@
 | REQ-11-SVC | Servicekatalog (Öl, EPB, DPF, …) | 11 | `simuliert getestet` | Katalog + Gates `/api/service/*`, UI `/service`; Live/Schreiben deaktiviert | `test_phase11_*` | BLK-OEM, BLK-HW, BLK-RELEASE; DPF-Off ausgeschlossen |
 | REQ-11-GUIDED | Geführte Diagnose | 11 | `simuliert getestet` | `/api/guided/*`, UI `/guided`; ECU/Messgruppen/DTC-Hilfe | `test_phase11_*` | BLK-OEM (keine OEM-Texte) |
 | REQ-11-ACT | Stellgliedtests | 11 | `implementiert` (Gerüst, deaktiviert) | Katalog `ACTUATOR_TEST_GENERIC` ohne Routine-IDs | Gate-Tests | Freigabe + Hardware + OEM |
-| REQ-12-CODE | Steuergerätecodierung | 12 | `geplant` | UI „Geplant“ | — | BLK-OEM, Freigabe |
-| REQ-12-FLASH | Programmierung / J2534 | 12 | `geplant` | UI „Geplant“ | — | BLK-OEM, Hardware, Freigabe |
+| REQ-12-CODE | Steuergerätecodierung | 12 | `simuliert getestet` | Katalog/Gates `/api/coding/*`, UI `/coding`; Schreiben ohne Spec/Berechtigung DEAKTIVIERT | `test_phase12_*` | BLK-OEM, BLK-RELEASE |
+| REQ-12-FLASH | Programmierung / J2534 | 12 | `simuliert getestet` (Framework) | Flash-Pfad immer 403; J2534/D-PDU Prep; Spannungs-/Kompatibilitäts-Gates | `test_phase12_*` | BLK-OEM, BLK-HW, BLK-J2534, Freigabe |
 | REQ-13-SUB | Abos, Entitlements, Tarife | 13 | `geplant` | — | — | BLK-PAY, BLK-LEGAL |
 | REQ-13-ADMIN | Admin-Dashboard Nutzer/Abo/Audit | 13 | `geplant` | — | — | — |
 | REQ-14-UPD | Software-/Connector-Updates, Signatur | 14 | `geplant` | Version API `0.1.0` hardcodiert | — | Zertifikat |

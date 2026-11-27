@@ -85,9 +85,9 @@ export interface ConnectionStatus {
 }
 
 export const PLANNED_MODULES = [
-  { id: "ecu", label: "Steuergeräte", status: "planned" as const },
-  { id: "service", label: "Servicefunktionen", status: "planned" as const },
-  { id: "coding", label: "Codierung", status: "planned" as const },
+  { id: "ecu", label: "Steuergeräte", status: "simulated" as const },
+  { id: "service", label: "Servicefunktionen", status: "simulated" as const },
+  { id: "coding", label: "Codierung / Programmierung", status: "simulated" as const },
   { id: "actuator", label: "Stellglieddiagnose", status: "planned" as const },
-  { id: "flash", label: "Programmierung", status: "planned" as const },
+  { id: "flash", label: "Flash Live", status: "planned" as const },
 ] as const;

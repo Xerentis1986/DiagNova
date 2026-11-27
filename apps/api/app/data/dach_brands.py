@@ -112,8 +112,8 @@ PLANNED_CAPABILITIES = [
     },
     {
         "id": "coding",
-        "label_de": "Codierung / Programmierung",
-        "status": "planned",
+        "label_de": "Codierung / Programmierung (Gates, Flash deaktiviert)",
+        "status": "simulated",
         "phase": 12,
     },
 ]

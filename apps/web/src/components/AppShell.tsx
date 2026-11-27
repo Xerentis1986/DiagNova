@@ -47,7 +47,7 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/ecu', label: 'Steuergeräte', icon: <IconDiagnose /> },
   { to: '/guided', label: 'Geführte Diagnose', icon: <IconDiagnose /> },
   { to: '/service', label: 'Service', icon: <IconWorkshop /> },
-  { to: '/planned/coding', label: 'Codierung', planned: true, icon: <IconSettings /> },
+  { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
 ]
 
 const QUICK: { to: string; label: string; end?: boolean }[] = [

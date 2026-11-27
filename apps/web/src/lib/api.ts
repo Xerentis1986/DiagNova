@@ -671,6 +671,123 @@ export interface GuidedOverview {
   dtc_help_hint_de: string
 }
 
+export interface CodingOperation {
+  code: string
+  name_de: string
+  category: string
+  operation_type: string
+  safety_class: string
+  release_status: string
+  enabled: boolean
+  write_allowed: boolean
+  flash_allowed: boolean
+  prerequisites: { id: string; label_de: string }[]
+  confirmation_phrase: string | null
+  timeout_seconds: number
+  abort_strategy_de: string
+  result_checks_de: string[]
+  ecu_roles: string[]
+  compatibility_de: string
+  source_license_de: string
+  notes_de: string
+  blockers: string[]
+  requires_j2534: boolean
+  requires_authorization: boolean
+  backup_supported: boolean
+  auto_retry_forbidden: boolean
+  data_source: string
+  oem_procedure_invented: boolean
+}
+
+export interface CodingCatalog {
+  data_source: string
+  disclaimer_de: string
+  operations: CodingOperation[]
+  excluded: { code: string; name_de: string; reason_de?: string; safety_class?: string }[]
+  live_execution_available: boolean
+  flash_available: boolean
+  hardware_live: boolean
+  auto_retry_forbidden: boolean
+  j2534_status: string
+  dpdu_status: string
+}
+
+export interface CodingVehicleState {
+  ignition_on?: boolean
+  adapter_connected?: boolean
+  battery_voltage_ok?: boolean
+  battery_voltage_v?: number | null
+  stable_connection?: boolean
+  vin_ecu_match?: boolean
+  oem_spec_present?: boolean
+  authorization_present?: boolean
+  recovery_plan?: boolean
+  operator_confirm?: boolean
+  expected_vin?: string | null
+  actual_vin?: string | null
+  expected_ecu_sw?: string | null
+  actual_ecu_sw?: string | null
+}
+
+export interface CodingRun {
+  id: string
+  operation_code: string
+  status: string
+  scenario: string | null
+  data_source: string
+  prerequisites: { id: string; label_de: string; met: boolean; detail_de?: string | null }[]
+  checks: Record<string, unknown>
+  result: Record<string, unknown>
+  message_de: string | null
+  abort_reason_de: string | null
+  write_commands_sent: boolean
+  flash_commands_sent: boolean
+  auto_retry_attempted: boolean
+  started_at: string
+  ended_at: string | null
+}
+
+export interface EcuIdentification {
+  data_source: string
+  disclaimer_de: string
+  vin: string | null
+  ecu_id: string | null
+  part_number: string | null
+  software_version: string | null
+  hardware_version: string | null
+  coding_profile: string | null
+  coding_profile_status: string
+  oem_fields_available: boolean
+  message_de: string
+}
+
+export interface CompatibilityCheck {
+  data_source: string
+  vin_match: boolean
+  ecu_match: boolean
+  software_compatible: boolean | null
+  signature_verified: boolean | null
+  voltage_ok: boolean
+  voltage_v: number | null
+  stable_connection: boolean
+  authorization_ok: boolean
+  oem_spec_ok: boolean
+  recovery_plan_ok: boolean
+  overall_ok: boolean
+  blockers: string[]
+  message_de: string
+  flash_blocked: boolean
+  write_blocked: boolean
+}
+
+export interface CodingInterfaces {
+  j2534_status: string
+  dpdu_status: string
+  vendor_dll_present: boolean
+  notes_de: string
+  docs: string[]
+}
+
 class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -1150,6 +1267,70 @@ export const api = {
   },
   dtcHelp(code: string) {
     return request<DtcHelp>(`/api/guided/dtc/${encodeURIComponent(code)}`)
+  },
+  codingCatalog() {
+    return request<CodingCatalog>('/api/coding/catalog')
+  },
+  codingOperation(code: string) {
+    return request<CodingOperation>(`/api/coding/operations/${encodeURIComponent(code)}`)
+  },
+  codingIdentify(vehicleId?: string) {
+    const qs = vehicleId ? `?vehicle_id=${encodeURIComponent(vehicleId)}` : ''
+    return request<EcuIdentification>(`/api/coding/identify${qs}`)
+  },
+  codingCompatibilityCheck(body: CodingVehicleState) {
+    return request<CompatibilityCheck>('/api/coding/compatibility-check', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  codingInterfaces() {
+    return request<CodingInterfaces>('/api/coding/interfaces')
+  },
+  startCodingRun(
+    code: string,
+    body: {
+      vehicle_id?: string | null
+      confirmation_phrase?: string | null
+      vehicle_state?: CodingVehicleState
+      scenario?:
+        | 'normal'
+        | 'missing_prereq'
+        | 'abort'
+        | 'comm_loss'
+        | 'voltage_drop'
+        | 'wrong_vehicle'
+      acknowledge_disabled?: boolean
+      acknowledge_no_oem_write?: boolean
+      acknowledge_no_flash?: boolean
+    },
+  ) {
+    return request<CodingRun>(`/api/coding/operations/${encodeURIComponent(code)}/start`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  abortCodingRun(runId: string, reason_de?: string) {
+    return request<CodingRun>(`/api/coding/runs/${runId}/abort`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de: reason_de || 'Bedienerabbruch' }),
+    })
+  },
+  codingRuns() {
+    return request<CodingRun[]>('/api/coding/runs')
+  },
+  codingRun(id: string) {
+    return request<CodingRun>(`/api/coding/runs/${id}`)
+  },
+  executeCodingLive(code: string) {
+    return request<unknown>(`/api/coding/operations/${encodeURIComponent(code)}/execute-live`, {
+      method: 'POST',
+    })
+  },
+  executeCodingFlash(code: string) {
+    return request<unknown>(`/api/coding/operations/${encodeURIComponent(code)}/flash`, {
+      method: 'POST',
+    })
   },
 }
 

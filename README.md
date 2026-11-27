@@ -117,4 +117,4 @@ diagnova/
 
 ## Geplante Module
 
-Steuergeräte, Servicefunktionen, Codierung, Stellglieddiagnose, Programmierung – in der UI als **Geplant** markiert, nicht implementiert.
+Stellglieddiagnose und Flash-Live bleiben in der UI als **Geplant**. Steuergeräte, Service, Guided und Codierung/Programmierung existieren als simulierte Gate-/Katalog-UIs; Schreiben und Flash ohne Spec/Freigabe sind **deaktiviert**.

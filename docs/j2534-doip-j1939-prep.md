@@ -1,7 +1,8 @@
-# Vorbereitung: J2534, DoIP, J1939/RP1210 (Phase 05)
+# Vorbereitung: J2534, DoIP, J1939/RP1210 (Phase 05 / 12)
 
 **Status:** nur Dokumentation / Schnittstellen-Vorbereitung – **keine** laufende Implementierung.  
-**Kein** Hardwaretest, **keine** Freigabe.
+**Kein** Hardwaretest, **keine** Freigabe.  
+**Phase 12:** API `/api/coding/interfaces` und Katalogeinträge `J2534_PASSTHRU_PREP` / `DPDU_MVCI_PREP` spiegeln diesen Prep-Status; Flash bleibt 403.
 
 ## SAE J2534 PassThru
 

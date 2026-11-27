@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.routes import (
     auth,
     catalog,
+    coding,
     customers,
     dashboard,
     data_updates,
@@ -36,3 +37,4 @@ api_router.include_router(diagnostic_data.router)
 api_router.include_router(data_updates.router)
 api_router.include_router(service.router)
 api_router.include_router(guided.router)
+api_router.include_router(coding.router)

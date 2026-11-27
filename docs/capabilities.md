@@ -39,7 +39,8 @@
 | Berichtsarchiv | ReportsPage | `GET /api/reports`, `…/archive`, Purge | `007_phase10` | Mandant 404 |
 | Servicekatalog + Gates | ServicePage `/service` | `/api/service/*` | `service_runs` | Live deaktiviert; DPF-Off excluded |
 | Geführte Diagnose | GuidedPage `/guided` | `/api/guided/*` | — | simuliert; keine Auto-Reparatur |
-| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Codierung/Flash) |
+| Codierung / Programmierung Gates | CodingPage `/coding` | `/api/coding/*` | `coding_runs` | Flash/Schreiben DEAKTIVIERT; Identifikation lesend |
+| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live); Codierung → `/coding` |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
 
@@ -86,7 +87,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Hardwaregetestete OBD-Kommunikation | fehlt (BLK-HW) – Parser/Simulator OK |
 | Live-Clear ohne Freigabe | deaktiviert; Gate Pflicht |
 | OEM-Service Live-Schreiben | Katalog Phase 11 mit Gates; Ausführung deaktiviert (BLK-OEM/HW/RELEASE) |
-| Codierung / Flash | UI „Geplant“, keine Logik |
+| Codierung / Flash | Phase 12 Gates/UI `/coding`; Identifikation lesend; Schreiben/Flash DEAKTIVIERT; J2534 Prep |
 | Stellglieder | Gerüst im Servicekatalog, deaktiviert |
 | DPF-Off / Abgas-Deaktivierung | ausgeschlossen |
 | Mandantenfähigkeit / Kundenverwaltung | Phase 08 simuliert (serverseitige `workshop_id`, CRUD, DSGVO-Export) |
@@ -124,8 +125,9 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `update_changelogs` | Änderungsprotokoll |
 | `update_job_locks` | Sperre gegen parallele Jobs |
 | `service_runs` | Phase-11 Gate-/Audit-Läufe (kein Live-Schreiben) |
+| `coding_runs` | Phase-12 Gate-/Identifikationsläufe (kein Flash/Schreiben) |
 
-Migrationen: `001_initial` … `007_phase10`, `008_phase11`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -184,9 +186,12 @@ Migrationen: `001_initial` … `007_phase10`, `008_phase11`. Runtime zusätzlich
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
 | `/reports` | ReportsPage | Berichte, Vorschau, Archiv, PDF/CSV |
 | `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
+| `/service` | ServicePage | Servicekatalog + Gates |
+| `/guided` | GuidedPage | Geführte Diagnose |
+| `/coding` | CodingPage | Identifikation, Kompatibilitäts-/Spannungs-Gates; Flash aus |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/data-updates` | DataUpdatesPage | Admin: Kanäle, Läufe, Freigabe, Rollback |
-| `/planned/:moduleId` | PlannedPage | service, coding, … |
+| `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
 
 ## Test-Inventar
 
@@ -196,6 +201,8 @@ Migrationen: `001_initial` … `007_phase10`, `008_phase11`. Runtime zusätzlich
 | API Phase 02 | `tests/api/test_phase02_catalog.py` | Katalog, Theme, Favoriten, VIN, Capabilities |
 | API Phase 06 | `tests/api/test_phase06_diagnostic_data.py` | Quellen, Lookup, Import/Quarantäne/Rollback, ODX 403 |
 | API Phase 09 | `tests/api/test_phase09_vehicle_history.py` | Akte, Lookup, Abort, Vergleich, Mandant, Persistenz |
+| API Phase 11 | `tests/api/test_phase11_service.py` | Servicekatalog, Gates, Guided |
+| API Phase 12 | `tests/api/test_phase12_coding.py` | Identifikation, Spannungs-/VIN-Gates, Flash 403 |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

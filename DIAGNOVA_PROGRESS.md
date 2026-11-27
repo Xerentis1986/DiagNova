@@ -22,6 +22,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Branding-Branch | `cursor/diagnova-branding-1a2e` |
 | Phase-10B-Branch | `cursor/diagnova-phase-10b-brand-4bc4` |
 | Phase-11-Branch | `cursor/diagnova-phase-11-service-8820` |
+| Phase-12-Branch | `cursor/diagnova-phase-12-coding-2dd5` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -40,13 +41,33 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
 | 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv |
 | 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens |
-| 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided; **Phase 12 nicht gestartet** |
-| 12–15 | ⚪ Offen | |
+| 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided |
+| 12 Codierung/Programmierung | 🟢 Simuliert getestet | Gates/Identifikation; Flash DEAKTIVIERT; **Phase 13 nicht gestartet** |
+| 13–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 12 Steuergerätecodierung und Programmierung
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-11-service-8820` (PR #19)
+- Katalog Identifikation/Codierung/Flash/J2534-Prep; Schreiben & Flash DEAKTIVIERT
+- Gates: falsches Fahrzeug, Spannungsabfall, fehlende Spec/Berechtigung, Abbruch, Comm-Loss; kein Auto-Retry
+- UI `/coding` (Designsystem 10B); Alembic `009_phase12`
+- Tests: pytest **97 passed**, Frontend build OK
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 13 nicht gestartet**
+- Keine echten Flash-Routinen; keine OEM-Codierdaten; kein Prod-Deploy
+
+**Nächster Schritt:** Coordinator orchestriert Phase 13.
+
+Details: [docs/phase-12-abschluss.md](docs/phase-12-abschluss.md)
 
 ### 2026-11-27 – Phase 11 Erweiterte Diagnose und Servicefunktionen
 

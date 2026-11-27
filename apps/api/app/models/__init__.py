@@ -35,10 +35,12 @@ from app.models.vehicle_history import (
     VehicleRecordNote,
 )
 from app.models.service import ServiceRun
+from app.models.coding import CodingRun
 from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
 
 __all__ = [
     "AuditLog",
+    "CodingRun",
     "Customer",
     "CustomerVehicleLink",
     "DataLicenseSource",

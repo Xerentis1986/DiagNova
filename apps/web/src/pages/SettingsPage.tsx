@@ -74,8 +74,8 @@ export function SettingsPage() {
               </Link>
             </li>
             <li>
-              <Link className="dn-btn dn-btn--secondary" to="/planned/coding">
-                Codierung (geplant)
+              <Link className="dn-btn dn-btn--secondary" to="/coding">
+                Codierung / Programmierung
               </Link>
             </li>
           </ul>
