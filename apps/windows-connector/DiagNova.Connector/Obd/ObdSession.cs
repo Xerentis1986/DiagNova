@@ -1,3 +1,4 @@
+using DiagNova.Connector.Ecu;
 using DiagNova.Connector.Logging;
 using DiagNova.Connector.Transport;
 
@@ -6,6 +7,7 @@ namespace DiagNova.Connector.Obd;
 /// <summary>
 /// OBD-II/EOBD-Sitzung über ELM327: Init, Protokollerkennung, PID-Bitmap,
 /// Live-Daten, DTCs, Freeze-Frame, Readiness, VIN. Nur Allowlist-Befehle.
+/// Phase 05: Mehr-ECU-Inventar aus beobachteten Antworten (kein Blindscan).
 /// </summary>
 public sealed class ObdSession
 {
@@ -14,6 +16,7 @@ public sealed class ObdSession
     private readonly bool _isSimulator;
     private readonly string _dataSource;
     private readonly TimeSpan _timeout;
+    private IReadOnlyList<ObdEcuFrame> _lastDiscoveryFrames = Array.Empty<ObdEcuFrame>();
 
     public string? ProtocolName { get; private set; }
     public string? ProtocolNumber { get; private set; }
@@ -61,6 +64,7 @@ public sealed class ObdSession
         // Protokollerkennung
         var search = await TransactAllowedAsync("0100", ct).ConfigureAwait(false);
         exchanges.Add(new { command = "0100", kind = search.Kind.ToString(), preview = Truncate(search.Raw) });
+        _lastDiscoveryFrames = search.Frames;
 
         if (search.Kind == ObdResponseKind.Ok && search.Frames.Count > 0)
         {
@@ -121,7 +125,55 @@ public sealed class ObdSession
             message_de = VehicleLinked
                 ? "Adapter-Init und Protokollerkennung OK."
                 : "Init ohne Fahrzeuglink.",
-            exchanges
+            exchanges,
+            discovered_ecu_count = _lastDiscoveryFrames
+                .Select(f => ObdEcuAddresses.Normalize(f.EcuId))
+                .Where(id => id is not null && ObdEcuAddresses.IsStandardResponse(id))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count()
+        };
+    }
+
+    /// <summary>
+    /// Steuergeräte aus beobachteten OBD-Antworten (0100 erneut oder Cache). Kein Blindscan.
+    /// Optional lesende Identifikation (VIN Mode 09) pro antwortendem ECM.
+    /// </summary>
+    public async Task<object> ListEcusAsync(bool refresh = true, CancellationToken ct = default)
+    {
+        EnsureVehicleOrThrow();
+        if (refresh || _lastDiscoveryFrames.Count == 0)
+        {
+            var search = await TransactAllowedAsync("0100", ct).ConfigureAwait(false);
+            if (search.Kind == ObdResponseKind.Ok)
+            {
+                _lastDiscoveryFrames = search.Frames;
+            }
+        }
+
+        var inventory = MultiEcuService.InventoryFromInitBitmap(
+            _lastDiscoveryFrames, _dataSource, ProtocolName);
+
+        // Lesende Identifikation zuerst: VIN nur am Standard-ECM-Pfad (funktional Mode 09)
+        object? identification = null;
+        try
+        {
+            identification = await ReadVinAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            identification = new
+            {
+                status = "unavailable",
+                message_de = ex.Message
+            };
+        }
+
+        return new
+        {
+            inventory,
+            identification_read_first = identification,
+            categories = MultiEcuService.CategoriesOverview(),
+            note_de = "ABS/Airbag/Komfort ohne verifizierte Definition – nicht gescannt."
         };
     }
 

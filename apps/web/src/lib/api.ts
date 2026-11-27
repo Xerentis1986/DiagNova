@@ -71,6 +71,63 @@ export interface Capabilities {
   adapter_next_step_de: string
 }
 
+export interface EcuDiscovered {
+  ecu_id: string
+  response_hex: string
+  request_hex: string | null
+  slot_index: number | null
+  role_hint_de: string
+  verified_source: string
+  discovery_method: string
+  status: string
+}
+
+export interface EcuSimulated {
+  data_source: string
+  protocol_name?: string | null
+  blind_scan_used: boolean
+  blind_scan_allowed: boolean
+  count: number
+  discovered_obd_ecus: EcuDiscovered[]
+  unavailable_categories: { id: string; label_de: string; reason_de: string }[]
+  message_de: string
+  categories?: {
+    id: string
+    label_de: string
+    availability: string
+    notes_de?: string
+  }[]
+  identification_read_first?: {
+    status: string
+    vin?: string
+    note_de?: string
+  }
+  disclaimer_de?: string
+}
+
+export interface EcuOverview {
+  data_source: string
+  blind_scan_allowed: boolean
+  disclaimer_de: string
+  categories: {
+    id: string
+    label_de: string
+    availability: string
+    notes_de?: string
+    source?: string | null
+  }[]
+}
+
+export interface CapabilityMatrix {
+  disclaimer_de: string
+  adapters: {
+    adapter_id: string
+    hardware_tested?: boolean
+    protocols?: Record<string, string>
+    notes_de?: string
+  }[]
+}
+
 export interface RecentSelection {
   id: string
   vehicle_id: string | null
@@ -234,6 +291,18 @@ export const api = {
   catalogCapabilities(brandSlug?: string) {
     const qs = brandSlug ? `?brand_slug=${encodeURIComponent(brandSlug)}` : ''
     return request<Capabilities>(`/api/catalog/capabilities${qs}`)
+  },
+  protocolCatalog() {
+    return request<Record<string, unknown>>('/api/protocols/catalog')
+  },
+  capabilityMatrix() {
+    return request<CapabilityMatrix>('/api/protocols/capability-matrix')
+  },
+  ecuOverview() {
+    return request<EcuOverview>('/api/protocols/ecu/overview')
+  },
+  ecuSimulated() {
+    return request<EcuSimulated>('/api/protocols/ecu/simulated')
   },
   confirmVehicle(payload: VehicleConfirmPayload) {
     return request<Vehicle>('/api/vehicles/confirm', {

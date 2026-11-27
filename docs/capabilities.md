@@ -1,8 +1,8 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–04  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–05  
 **Datenmodus API-UI:** Standard **simuliert** (`data_source: "simulated"`).  
-**Connector OBD:** Allowlist + Parser **simuliert getestet**; Hardwarepfad vorhanden aber **nicht** hardwaregetestet/freigegeben.  
+**Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben.  
 **Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.
 
 ## Architekturüberblick
@@ -12,9 +12,9 @@
 | Web-UI | React 19, TypeScript, Vite 8, Tailwind 4, React Router, TanStack Query, Recharts | `apps/web` | MVP lauffähig (Build OK) |
 | API | Python 3.12, FastAPI, SQLAlchemy, Alembic, Pydantic, JWT/bcrypt, ReportLab | `apps/api` | MVP lauffähig (12 Tests OK) |
 | DB | PostgreSQL 16 (Compose) / SQLite für lokale Tests | Models + `001_initial` | Schema MVP |
-| Connector | .NET 8, Loopback `127.0.0.1:8765`, Discovery/Auth/Transport/OBD | `apps/windows-connector` | Phase 04; `dotnet test` 23 passed |
+| Connector | .NET 8, Loopback `127.0.0.1:8765`, Discovery/Auth/Transport/OBD/ECU | `apps/windows-connector` | Phase 05; siehe Testlauf |
 | Shared TS | Typen Web↔API | `packages/shared-types` | MVP |
-| Protocols | OBD-II ELM/DTC/PID/Readiness/VIN (Python) | `packages/diagnostic-protocols` | Unit-getestet |
+| Protocols | OBD-II + ISO-TP/UDS/Capability/Multi-ECU (Python) | `packages/diagnostic-protocols` | Unit-getestet |
 | Infra | Docker Compose (postgres, api, web), nginx-Skizze | `docker-compose.yml`, `infrastructure/` | Compose hier nicht ausgeführt |
 
 ## Was funktioniert (simuliert)
@@ -54,19 +54,25 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Fake-Port + AT-Init + OBD-Vektoren | simuliert getestet | `ObdSimulatorResponses` |
 | OBD Init/Live/DTC/FF/RDY/VIN | simuliert getestet | `/obd/*` Allowlist |
 | Clear DTC Gate | simuliert getestet | Freigabe-Token; permanent nicht löschbar |
+| Mehr-ECU Inventar (OBD) | simuliert getestet | `/ecu/list` – nur beobachtete 7E8–7EF |
+| Protokollkatalog / Matrix | simuliert getestet | `/protocols`, `/capability-matrix` |
+| Blindscan | **deaktiviert** | `POST /ecu/blind-scan` → 403 |
 | Simulator separat | ja | `POST /adapter/simulator` |
 | Pairing + Origin + Loopback | simuliert getestet | siehe `docs/windows-connector-auth.md` |
 | Adapter vs. Fahrzeugstatus | getrennt | Fahrzeug nach erfolgreichem `/obd/init` |
 | Diagnoseprotokoll | Ringpuffer `/log` | Transport/Status/OBD |
 | Delphi/Autocom | **blocked** | `docs/delphi-autocom-interface.md` |
 | Vgate SPP | **blocked** / ELM prep | `docs/vgate-elm327-prep.md` |
+| DoIP / J2534 / CAN-FD | **documented_prep** | `docs/j2534-doip-j1939-prep.md` |
 
 ## Was nur als Skelett / geplant existiert
 
 | Fähigkeit | Details | Fehlend |
 |-----------|---------|---------|
 | Hardware-Live-OBD | Codepfad `data_source=live` für System-COM | BLK-HW Freigabe + realer Test |
-| Protocol-Package | OBD-II J1979 Basis Phase 04 | Multiprotokoll, UDS/DoIP, J1939 → Phase 05+ |
+| OEM ABS/Airbag/Komfort | Kategorien unavailable | BLK-OEM / Phase 06 Definitionen |
+| DoIP / J2534 Live | nur Prep-Docs | BLK-HW |
+| J1939 / RP1210 | geplant Phase 19 | BLK-HW |
 | nginx-Conf | Proxy `/api` + SPA | TLS, WebSocket, Plesk-Integration |
 | Browser-Pairing-UI | Connector-API fertig | Web-UI Pairing-Seite optional später |
 
@@ -139,7 +145,8 @@ Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Se
 | `/vehicles` | VehiclesPage | Fahrzeugliste |
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
 | `/reports` | ReportsPage | Berichte / Export |
-| `/planned/:moduleId` | PlannedPage | ecu, service, coding, … |
+| `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
+| `/planned/:moduleId` | PlannedPage | service, coding, … |
 
 ## Test-Inventar
 

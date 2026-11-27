@@ -13,6 +13,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-02-Branch | `cursor/diagnova-phase-02-brands-c4de` |
 | Phase-03-Branch | `cursor/diagnova-phase-03-connector-90c7` |
 | Phase-04-Branch | `cursor/diagnova-phase-04-obd-606d` |
+| Phase-05-Branch | `cursor/diagnova-phase-05-multiprotocol-dd50` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -23,33 +24,41 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 01 MVP Basis | 🟢 Simuliert | PR #1 – nicht erneut entwickeln |
 | 02 Marken-Kacheln | 🟢 Simuliert getestet | Katalog, Theme, Wizard, E2E |
 | 03 Windows-Connector | 🟢 Simuliert getestet | Discovery/Auth/Fake-Port |
-| 04 OBD-II/EOBD | 🟢 Simuliert getestet | Parser/Allowlist/Clear-Gate – **keine HW-Freigabe**; **Phase 05 nicht gestartet** |
-| 05–15 | ⚪ Offen | |
+| 04 OBD-II/EOBD | 🟢 Simuliert getestet | Parser/Allowlist/Clear-Gate – **keine HW-Freigabe** |
+| 05 Multiprotokoll / Mehr-ECU | 🟢 Simuliert getestet | Schichten/Matrix/ISO-TP/UDS; OEM unavailable; **Phase 06 nicht gestartet** |
+| 06–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
-| 18–19 Optional | ⚪ Später | |
+| 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
 
-### 2026-11-27 – Phase 04 Echte OBD-II/EOBD-Diagnose
+### 2026-11-27 – Phase 05 Multiprotokoll und Mehrsteuergerätediagnose
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-03-connector-90c7` (PR #7)
-- ELM/OBD-Parser (Multi-ECU, NO DATA, Timeout, Negativ); PID-Bitmap; Readiness; VIN; Freeze-Frame
-- Connector `ObdSession` + Allowlist; Fake-Simulatorvektoren; Fahrzeuglink nach Init
-- Clear-DTC freigabegeschützt (Phrase, Acks, Token) – permanente DTCs nicht löschbar
-- API/UI: simulierte Clear-Flow, Live/Demo-Kennzeichnung
-- Tests: `dotnet test` **23 passed**; pytest **27 passed**
-- Docs: `docs/phase-04-abschluss.md`, Progress/Requirements/Capabilities/Status
+- Branch von `origin/cursor/diagnova-phase-04-obd-606d` (PR #8)
+- Schichtentrennung Transport/Protokoll/Adapter/Fahrzeugdefinition
+- Protokollkatalog + Adapter-Capability-Matrix; ISO-TP Framing; UDS NRC (Write/Security aus)
+- Mehr-ECU nur ISO 15765-4 (7E8/7E9 Simulator); kein Blindscan; ABS/Airbag/Komfort unavailable
+- J2534/DoIP/J1939 Vorbereitung dokumentiert
+- API `/api/protocols/*`, UI `/ecu`, Connector `/ecu/list`
+- Tests: `dotnet test` **29 passed**; pytest **40 passed**
+- Docs: `docs/phase-05-abschluss.md`, Architecture/Matrix/Prep, Progress/Requirements/Capabilities/Status
 
 **Nicht gemacht (bewusst)**
 
-- Kein realer Fahrzeugtest / keine Hardwarefreigabe
-- Keine Phase 05
+- Keine erfundenen OEM-Adressen / kein Blindscan
+- Keine DoIP/J2534/CAN-FD-Live-Implementierung
+- Keine Hardwarefreigabe
+- **Phase 06 nicht gestartet**
 - Kein Prod-Deploy
 
-**Nächster Schritt:** Coordinator orchestriert Phase 05.
+**Nächster Schritt:** Coordinator orchestriert Phase 06.
+
+### 2026-11-27 – Phase 04 Echte OBD-II/EOBD-Diagnose
+
+Details: `docs/phase-04-abschluss.md`.
 
 ### 2026-11-27 – Phase 03 Windows-Connector und Bluetooth
 
@@ -72,6 +81,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
-- Phase-02-Abschluss: [docs/phase-02-abschluss.md](docs/phase-02-abschluss.md)
-- Phase-03-Abschluss: [docs/phase-03-abschluss.md](docs/phase-03-abschluss.md)
+- Phase-05-Abschluss: [docs/phase-05-abschluss.md](docs/phase-05-abschluss.md)
 - Phase-04-Abschluss: [docs/phase-04-abschluss.md](docs/phase-04-abschluss.md)
+- Phase-03-Abschluss: [docs/phase-03-abschluss.md](docs/phase-03-abschluss.md)
+- Phase-02-Abschluss: [docs/phase-02-abschluss.md](docs/phase-02-abschluss.md)

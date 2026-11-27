@@ -10,7 +10,7 @@ import json
 router = APIRouter(tags=["dashboard"])
 
 PLANNED = [
-    {"id": "ecu", "label": "Steuergeräte", "status": "planned"},
+    {"id": "ecu", "label": "Steuergeräte (OBD simuliert)", "status": "simulated"},
     {"id": "service", "label": "Servicefunktionen", "status": "planned"},
     {"id": "coding", "label": "Codierung", "status": "planned"},
     {"id": "actuator", "label": "Stellglieddiagnose", "status": "planned"},

@@ -209,6 +209,9 @@ public sealed class AdapterConnectionManager : IDiagnosticAdapter
     public Task<object> ReadVinAsync(CancellationToken ct = default) =>
         RequireSession().ReadVinAsync(ct);
 
+    public Task<object> ListEcusAsync(bool refresh = true, CancellationToken ct = default) =>
+        RequireSession().ListEcusAsync(refresh, ct);
+
     public Task<object> ClearDtcsAsync(ClearApproval approval, CancellationToken ct = default) =>
         RequireSession().ClearDtcsAsync(approval, ct);
 

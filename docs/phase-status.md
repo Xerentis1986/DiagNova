@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 04 abgeschlossen (simuliert getestet). **Phase 05 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-03-Branch `cursor/diagnova-phase-03-connector-90c7`; Arbeit auf `cursor/diagnova-phase-04-obd-606d`.
+**Aktuelle Arbeitsphase:** 05 abgeschlossen (simuliert getestet). **Phase 06 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-04-Branch `cursor/diagnova-phase-04-obd-606d`; Arbeit auf `cursor/diagnova-phase-05-multiprotocol-dd50`.
 
 ## Phasenübersicht
 
@@ -13,7 +13,7 @@
 | **02** | Marken-Kacheln & Fahrzeugauswahl | **Simuliert getestet** | Katalog, Theme, Wizard, E2E |
 | **03** | Windows-Connector & Bluetooth | **Simuliert getestet** | Discovery, Auth, Fake-Port, ELM-Prep |
 | **04** | Echte OBD-II/EOBD | **Simuliert getestet** | Parser/Allowlist/Clear-Gate; **keine HW-Freigabe** |
-| 05 | Multiprotokoll / Mehr-ECU | Offen | |
+| **05** | Multiprotokoll / Mehr-ECU | **Simuliert getestet** | Schichten, Matrix, ISO-TP/UDS-NRC, OBD-ECUs; DoIP/J2534 Prep |
 | 06 | Diagnosedatenbank & Importe | Offen | |
 | 07 | Automatische Daten-Updates | Offen | |
 | 08 | Werkstatt- & Kundenverwaltung | Offen | |
@@ -27,29 +27,27 @@
 | 16 | World4You Ubuntu/Plesk Deploy | Offen / parallel vorbereitet | kein Prod-Deploy |
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
-| 19 | LKW (optional) | Später | |
+| 19 | LKW (optional) | Später | J1939/RP1210 |
 
-## Phase 04 – Kurzfazit
+## Phase 05 – Kurzfazit
 
 | Bereich | Ergebnis |
 |---------|----------|
-| Init/Protokoll | AT-Init + 0100/ATDP/ATDPN; Fahrzeuglink nach Erfolg |
-| PID/Live | Bitmap + Mode-01 Live mit Einheiten/Zeitstempel |
-| DTC | stored/pending/permanent; Multi-ECU |
-| FF/Readiness/VIN | Mode 02/01-01/09-02 |
-| Fehlerbehandlung | NO DATA, Timeout, Negativ, Abbruch – Status explizit |
-| Clear | Freigabe-Phrase + Acks + Token; permanente nicht löschbar |
-| Live vs Demo | `data_source` simulated\|live strikt |
-| Tests | `dotnet test` **23 passed**; pytest **27 passed** |
-| Blocker | BLK-HW (keine Live-Freigabe), BLK-ADAPTER |
+| Schichten | Transport / Protokoll / Adapter / Fahrzeugdefinition getrennt |
+| Capability-Matrix | Pro Adapter; ELM ≠ DoIP/CAN-FD |
+| ISO-TP / UDS | Parser + Testvektoren; Write/Security aus |
+| Mehr-ECU | 7E8/7E9 aus beobachteten Antworten; kein Blindscan |
+| OEM | ABS/Airbag/Komfort unavailable (BLK-OEM) |
+| Prep-Docs | J2534 / DoIP / J1939 |
+| Blocker | BLK-HW, BLK-OEM, BLK-ADAPTER |
 
-Details: [phase-04-abschluss.md](./phase-04-abschluss.md), [requirements.md](./requirements.md), [capabilities.md](./capabilities.md).
+Details: [phase-05-abschluss.md](./phase-05-abschluss.md), [protocol-architecture.md](./protocol-architecture.md), [requirements.md](./requirements.md).
 
 ## Nicht ausgeführt (weiterhin)
 
 | Check | Grund |
 |-------|-------|
 | `docker compose up --build` | Docker nicht installiert (BLK-DOCKER) |
-| Echter Fahrzeug-/OBD-Hardwaretest | Keine Hardware (BLK-HW); Fake/Simulator getestet |
-| Live-Freigabe | Explizit ausstehend bis Hardware + Zustimmung |
-| Echte Markenlogos | Rechte ungeklärt (BLK-LOGO) |
+| Echter Fahrzeug-/Multiprotokoll-Hardwaretest | Keine Hardware (BLK-HW) |
+| Live-Freigabe | Explizit ausstehend |
+| OEM-ECU-Definitionen | BLK-OEM |
