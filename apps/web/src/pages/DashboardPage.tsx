@@ -107,15 +107,19 @@ export function DashboardPage() {
       <section className="dn-panel p-4">
         <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">Schnellzugriff / Geplant</h2>
         <div className="flex flex-wrap gap-2">
-          {data.planned_modules.map((m) => (
-            <Link
-              key={m.id}
-              to={`/planned/${m.id}`}
-              className="rounded-md border border-dashed border-slate-600 px-3 py-2 text-sm text-slate-400 hover:border-blue-500 hover:text-blue-200"
-            >
-              {m.label} <span className="text-[10px] uppercase">Geplant</span>
-            </Link>
-          ))}
+          {data.planned_modules.map((m) => {
+            const isSimEcu = m.id === 'ecu' && m.status === 'simulated'
+            return (
+              <Link
+                key={m.id}
+                to={isSimEcu ? '/ecu' : `/planned/${m.id}`}
+                className="rounded-md border border-dashed border-slate-600 px-3 py-2 text-sm text-slate-400 hover:border-blue-500 hover:text-blue-200"
+              >
+                {m.label}{' '}
+                <span className="text-[10px] uppercase">{isSimEcu ? 'Simuliert' : 'Geplant'}</span>
+              </Link>
+            )
+          })}
         </div>
       </section>
     </div>

@@ -1,7 +1,7 @@
 # DiagNova – Anforderungsmatrix (Phase 00)
 
 **Stand:** 2026-11-27 (Europe/Vienna)  
-**Basis:** MVP `6adfcc4` + Phase 00; Phase 02–03 Feature-Branches; Phase 04 `cursor/diagnova-phase-04-obd-606d`  
+**Basis:** MVP `6adfcc4` + Phase 00; Phase 02–04 Feature-Branches; Phase 05 `cursor/diagnova-phase-05-multiprotocol-dd50`  
 **Quelle:** Master-Prompt 00 sowie Promptpaket Phasen 02–19
 
 ## Statuslegende
@@ -70,9 +70,11 @@
 | REQ-04-CLR | DTC-Löschung mit Freigabe/Audit | 04 | `simuliert getestet` | `ClearDtcGate` + API Clear (permanent bleibt) | API + Connector | BLK-HW – Live Clear nicht freigegeben |
 | REQ-04-MULTI | Mehrere ECU-Antworten getrennt | 04 | `simuliert getestet` | `elm_response` / `ObdResponseParser` | Protocol + Connector | BLK-HW |
 | REQ-04-VIN | VIN Mode 09 soweit unterstützt | 04 | `simuliert getestet` | `vin.py` + `/obd/vin` | Protocol + Connector | BLK-HW |
-| REQ-05-PROTO | Multiprotokoll (ISO/KWP/CAN/UDS/DoIP/…) | 05 | `geplant` | Package nur OBD-II Basis | — | BLK-HW, Spezifikationen |
-| REQ-05-ECU | Steuergeräteübersicht mit verifizierten Adressen | 05 | `geplant` | UI „Geplant“ | — | BLK-OEM |
-| REQ-05-CAP-MAT | Capability-Matrix pro Adapter | 05 | `geplant` | — | — | BLK-ADAPTER |
+| REQ-05-PROTO | Multiprotokoll (ISO/KWP/CAN/UDS/DoIP/…) | 05 | `simuliert getestet` | Katalog + ISO-TP/UDS-NRC Parser; DoIP/J2534 Prep | Protocol + Connector + API | BLK-HW (Live), Spezifikationen |
+| REQ-05-ECU | Steuergeräteübersicht mit verifizierten Adressen | 05 | `simuliert getestet` | ISO 15765-4 7E8/7E9; OEM unavailable | Protocol + API + UI `/ecu` | BLK-OEM (ABS/Airbag/Komfort) |
+| REQ-05-CAP-MAT | Capability-Matrix pro Adapter | 05 | `simuliert getestet` | `capability_matrix.py` + Connector | API + Unit | BLK-ADAPTER (Vgate/Delphi) |
+| REQ-05-LAYERS | Transport/Protokoll/Adapter/Fahrzeugdef. getrennt | 05 | `implementiert` | `docs/protocol-architecture.md` | Review | — |
+| REQ-05-NO-BLIND | Kein Blindscan unbekannter Netze | 05 | `simuliert getestet` | Flags + Connector 403 | API + Connector | — |
 | REQ-06-MODEL | Versioniertes Diagnosedatenmodell | 06 | `geplant` | nur Demo-Seed-Fahrzeuge | — | BLK-OEM |
 | REQ-06-IMPORT | JSON/CSV-Import, Quarantäne, Rollback | 06 | `geplant` | — | — | — |
 | REQ-06-ODX | ODX/PDX nur mit Lizenz | 06 | `geplant` | — | — | BLK-OEM |

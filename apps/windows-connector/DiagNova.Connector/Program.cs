@@ -3,8 +3,10 @@ using System.Runtime.InteropServices;
 using DiagNova.Connector.Adapters;
 using DiagNova.Connector.Auth;
 using DiagNova.Connector.Discovery;
+using DiagNova.Connector.Ecu;
 using DiagNova.Connector.Logging;
 using DiagNova.Connector.Obd;
+using DiagNova.Connector.Protocol;
 using DiagNova.Connector.Transport;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,11 +33,11 @@ var app = builder.Build();
 var log = app.Services.GetRequiredService<DiagnosticProtocolLog>();
 var pairing = app.Services.GetRequiredService<PairingService>();
 
-log.Info("startup", "DiagNova Connector Phase 04 startet", loopbackUrl);
+log.Info("startup", "DiagNova Connector Phase 05 startet", loopbackUrl);
 log.Info("startup", "Pairing-Code erzeugt", pairing.GetPairingInfo().PairingCode);
 Console.WriteLine($"DiagNova Connector – Loopback {loopbackUrl}");
 Console.WriteLine($"Pairing-Code: {pairing.GetPairingInfo().PairingCode} (gilt bis {pairing.GetPairingInfo().PairingExpiresAt:u})");
-Console.WriteLine("Phase 04: OBD-II lesen + freigabegeschütztes Clear DTC. Live/Demo getrennt.");
+Console.WriteLine("Phase 05: Multiprotokoll-Katalog + Mehr-ECU (OBD-Standardadressen). Kein Blindscan.");
 
 app.Use(async (ctx, next) =>
 {
@@ -118,13 +120,17 @@ app.MapPost("/pair", async (HttpRequest req, PairingService pairingSvc, Diagnost
 app.MapGet("/health", (IDiagnosticAdapter adapter) => Results.Json(new
 {
     status = "ok",
-    phase = 4,
+    phase = 5,
     adapter = adapter.Name,
     data_source = adapter.DataSource,
     is_simulator = adapter.IsSimulator,
     platform = RuntimeInformation.OSDescription,
-    message_de = "Connector Phase 04 – OBD-II/EOBD (Allowlist). Hardwarefreigabe ausstehend."
+    message_de = "Connector Phase 05 – Multiprotokoll/Mehr-ECU (Simulator). Hardwarefreigabe ausstehend."
 }));
+
+app.MapGet("/protocols", () => Results.Json(ProtocolCatalog.Summary()));
+app.MapGet("/capability-matrix", () => Results.Json(AdapterCapabilityMatrix.Matrix()));
+app.MapGet("/ecu/categories", () => Results.Json(MultiEcuService.CategoriesOverview()));
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 
@@ -252,6 +258,25 @@ app.MapGet("/obd/vin", async (AdapterConnectionManager manager, CancellationToke
     }
 });
 
+app.MapGet("/ecu/list", async (AdapterConnectionManager manager, bool? refresh, CancellationToken ct) =>
+{
+    try
+    {
+        return Results.Json(await manager.ListEcusAsync(refresh ?? true, ct));
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(new { error = "ecu_list_failed", message_de = ex.Message }, statusCode: 400);
+    }
+});
+
+// Bewusst kein Blindscan-Endpoint
+app.MapPost("/ecu/blind-scan", () => Results.Json(new
+{
+    error = "blind_scan_forbidden",
+    message_de = "Blindes Netzwerkscan ist deaktiviert. Nur beobachtete ISO-15765-4-OBD-Adressen."
+}, statusCode: 403));
+
 app.MapGet("/obd/clear/warnings", (ClearDtcGate gate) => Results.Json(gate.GetWarnings()));
 
 app.MapPost("/obd/clear/approve", async (HttpRequest req, ClearDtcGate gate) =>
@@ -305,10 +330,11 @@ app.MapPost("/obd/dtc/clear", async (HttpRequest req, ClearDtcGate gate, Adapter
 
 app.MapGet("/capabilities", () => Results.Json(new
 {
-    phase = 4,
+    phase = 5,
     vehicle_commands = true,
     vehicle_commands_allowlist_only = true,
     clear_dtc_requires_approval = true,
+    blind_scan_allowed = false,
     features = new
     {
         device_discovery = true,
@@ -326,17 +352,28 @@ app.MapGet("/capabilities", () => Results.Json(new
         obd_vin = true,
         obd_clear_gated = true,
         multi_ecu = true,
+        multi_ecu_inventory = true,
+        protocol_catalog = true,
+        capability_matrix = true,
+        uds_nrc_parser = true,
+        isotp_documented = true,
+        doip_prep_docs = true,
+        j2534_prep_docs = true,
+        j1939_planned_later = true,
         fake_port_tests = true,
         simulator_separate = true,
         browser_pairing = true,
         loopback_only = true,
         origin_guard = true,
-        live_vs_demo_label = true
+        live_vs_demo_label = true,
+        oem_abs_airbag_comfort = false
     },
     adapters = new object[]
     {
         new { id = "simulator", status = "available", note_de = "Separater Simulator-Pfad (data_source=simulated)" },
-        new { id = "elm327-obd", status = "implemented_simulated", note_de = "OBD über Fake/Simulator getestet; Hardwarefreigabe ausstehend" },
+        new { id = "elm327-obd", status = "implemented_simulated", note_de = "OBD über Fake/Simulator getestet; kein DoIP/CAN-FD; Hardwarefreigabe ausstehend" },
+        new { id = "j2534-passthru", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
+        new { id = "doip-ethernet", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "vgate-vlinker-mc-plus", status = "blocked", note_de = "Windows-SPP-Variante nicht verifiziert (BLK-ADAPTER)" },
         new { id = "delphi-autocom", status = "blocked", note_de = "Keine dokumentierte öffentliche Schnittstelle" }
     },
@@ -344,6 +381,10 @@ app.MapGet("/capabilities", () => Results.Json(new
     {
         "Kein realer Fahrzeugtest in dieser Umgebung – Parser/Simulator nur.",
         "Live-Hardwarepfad implementiert aber nicht hardwaregetestet / nicht freigegeben.",
+        "Kein Blindscan unbekannter Netze.",
+        "ABS/Airbag/Komfort ohne verifizierte OEM-Definitionen.",
+        "DoIP/CAN-FD/J2534 nur vorbereitet, nicht implementiert.",
+        "J1939/RP1210 → Phase 19.",
         "Delphi/Autocom nicht angebunden.",
         "Mode 04 nur mit Freigabe; permanente DTCs nicht löschbar.",
         "HTTPS-Browser: Mixed-Content zu http://127.0.0.1 je nach Browser eingeschränkt."

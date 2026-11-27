@@ -9,7 +9,7 @@ const NAV = [
   { to: '/vehicles', label: 'Fahrzeuge', planned: false },
   { to: '/diagnostics', label: 'Diagnose', planned: false },
   { to: '/reports', label: 'Berichte', planned: false },
-  { to: '/planned/ecu', label: 'Steuergeräte', planned: true },
+  { to: '/ecu', label: 'Steuergeräte', planned: false },
   { to: '/planned/service', label: 'Service', planned: true },
   { to: '/planned/coding', label: 'Codierung', planned: true },
 ]

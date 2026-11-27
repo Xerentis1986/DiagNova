@@ -53,13 +53,31 @@ MVP_SIMULATED_CAPABILITIES = [
         "status": "simulated",
         "phase": 4,
     },
+    {
+        "id": "multi_ecu_obd",
+        "label_de": "Mehr-ECU OBD (ISO 15765-4 Standardadressen, simuliert)",
+        "status": "simulated",
+        "phase": 5,
+    },
+    {
+        "id": "protocol_catalog",
+        "label_de": "Protokollkatalog + Adapter-Capability-Matrix",
+        "status": "simulated",
+        "phase": 5,
+    },
 ]
 
 PLANNED_CAPABILITIES = [
     {
-        "id": "oem_ecu_scan",
-        "label_de": "Hersteller-Steuergeräteübersicht",
+        "id": "oem_ecu_abs_airbag_comfort",
+        "label_de": "OEM-Steuergeräte ABS/Airbag/Komfort (verifizierte Definitionen)",
         "status": "planned",
+        "phase": 6,
+    },
+    {
+        "id": "doip_can_fd_j2534_live",
+        "label_de": "DoIP / CAN-FD / J2534 Live-Hardware",
+        "status": "unavailable",
         "phase": 5,
     },
     {
@@ -713,12 +731,15 @@ def capabilities_for_selection() -> dict[str, Any]:
     return {
         "disclaimer_de": (
             "Ein Katalogeintrag bedeutet keine Diagnoseabdeckung. "
-            "Derzeit sind nur simulierte OBD-II-Funktionen des MVP verfügbar. "
-            "OEM-/Service-/Codierfunktionen sind geplant und deaktiviert."
+            "Simuliert: OBD-II und Mehr-ECU über ISO-15765-4-Standardadressen. "
+            "Kein Blindscan. OEM ABS/Airbag/Komfort und DoIP/CAN-FD/J2534 Live fehlen."
         ),
         "available": MVP_SIMULATED_CAPABILITIES,
         "unavailable": PLANNED_CAPABILITIES,
-        "adapter_next_step_de": "Adapter: lokaler Windows-Connector (Phase 03 Inventar/Pairing) oder MVP-Simulator – keine OBD-Fahrzeugbefehle vor Phase 04.",
+        "adapter_next_step_de": (
+            "Adapter: Windows-Connector Fake/Simulator oder ELM-Pfad (nicht hardwarefreigegeben). "
+            "Capability-Matrix unter /api/protocols/capability-matrix."
+        ),
     }
 
 
