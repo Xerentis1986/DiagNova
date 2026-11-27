@@ -104,8 +104,8 @@
 | REQ-15-SEC | Threat Model, Rate Limits, IDOR, CSRF | 15 | `simuliert getestet` | Threat Model, Login-Rate-Limit, Security-Header, Audit-Redaction, Origin-Check, JWT iat/typ, UI `/security` | `test_phase15_*` | Default-JWT in Tests; Prod-Secret Pflicht |
 | REQ-15-BACKUP | Backup/Restore, Monitoring | 15 | `simuliert getestet` | Docs + `/api/security/backup`; Phase-16-Checkliste ergänzt | manuell / Docs | Prod-Alerting offen |
 | REQ-15-QA | E2E, Last, Security-Regression | 15 | `simuliert getestet` | Security-Regression (Rate-Limit, IDOR, Redaction, RBAC); Last = Rate-Limit-Stress | `test_phase15_*` | Volle E2E/Last optional später |
-| REQ-16-DEP | World4You Ubuntu/Plesk Deploy | 16 | `geplant` (Deploy weitgehend live; Checkliste ergänzt) | `docs/phase-16-deploy-checklist.md` | Compose hier nicht | BLK-DEPLOY – Phase 16 nicht gestartet |
-| REQ-16-TLS | HTTPS Reverse Proxy, WS | 16 | `geplant` | nginx nur HTTP-Skizze | — | DNS/TLS |
+| REQ-16-DEP | World4You Ubuntu/Plesk Deploy | 16 | `implementiert` (Docs/Ops; Live Ist) | Install + Compose Prod + Deploy/Backup-Skripte; Live `/`+`/health` 200 | manuell / Smoke | BLK-DEPLOY – Redeploy nur mit Freigabe |
+| REQ-16-TLS | HTTPS Reverse Proxy, WS | 16 | `implementiert` (Ist + Conf) | LE via Plesk; `web.conf` + `plesk-proxy.conf` mit Upgrade-Headern | manuell | Staging optional nicht angelegt |
 | REQ-17-ACC | Gesamtabnahme, Abdeckungsmatrix, Go/No-Go | 17 | `geplant` | — | — | alle vorgelagerten Blocker |
 | REQ-18-TUNE | Optionales Chiptuning (gesperrt) | 18 | `geplant` | bewusst nicht aktiv | — | Rechtlich/technisch |
 | REQ-19-LKW | LKW/J1939/RP1210 | 19 | `geplant` | — | — | Hardware 24 V, Spezifikationen |

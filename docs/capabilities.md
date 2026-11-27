@@ -79,7 +79,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | OEM ABS/Airbag/Komfort | Kategorien unavailable | BLK-OEM / Phase 06 Definitionen |
 | DoIP / J2534 Live | nur Prep-Docs | BLK-HW |
 | J1939 / RP1210 | geplant Phase 19 | BLK-HW |
-| nginx-Conf | Proxy `/api` + SPA | TLS, WebSocket, Plesk-Integration |
+| nginx-Conf | Proxy `/api` + SPA + WS-Header; Plesk-Proxy-Snippet | Staging-Subdomain optional |
 | Browser-Pairing-UI | Connector-API fertig | Web-UI Pairing-Seite optional später |
 
 ## Was bewusst nicht vorhanden / deaktiviert ist
@@ -98,10 +98,11 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
 | Software-/Connector-Updates | Phase 14/15 Versionen 0.15.x; Signatur/Staging/Admin-Freigabe/Rollback/Busy-Gate; Prod-Auto ohne Zertifikat gesperrt |
 | Sicherheit / Datenschutz / QA | Phase 15: Threat Model, Rate-Limits, Audit-Redaction, Security-Header, DSGVO-Prozess-Docs, Backup-Hinweise; UI `/security` |
+| World4You / Plesk Deploy | Phase 16: Install-Doku, Compose Prod, Proxy/WS, Backup/Rollback; Live verifiziert (Smoke) |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
-| Produktives Deployment | nicht Teil Phase 00 |
+| Produktives Deployment | Phase 16: Docs/Compose/Proxy/Backup; Live Ist unter diagnova.codekreativ.at; Redeploy nur mit Freigabe |
 
 ## Datenbank-Inventar
 

@@ -80,12 +80,23 @@ pytest ../../tests -q
 
 Abgedeckt: Auth/Demo-Modus, Seed-Fahrzeuge, Simulator DTCs/Live, Bericht CSV/PDF, DTC-/PID-Parser.
 
-## Dokumentation (Phase 00)
+## Dokumentation
 
 - Fortschritt: [`DIAGNOVA_PROGRESS.md`](DIAGNOVA_PROGRESS.md)
 - Anforderungsmatrix: [`docs/requirements.md`](docs/requirements.md)
 - Fähigkeitenkatalog: [`docs/capabilities.md`](docs/capabilities.md)
 - Phasenstatus + Baseline-Tests: [`docs/phase-status.md`](docs/phase-status.md)
+- World4You / Plesk: [`docs/world4you-plesk-install.md`](docs/world4you-plesk-install.md)
+- Deploy-Checkliste: [`docs/phase-16-deploy-checklist.md`](docs/phase-16-deploy-checklist.md)
+
+### Produktion (Kurz)
+
+```bash
+# Nur auf dem Server, mit bestehender .env (chmod 600) – keine Secrets committen
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+```
+
+Live (Ist): https://diagnova.codekreativ.at/ – Redeploy nur mit Betreiberfreigabe.
 
 ## Monorepo-Struktur
 

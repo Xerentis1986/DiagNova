@@ -25,6 +25,8 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-12-Branch | `cursor/diagnova-phase-12-coding-2dd5` |
 | Phase-13-Branch | `cursor/diagnova-phase-13-subscriptions-66ed` |
 | Phase-14-Branch | `cursor/diagnova-phase-14-software-updates-8f1e` |
+| Phase-15-Branch | `cursor/diagnova-phase-15-security-4381` |
+| Phase-16-Branch | `cursor/diagnova-phase-16-deploy-8876` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -46,13 +48,32 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided |
 | 12 Codierung/Programmierung | 🟢 Simuliert getestet | Gates/Identifikation; Flash DEAKTIVIERT |
 | 13 Abos/Administration | 🟢 Simuliert getestet | Stub-Zahlung; Entitlements; Admin |
-| 14 Software-/Connector-Updates | 🟢 Simuliert getestet | Signatur/Staging/Freigabe/Rollback; **Phase 15 nicht gestartet** |
-| 15 Sicherheit/QA | ⚪ Offen | |
-| 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
-| 17 Abnahme | ⚪ Offen | |
+| 14 Software-/Connector-Updates | 🟢 Simuliert getestet | Signatur/Staging/Freigabe/Rollback |
+| 15 Sicherheit/QA | 🟢 Simuliert getestet | Threat Model, Rate-Limits, Audit, DSGVO-Docs |
+| 16 World4You/Plesk Deploy | 🟢 Docs/Ops | Install/Compose/Proxy/Backup; Live Smoke; **Phase 17 nicht gestartet** |
+| 17 Abnahme | ⚪ Offen | Freigabeprüfung Coordinator |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 16 World4You Ubuntu/Plesk Deployment
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-15-security-4381` (PR #24)
+- Installationsanleitung, Checkliste, Backup/Rollback, Proxy/WS-Confs
+- `docker-compose.prod.yml` + Deploy-/Backup-Skripte (helix/Sites unberührt)
+- Live Smoke read-only: `/` + `/health` 200 unter https://diagnova.codekreativ.at/
+- Keine Secrets in Git; kein destruktives Server-Redeploy
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 17 nicht gestartet**
+- Kein Staging-Subdomain-Anlegen; kein Live-Redeploy ohne Freigabe
+
+**Nächster Schritt:** Coordinator meldet Freigabeprüfung vor Phase 17.
+
+Details: [docs/phase-16-abschluss.md](docs/phase-16-abschluss.md)
 
 ### 2026-11-27 – Phase 14 Software- und Connector-Updates
 
