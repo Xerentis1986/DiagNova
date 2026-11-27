@@ -16,11 +16,11 @@ fi
 
 mkdir -p "${APP_DIR}"
 if [[ ! -d "${APP_DIR}/.git" ]]; then
-  git clone --branch "${BRANCH}" --single-branch "${REPO_URL}" "${APP_DIR}"
+  git clone --branch "${BRANCH}" "${REPO_URL}" "${APP_DIR}"
 else
-  git -C "${APP_DIR}" fetch origin "${BRANCH}"
-  git -C "${APP_DIR}" checkout "${BRANCH}"
-  git -C "${APP_DIR}" pull --ff-only origin "${BRANCH}"
+  # single-branch-Klone brauchen expliziten Refspec
+  git -C "${APP_DIR}" fetch origin "+${BRANCH}:refs/remotes/origin/${BRANCH}"
+  git -C "${APP_DIR}" checkout -B "${BRANCH}" "origin/${BRANCH}"
 fi
 
 cd "${APP_DIR}"
