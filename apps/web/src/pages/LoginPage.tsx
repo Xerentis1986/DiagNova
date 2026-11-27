@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
 import { BrandMark } from '../components/BrandMark'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { Button, Field, Input } from '../components/ui'
 import { useAuth } from '../lib/auth'
 import { ApiError } from '../lib/api'
 
@@ -48,31 +49,27 @@ export function LoginPage() {
             Demo-Zugang vorkonfiguriert. Alle Diagnosedaten sind <strong>simuliert</strong>.
           </div>
           <form onSubmit={onSubmit} className="space-y-4">
-            <label className="block text-sm">
-              <span className="mb-1 block text-[var(--dn-muted)]">E-Mail</span>
-              <input
-                className="dn-input w-full"
+            <Field label="E-Mail">
+              <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </label>
-            <label className="block text-sm">
-              <span className="mb-1 block text-[var(--dn-muted)]">Passwort</span>
-              <input
-                className="dn-input w-full"
+            </Field>
+            <Field label="Passwort">
+              <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
               />
-            </label>
+            </Field>
             {error && <p className="text-sm text-[var(--dn-danger)]">{error}</p>}
-            <button type="submit" disabled={busy} className="dn-btn-primary w-full px-4 py-2.5">
+            <Button type="submit" variant="primary" disabled={busy} className="w-full">
               {busy ? 'Anmelden…' : 'Anmelden'}
-            </button>
+            </Button>
           </form>
           <p className="mt-4 text-xs text-[var(--dn-muted)]">
             Seed: admin@example.com / AdminDemo123! · tech@example.com / TechDemo123!

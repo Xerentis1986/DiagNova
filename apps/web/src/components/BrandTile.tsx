@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react'
 import type { Brand } from '../lib/api'
 
 interface Props {
@@ -5,15 +6,31 @@ interface Props {
   favorite: boolean
   onSelect: () => void
   onToggleFavorite: () => void
+  tabIndex?: number
+  active?: boolean
+  tileRef?: (el: HTMLButtonElement | null) => void
+  onKeyNavigate?: (e: KeyboardEvent<HTMLButtonElement>) => void
 }
 
-export function BrandTile({ brand, favorite, onSelect, onToggleFavorite }: Props) {
+export function BrandTile({
+  brand,
+  favorite,
+  onSelect,
+  onToggleFavorite,
+  tabIndex = 0,
+  active = false,
+  tileRef,
+  onKeyNavigate,
+}: Props) {
   return (
-    <div className="dn-brand-tile group relative">
+    <div className={`dn-brand-tile group relative ${active ? 'dn-brand-tile--active' : ''}`.trim()}>
       <button
+        ref={tileRef}
         type="button"
+        tabIndex={tabIndex}
         onClick={onSelect}
-        className="flex w-full flex-col items-center gap-3 p-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--dn-accent)]"
+        onKeyDown={onKeyNavigate}
+        className="flex min-h-[7.5rem] w-full touch-manipulation flex-col items-center gap-3 p-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--dn-accent)]"
         aria-label={`Marke ${brand.name} wählen`}
       >
         <span
@@ -28,7 +45,7 @@ export function BrandTile({ brand, favorite, onSelect, onToggleFavorite }: Props
       </button>
       <button
         type="button"
-        className="absolute right-2 top-2 rounded-md px-2 py-1 text-sm text-[var(--dn-muted)] hover:bg-[var(--dn-hover)] hover:text-[var(--dn-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dn-accent)]"
+        className="absolute right-2 top-2 flex h-10 w-10 touch-manipulation items-center justify-center rounded-md text-base text-[var(--dn-muted)] hover:bg-[var(--dn-hover)] hover:text-[var(--dn-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dn-accent)]"
         aria-pressed={favorite}
         aria-label={favorite ? `${brand.name} aus Favoriten entfernen` : `${brand.name} zu Favoriten`}
         onClick={(e) => {

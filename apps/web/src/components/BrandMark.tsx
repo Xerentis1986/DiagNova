@@ -5,14 +5,15 @@ type Variant = 'symbol' | 'wordmark' | 'lockup'
 interface BrandMarkProps {
   variant?: Variant
   className?: string
-  /** Wordmark max height in rem-ish CSS size, e.g. "2.5rem" */
+  /** CSS height for the mark; width follows aspect ratio (kein Abschneiden). */
   height?: string
   priority?: boolean
 }
 
 /**
  * Theme-aware DiagNova Marke.
- * Light: charcoal Wordmark / Symbol. Dark: weißes Monochrom-Wordmark (Kontrast).
+ * Light: charcoal Wordmark (Diag anthrazit / Nova türkis im Raster).
+ * Dark: weißes Monochrom-Wordmark (Kontrast).
  */
 export function BrandMark({
   variant = 'lockup',
@@ -25,6 +26,11 @@ export function BrandMark({
   const wordmarkSrc = dark ? '/brand/wordmark-dark.png' : '/brand/wordmark-light.png'
   const symbolSrc = '/brand/symbol-128.png'
   const loading = priority ? 'eager' : 'lazy'
+  const common = {
+    loading: loading as 'eager' | 'lazy',
+    decoding: 'async' as const,
+    style: { height, width: 'auto', maxWidth: '100%' },
+  }
 
   if (variant === 'symbol') {
     return (
@@ -33,10 +39,8 @@ export function BrandMark({
         alt="DiagNova"
         width={128}
         height={128}
-        loading={loading}
-        decoding="async"
+        {...common}
         className={`dn-brand-mark dn-brand-mark--symbol ${className}`.trim()}
-        style={{ height, width: 'auto' }}
       />
     )
   }
@@ -47,37 +51,31 @@ export function BrandMark({
         src={wordmarkSrc}
         alt="DiagNova"
         width={800}
-        height={200}
-        loading={loading}
-        decoding="async"
+        height={145}
+        {...common}
         className={`dn-brand-mark dn-brand-mark--wordmark ${className}`.trim()}
-        style={{ height, width: 'auto' }}
       />
     )
   }
 
   return (
-    <span className={`dn-brand-lockup inline-flex items-center gap-2 ${className}`.trim()}>
+    <span className={`dn-brand-lockup inline-flex max-w-full items-center gap-2 ${className}`.trim()}>
       <img
         src={symbolSrc}
         alt=""
         aria-hidden
         width={128}
         height={128}
-        loading={loading}
-        decoding="async"
-        className="dn-brand-mark dn-brand-mark--symbol"
-        style={{ height, width: 'auto' }}
+        {...common}
+        className="dn-brand-mark dn-brand-mark--symbol shrink-0"
       />
       <img
         src={wordmarkSrc}
         alt="DiagNova"
         width={800}
-        height={200}
-        loading={loading}
-        decoding="async"
-        className="dn-brand-mark dn-brand-mark--wordmark"
-        style={{ height, width: 'auto' }}
+        height={145}
+        {...common}
+        className="dn-brand-mark dn-brand-mark--wordmark min-w-0"
       />
     </span>
   )

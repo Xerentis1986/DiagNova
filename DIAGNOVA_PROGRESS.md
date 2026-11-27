@@ -37,8 +37,8 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe |
 | 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO |
 | 09 Fahrzeugakte/Historie | 🟢 Simuliert getestet | Zeitstrahl/Vergleich/Messwerte |
-| 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv; **Phase 11 nicht gestartet** |
-| 10B Premium-Branding | 🟡 In Arbeit | Designsystem + Logo + Theme |
+| 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv |
+| 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens; **Phase 11 nicht gestartet** |
 | 11–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
@@ -46,9 +46,24 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 
 ## Chronik
 
-### 2026-11-27 – Phase 10B Premium-Branding und Designsystem (in Arbeit)
+### 2026-11-27 – Phase 10B Premium-Branding und Designsystem
 
-Basis: Phase 10 (`cursor/diagnova-phase-10-pdf-7d82`) + Branding (`cursor/diagnova-branding-1a2e`). Siehe Abschlussbericht nach Fertigstellung.
+**Erledigt**
+
+- Merge Phase 10 + Branding #16 auf `cursor/diagnova-phase-10b-brand-4bc4`
+- Tokens Charcoal/Teal `#00B3A3`/Hell `#F8FAFB`/Dunkel `#111A20`
+- Designsystem UI-Primitives; AppShell Sidebar+Topbar nach Mockup (Brand-Logo, Teal)
+- Fahrzeugauswahl Hero + Aktionskarten; Settings-Seite; PDF Brand-Fallback
+- Tests: Frontend build OK, pytest **83 passed**
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 11 nicht gestartet**
+- Kein Prod-Deploy; keine OEM-Logos; keine Vektor-Logos
+
+**Nächster Schritt:** Coordinator orchestriert Phase 11.
+
+Details: [docs/phase-10b-abschluss.md](docs/phase-10b-abschluss.md)
 
 ### 2026-11-27 – Logo-/Brand-Paket integriert
 
@@ -56,33 +71,20 @@ Basis: Phase 10 (`cursor/diagnova-phase-10-pdf-7d82`) + Branding (`cursor/diagno
 
 - Basis: `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14); Branding-PR separat
 - Web: Favicons, PWA-Icons, Apple-Touch, Manifest → `apps/web/public/`
-- Brand-Tokens Teal/Charcoal/White in `index.css`; Theme-aware `BrandMark`
-- Login hero-level Wordmark; Header Lockup Symbol+Wordmark
-- Windows-Connector: `ApplicationIcon` aus `Assets/DiagNova_app.ico`
+- Brand-Tokens; Theme-aware `BrandMark`
+- Windows-Connector ApplicationIcon
 - Doku: [docs/branding.md](docs/branding.md)
-
-**Nicht gemacht (bewusst)**
-
-- Keine Phase-Prompts geändert; kein zwingendes Live-Deploy
-- Keine echten Vektor-Logos (Paket ist Raster)
 
 ### 2026-11-27 – Phase 10 PDF-Diagnoseberichte und Archiv
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-09-history-f3fe` (PR #14)
-- Alembic `007_phase10` + Snapshot-Felder, Berichtsnummer, Archiv/Löschung
-- A4-PDF mit Werkstattlogo, Unicode, Demo-Wasserzeichen, Kopf/Fuß
-- Suche/Archiv/Auto-PDF; keine Auto-Reparaturdiagnose
+- Alembic `007_phase10`, A4-PDF, Archiv/Suche/Auto-PDF
 - UI `/reports`; Tests: pytest **83 passed**
 
 **Nicht gemacht (bewusst)**
 
-- Keine echten Live-Berichte als echt; keine erfundenen Testergebnisse
-- **Phase 11 nicht gestartet**
-- Kein Prod-Deploy
-
-**Nächster Schritt:** Coordinator orchestriert Phase 11 (nach 10B).
+- Keine echten Live-Berichte; **Phase 11 damals nicht gestartet**
 
 ### 2026-11-27 – Phase 09 Fahrzeug-History und digitale Fahrzeugakte
 
@@ -130,6 +132,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Branding: [docs/branding.md](docs/branding.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-10B-Abschluss: [docs/phase-10b-abschluss.md](docs/phase-10b-abschluss.md)
 - Phase-10-Abschluss: [docs/phase-10-abschluss.md](docs/phase-10-abschluss.md)
 - Phase-09-Abschluss: [docs/phase-09-abschluss.md](docs/phase-09-abschluss.md)
 - Phase-08-Abschluss: [docs/phase-08-abschluss.md](docs/phase-08-abschluss.md)

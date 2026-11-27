@@ -82,7 +82,7 @@ export function DataUpdatesPage() {
   }
 
   if (dash.isLoading) return <p className="text-[var(--dn-muted)]">Laden…</p>
-  if (dash.isError) return <p className="text-red-600">{(dash.error as Error).message}</p>
+  if (dash.isError) return <p className="text-[var(--dn-danger)]">{(dash.error as Error).message}</p>
   const d = dash.data!
 
   return (

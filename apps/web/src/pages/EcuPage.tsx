@@ -31,7 +31,7 @@ export function EcuPage() {
 
       {loading && <p className="text-sm text-[var(--dn-muted)]">Laden…</p>}
       {err && (
-        <p className="text-sm text-red-400">
+        <p className="text-sm text-[var(--dn-danger)]">
           Fehler: {err instanceof Error ? err.message : 'Unbekannt'}
         </p>
       )}

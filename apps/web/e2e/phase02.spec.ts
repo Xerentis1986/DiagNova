@@ -10,7 +10,7 @@ test.describe('Phase 02 Marken & Auswahl', () => {
     await page.getByLabel('E-Mail').fill('admin@example.com')
     await page.getByLabel('Passwort').fill('AdminDemo123!')
     await page.getByRole('button', { name: 'Anmelden' }).click()
-    await expect(page.getByRole('heading', { name: 'Markenübersicht' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Fahrzeugmarke auswählen' })).toBeVisible()
   })
 
   test('Markenkacheln mit Text-Fallback und Suche', async ({ page }) => {
@@ -27,7 +27,7 @@ test.describe('Phase 02 Marken & Auswahl', () => {
     await page.getByRole('button', { name: 'Hell' }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Markenübersicht' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Fahrzeugmarke auswählen' })).toBeVisible()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
     await page.getByRole('button', { name: 'Dunkel' }).click()
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

@@ -625,6 +625,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
+  health() {
+    return request<{
+      status: string
+      demo_mode?: boolean
+      data_source_default?: string
+      message_de?: string
+    }>('/health')
+  },
   login(email: string, password: string) {
     return request<{ access_token: string; user: User }>('/api/auth/login', {
       method: 'POST',

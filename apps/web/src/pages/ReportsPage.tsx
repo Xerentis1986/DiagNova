@@ -45,9 +45,9 @@ export function ReportsPage() {
     if (listQuery.isLoading) return null
     if (rows.length) return null
     return (
-      <p className="text-sm text-slate-400">
+      <p className="text-sm text-[var(--dn-muted)]">
         Keine Berichte.{' '}
-        <Link className="text-blue-300 underline" to="/diagnostics">
+        <Link className="text-[var(--dn-accent)] underline" to="/diagnostics">
           Zur Diagnose
         </Link>
       </p>
@@ -57,8 +57,8 @@ export function ReportsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold text-blue-100">Berichte &amp; Archiv</h1>
-        <p className="text-sm text-slate-400">
+        <h1 className="text-2xl font-semibold text-[var(--dn-text)]">Berichte &amp; Archiv</h1>
+        <p className="text-sm text-[var(--dn-muted)]">
           Unveränderliche Snapshots mit Datenquellenkennzeichnung. Demo/Simulation wird markiert.
           Keine automatisch erfundene Reparaturdiagnose.
         </p>
@@ -78,7 +78,7 @@ export function ReportsPage() {
             value={vin}
             onChange={(e) => setVin(e.target.value.toUpperCase())}
           />
-          <label className="flex items-center gap-2 text-sm text-slate-300">
+          <label className="flex items-center gap-2 text-sm text-[var(--dn-text)]">
             <input
               type="checkbox"
               checked={includeArchived}
@@ -87,8 +87,8 @@ export function ReportsPage() {
             Archiv anzeigen
           </label>
         </div>
-        {msg && <p className="text-sm text-emerald-300">{msg}</p>}
-        {listQuery.isLoading && <p className="text-sm text-slate-400">Laden…</p>}
+        {msg && <p className="text-sm text-[var(--dn-ok)]">{msg}</p>}
+        {listQuery.isLoading && <p className="text-sm text-[var(--dn-muted)]">Laden…</p>}
         {emptyHint}
         <ul className="divide-y divide-[var(--dn-border)]">
           {rows.map((r) => (
@@ -98,10 +98,10 @@ export function ReportsPage() {
                 className="text-left"
                 onClick={() => setSelectedId(r.id)}
               >
-                <div className="font-medium text-blue-100">
+                <div className="font-medium text-[var(--dn-text)]">
                   {r.report_number ?? r.id.slice(0, 8)} · {r.title}
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-[var(--dn-muted)]">
                   {r.vehicle_label} · VIN {r.vin ?? '–'} · {r.dtc_count} DTCs · Quelle:{' '}
                   {r.data_source}
                   {r.demo_watermark ? ' · DEMO' : ''}
@@ -149,10 +149,10 @@ export function ReportsPage() {
         <section className="dn-panel space-y-3 p-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 className="text-lg font-medium text-blue-100">
+              <h2 className="text-lg font-medium text-[var(--dn-text)]">
                 Vorschau {selected.report_number ?? selected.id.slice(0, 8)}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[var(--dn-muted)]">
                 Hash {selected.content_sha256?.slice(0, 16)}… · Version {selected.data_version} ·
                 eingefroren {selected.frozen_at ? new Date(selected.frozen_at).toLocaleString('de-AT') : '–'}
               </p>
@@ -175,12 +175,12 @@ export function ReportsPage() {
             </div>
           </div>
           {demo && (
-            <p className="rounded border border-amber-700/50 bg-amber-950/40 px-3 py-2 text-sm text-amber-200">
+            <p className="rounded border border-[color-mix(in_srgb,var(--dn-warn)_45%,var(--dn-border))] bg-[color-mix(in_srgb,var(--dn-warn)_12%,transparent)] px-3 py-2 text-sm text-[var(--dn-warn)]">
               DEMO / SIMULIERT – keine echte Fahrzeugdiagnose
             </p>
           )}
-          {disclaimer && <p className="text-sm text-slate-300">{disclaimer}</p>}
-          <pre className="max-h-[28rem] overflow-auto rounded bg-black/30 p-3 text-xs text-slate-300">
+          {disclaimer && <p className="text-sm text-[var(--dn-text)]">{disclaimer}</p>}
+          <pre className="max-h-[28rem] overflow-auto rounded bg-black/30 p-3 text-xs text-[var(--dn-text)]">
             {JSON.stringify(content, null, 2)}
           </pre>
         </section>

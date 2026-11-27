@@ -553,23 +553,44 @@ def _draw_wrapped(c: canvas.Canvas, text: str, x: float, y: float, max_width: fl
     return y - (size + 3)
 
 
-def _maybe_draw_logo(c: canvas.Canvas, data_url: str | None, x: float, y: float, max_w: float, max_h: float) -> None:
-    if not data_url or not data_url.startswith("data:image"):
-        return
+_BRAND_ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
+_BRAND_SYMBOL = _BRAND_ASSET_DIR / "diagnova_symbol_128.png"
+_BRAND_WORDMARK = _BRAND_ASSET_DIR / "diagnova_wordmark_800.png"
+
+
+def _draw_image_file(c: canvas.Canvas, path: Path, x: float, y: float, max_w: float, max_h: float) -> bool:
+    if not path.is_file():
+        return False
     try:
-        header, b64 = data_url.split(",", 1)
-        raw = base64.b64decode(b64)
-        img = io.BytesIO(raw)
-        # reportlab ImageReader
         from reportlab.lib.utils import ImageReader
 
-        reader = ImageReader(img)
+        reader = ImageReader(str(path))
         iw, ih = reader.getSize()
         scale = min(max_w / iw, max_h / ih, 1.0)
         c.drawImage(reader, x, y - ih * scale, width=iw * scale, height=ih * scale, mask="auto")
+        return True
     except Exception:
-        # Logo optional – Fehler nicht als Diagnosefehler ausgeben
-        return
+        return False
+
+
+def _maybe_draw_logo(c: canvas.Canvas, data_url: str | None, x: float, y: float, max_w: float, max_h: float) -> None:
+    if data_url and data_url.startswith("data:image"):
+        try:
+            _header, b64 = data_url.split(",", 1)
+            raw = base64.b64decode(b64)
+            img = io.BytesIO(raw)
+            from reportlab.lib.utils import ImageReader
+
+            reader = ImageReader(img)
+            iw, ih = reader.getSize()
+            scale = min(max_w / iw, max_h / ih, 1.0)
+            c.drawImage(reader, x, y - ih * scale, width=iw * scale, height=ih * scale, mask="auto")
+            return
+        except Exception:
+            pass
+    # Fallback: DiagNova Brand-Symbol (kein Werkstattlogo)
+    if not _draw_image_file(c, _BRAND_SYMBOL, x, y, max_w, max_h):
+        _draw_image_file(c, _BRAND_WORDMARK, x, y, max_w * 1.4, max_h)
 
 
 def report_to_pdf(report: DiagnosticReport) -> bytes:

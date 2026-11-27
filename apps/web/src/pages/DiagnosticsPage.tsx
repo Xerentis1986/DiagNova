@@ -109,11 +109,11 @@ export function DiagnosticsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-blue-100">OBD-Diagnose</h1>
-          <p className="text-sm text-slate-400">Fahrzeug: {vehicleLabel}</p>
+          <h1 className="text-2xl font-semibold text-[var(--dn-text)]">OBD-Diagnose</h1>
+          <p className="text-sm text-[var(--dn-muted)]">Fahrzeug: {vehicleLabel}</p>
           <p
             className={`mt-1 text-xs font-medium ${
-              dataSource === 'live' ? 'text-emerald-300' : 'text-amber-300'
+              dataSource === 'live' ? 'text-[var(--dn-ok)]' : 'text-[var(--dn-warn)]'
             }`}
           >
             Datenquelle: {dataSource === 'live' ? 'LIVE' : 'DEMO / simuliert'} – strikt getrennt
@@ -124,7 +124,7 @@ export function DiagnosticsPage() {
             type="button"
             disabled={!vehicleId || startSession.isPending}
             onClick={() => startSession.mutate()}
-            className="rounded-md border border-[var(--dn-border)] px-3 py-2 text-sm hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-md border border-[var(--dn-border)] px-3 py-2 text-sm hover:bg-[var(--dn-hover)] disabled:opacity-50"
           >
             Sitzung starten
           </button>
@@ -143,7 +143,7 @@ export function DiagnosticsPage() {
               setShowClear(true)
               setClearMsg(null)
             }}
-            className="rounded-md border border-red-800/60 px-3 py-2 text-sm text-red-200 hover:bg-red-950/40 disabled:opacity-50"
+            className="rounded-md border border-[color-mix(in_srgb,var(--dn-danger)_55%,var(--dn-border))] px-3 py-2 text-sm text-[var(--dn-danger)] hover:bg-[color-mix(in_srgb,var(--dn-danger)_10%,transparent)] disabled:opacity-50"
           >
             Fehler löschen…
           </button>
@@ -169,22 +169,22 @@ export function DiagnosticsPage() {
       </div>
 
       {sessionId && (
-        <p className="text-xs text-emerald-300">
+        <p className="text-xs text-[var(--dn-ok)]">
           Aktive Sitzung: {sessionId} ({dataSource})
         </p>
       )}
-      {clearMsg && <p className="text-sm text-amber-200">{clearMsg}</p>}
+      {clearMsg && <p className="text-sm text-[var(--dn-warn)]">{clearMsg}</p>}
 
       {showClear && (
-        <section className="dn-panel space-y-3 border border-red-900/50 p-4">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-red-200">
+        <section className="dn-panel space-y-3 border border-[color-mix(in_srgb,var(--dn-danger)_45%,var(--dn-border))] p-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--dn-danger)]">
             Fehlerlöschung (freigabegeschützt)
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[var(--dn-muted)]">
             Quelle: {clearWarningsQ.data?.data_source ?? '…'} · Hardware-Live:{' '}
             {clearWarningsQ.data?.hardware_live ? 'ja' : 'nein (Simulator)'}
           </p>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-300">
+          <ul className="list-disc space-y-1 pl-5 text-sm text-[var(--dn-text)]">
             {(clearWarningsQ.data?.warnings_de ?? []).map((w) => (
               <li key={w}>{w}</li>
             ))}
@@ -212,7 +212,7 @@ export function DiagnosticsPage() {
           <label className="block text-sm">
             Bestätigungsphrase ({clearWarningsQ.data?.requires_confirmation_phrase ?? '…'})
             <input
-              className="mt-1 w-full rounded border border-[var(--dn-border)] bg-slate-950 px-2 py-1 font-mono text-sm"
+              className="mt-1 w-full rounded border border-[var(--dn-border)] bg-[var(--dn-surface-inset)] px-2 py-1 font-mono text-sm"
               value={clearPhrase}
               onChange={(e) => setClearPhrase(e.target.value)}
               autoComplete="off"
@@ -221,7 +221,7 @@ export function DiagnosticsPage() {
           <div className="flex gap-2">
             <button
               type="button"
-              className="rounded-md bg-red-800 px-3 py-2 text-sm disabled:opacity-50"
+              className="rounded-md bg-[var(--dn-danger)] px-3 py-2 text-sm disabled:opacity-50"
               disabled={clearDtcs.isPending || !vehicleId}
               onClick={() => clearDtcs.mutate()}
             >
@@ -240,11 +240,11 @@ export function DiagnosticsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="dn-panel p-4">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--dn-muted)]">
             Fehlercodes (DTCs)
           </h2>
           {!dtcsQ.data?.length ? (
-            <p className="text-sm text-slate-400">Keine DTCs oder noch nicht geladen.</p>
+            <p className="text-sm text-[var(--dn-muted)]">Keine DTCs oder noch nicht geladen.</p>
           ) : (
             <ul className="space-y-2">
               {dtcsQ.data.map((d) => (
@@ -253,21 +253,21 @@ export function DiagnosticsPage() {
                   className="flex items-start justify-between gap-2 rounded-md border border-[var(--dn-border)] px-3 py-2"
                 >
                   <div>
-                    <div className="font-mono font-semibold text-blue-200">{d.code}</div>
-                    <div className="text-sm text-slate-300">{d.description_de}</div>
+                    <div className="font-mono font-semibold text-[var(--dn-accent)]">{d.code}</div>
+                    <div className="text-sm text-[var(--dn-text)]">{d.description_de}</div>
                   </div>
                   <div className="text-right text-xs">
-                    <div className="uppercase text-slate-400">{d.status}</div>
+                    <div className="uppercase text-[var(--dn-muted)]">{d.status}</div>
                     {d.status === 'permanent' && (
-                      <div className="text-rose-300">nicht löschbar</div>
+                      <div className="text-[var(--dn-danger)]">nicht löschbar</div>
                     )}
                     <div
                       className={
                         d.severity === 'critical'
-                          ? 'text-red-400'
+                          ? 'text-[var(--dn-danger)]'
                           : d.severity === 'warning'
-                            ? 'text-amber-300'
-                            : 'text-slate-400'
+                            ? 'text-[var(--dn-warn)]'
+                            : 'text-[var(--dn-muted)]'
                       }
                     >
                       {d.severity}
@@ -280,49 +280,53 @@ export function DiagnosticsPage() {
         </section>
 
         <section className="dn-panel p-4">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--dn-muted)]">
             Live-PIDs
           </h2>
           {liveQ.data ? (
             <>
-              <p className="mb-2 text-xs text-amber-300">
+              <p className="mb-2 text-xs text-[var(--dn-warn)]">
                 Quelle: {liveQ.data.data_source} · VIN: {liveQ.data.vin}
               </p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {liveQ.data.readings.map((r) => (
-                  <div key={r.pid} className="rounded-md bg-slate-950/60 px-3 py-2">
-                    <div className="text-[11px] text-slate-500">{r.description_de}</div>
+                  <div key={r.pid} className="rounded-md dn-surface-inset px-3 py-2">
+                    <div className="text-[11px] text-[var(--dn-muted)]">{r.description_de}</div>
                     <div className="text-lg font-semibold tabular-nums">
-                      {r.value} <span className="text-xs font-normal text-slate-400">{r.unit}</span>
+                      {r.value} <span className="text-xs font-normal text-[var(--dn-muted)]">{r.unit}</span>
                     </div>
-                    <div className="font-mono text-[10px] text-slate-500">{r.pid_hex}</div>
+                    <div className="font-mono text-[10px] text-[var(--dn-muted)]">{r.pid_hex}</div>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <p className="text-sm text-slate-400">Live-Daten werden geladen…</p>
+            <p className="text-sm text-[var(--dn-muted)]">Live-Daten werden geladen…</p>
           )}
         </section>
       </div>
 
       <section className="dn-panel p-4">
-        <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">
+        <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--dn-muted)]">
           Live-Verlauf (simuliert)
         </h2>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={history}>
-              <CartesianGrid stroke="#1e3a5f" strokeDasharray="3 3" />
-              <XAxis dataKey="t" stroke="#64748b" tick={{ fontSize: 10 }} />
-              <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
+              <CartesianGrid stroke="var(--dn-chart-grid)" strokeDasharray="3 3" />
+              <XAxis dataKey="t" stroke="var(--dn-chart-axis)" tick={{ fontSize: 10 }} />
+              <YAxis stroke="var(--dn-chart-axis)" tick={{ fontSize: 10 }} />
               <Tooltip
-                contentStyle={{ background: '#0f172a', border: '1px solid #1e3a5f' }}
-                labelStyle={{ color: '#94a3b8' }}
+                contentStyle={{
+                  background: 'var(--dn-chart-tooltip-bg)',
+                  border: '1px solid var(--dn-border)',
+                  color: 'var(--dn-text)',
+                }}
+                labelStyle={{ color: 'var(--dn-muted)' }}
               />
-              <Line type="monotone" dataKey="rpm" stroke="#60a5fa" dot={false} name="RPM" />
-              <Line type="monotone" dataKey="speed" stroke="#34d399" dot={false} name="km/h" />
-              <Line type="monotone" dataKey="coolant" stroke="#fbbf24" dot={false} name="°C" />
+              <Line type="monotone" dataKey="rpm" stroke="var(--dn-accent)" dot={false} name="RPM" />
+              <Line type="monotone" dataKey="speed" stroke="var(--dn-ok)" dot={false} name="km/h" />
+              <Line type="monotone" dataKey="coolant" stroke="var(--dn-warn)" dot={false} name="°C" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -330,30 +334,30 @@ export function DiagnosticsPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <section className="dn-panel p-4">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">Readiness</h2>
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--dn-muted)]">Readiness</h2>
           <ul className="grid grid-cols-2 gap-2 text-sm">
             {liveQ.data &&
               Object.entries(liveQ.data.readiness).map(([k, v]) => (
-                <li key={k} className="flex justify-between rounded bg-slate-950/50 px-2 py-1">
-                  <span className="text-slate-400">{k}</span>
-                  <span className={v ? 'text-emerald-400' : 'text-amber-300'}>{v ? 'OK' : 'offen'}</span>
+                <li key={k} className="flex justify-between rounded dn-surface-inset px-2 py-1">
+                  <span className="text-[var(--dn-muted)]">{k}</span>
+                  <span className={v ? 'text-[var(--dn-ok)]' : 'text-[var(--dn-warn)]'}>{v ? 'OK' : 'offen'}</span>
                 </li>
               ))}
           </ul>
         </section>
         <section className="dn-panel p-4">
-          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-slate-400">Freeze-Frame</h2>
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-[var(--dn-muted)]">Freeze-Frame</h2>
           {liveQ.data?.freeze_frame ? (
             <dl className="space-y-1 text-sm">
               {Object.entries(liveQ.data.freeze_frame).map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-2">
-                  <dt className="text-slate-500">{k}</dt>
-                  <dd className="font-mono text-slate-200">{String(v)}</dd>
+                  <dt className="text-[var(--dn-muted)]">{k}</dt>
+                  <dd className="font-mono text-[var(--dn-text)]">{String(v)}</dd>
                 </div>
               ))}
             </dl>
           ) : (
-            <p className="text-sm text-slate-400">Kein Freeze-Frame.</p>
+            <p className="text-sm text-[var(--dn-muted)]">Kein Freeze-Frame.</p>
           )}
         </section>
       </div>
