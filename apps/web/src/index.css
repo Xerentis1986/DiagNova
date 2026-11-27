@@ -372,9 +372,19 @@ body {
 }
 
 .dn-brand-logo {
-  border-radius: 9999px;
-  background: var(--dn-logo-bg);
+  border-radius: 0.85rem;
+  background: #ffffff;
   color: var(--dn-logo-fg);
+  border: 1px solid var(--dn-border);
+  box-shadow: var(--dn-shadow-sm);
+}
+
+html[data-theme="dark"] .dn-brand-logo {
+  background: #ffffff;
+}
+
+.dn-brand-logo__img {
+  display: block;
 }
 
 .dn-brand-mark {

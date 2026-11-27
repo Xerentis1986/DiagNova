@@ -120,7 +120,7 @@ export function BrandsPage() {
         <h1 className="dn-page-title text-[1.75rem] sm:text-[2rem]">Fahrzeugmarke auswählen</h1>
         <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--dn-muted)]">
           Wählen Sie eine Automarke, um die Diagnose zu starten. Katalogeintrag bedeutet keine
-          Diagnoseabdeckung. Herstellerlogos nur als Text-Fallback (Rechte ungeklärt).
+          Diagnoseabdeckung.
         </p>
         {/* Visuell versteckte Überschrift für bestehende E2E-/A11y-Referenzen */}
         <p className="sr-only">Markenübersicht</p>

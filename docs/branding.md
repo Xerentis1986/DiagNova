@@ -53,5 +53,6 @@ PDF-Kopf: Werkstattlogo wenn vorhanden, sonst DiagNova-Symbol.
 ## Hinweise
 
 - Dunkles UI: immer `wordmark-dark` / weißes Monochrom (Kontrast).
-- Herstellerlogos bleiben Text-Fallback (Rechte ungeklärt).
+- Herstellerlogos: PNG unter `apps/web/public/brand-logos/` (Dataset-Attribution dort);
+  Katalog liefert `logo_mode=image` / `logo_url` nach Produktfreigabe.
 - Mockup unter Store `media/brand/ui-mockup-fahrzeugauswahl.png` ist UX-Ziel, kein Pixel-Clone.

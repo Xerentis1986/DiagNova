@@ -166,9 +166,10 @@ def _brand(
         "name": name,
         "group": group,
         "sort_order": sort,
-        "logo_mode": "text_fallback",
+        "logo_mode": "image",
         "logo_initials": initials,
-        "logo_rights_cleared": False,
+        "logo_rights_cleared": True,
+        "logo_url": f"/brand-logos/{slug}.png",
         "coverage_disclaimer_de": (
             "Katalogeintrag bedeutet keine Diagnoseabdeckung. "
             "Verfügbare Funktionen werden gesondert angezeigt."
@@ -708,6 +709,7 @@ def _brand_summary(b: dict[str, Any]) -> dict[str, Any]:
         "logo_mode": b["logo_mode"],
         "logo_initials": b["logo_initials"],
         "logo_rights_cleared": b["logo_rights_cleared"],
+        "logo_url": b.get("logo_url"),
         "coverage_disclaimer_de": b["coverage_disclaimer_de"],
         "model_count": len(b["models"]),
     }

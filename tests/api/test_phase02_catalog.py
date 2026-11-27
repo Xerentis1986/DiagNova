@@ -5,8 +5,9 @@ def test_dach_catalog_contains_required_brands():
     names = {b["name"] for b in list_brands()}
     missing = set(REQUIRED_DACH_NAMES) - names
     assert not missing, f"Fehlende Marken: {missing}"
-    assert all(b["logo_mode"] == "text_fallback" for b in list_brands())
-    assert all(b["logo_rights_cleared"] is False for b in list_brands())
+    assert all(b["logo_mode"] == "image" for b in list_brands())
+    assert all(b["logo_rights_cleared"] is True for b in list_brands())
+    assert all(b.get("logo_url") for b in list_brands())
 
 
 def test_catalog_brands_api(client, auth_headers):
@@ -14,7 +15,8 @@ def test_catalog_brands_api(client, auth_headers):
     assert res.status_code == 200
     brands = res.json()
     assert len(brands) >= 38
-    assert brands[0]["logo_mode"] == "text_fallback"
+    assert brands[0]["logo_mode"] == "image"
+    assert brands[0]["logo_url"].startswith("/brand-logos/")
 
     search = client.get("/api/catalog/brands?q=bmw", headers=auth_headers)
     assert search.status_code == 200

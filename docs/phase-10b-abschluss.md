@@ -69,7 +69,7 @@ Login, Dashboard, Diagnose/Live-Charts, History/Akte (bestehende dn-Tokens), PDF
 | BLK-HW | Keine echte Live-OBD/Bluetooth-Hardware – Simulator bleibt Quelle |
 | BLK-HW-PDF | Keine echten Live-Fahrzeugberichte als „echt“ |
 | BLK-LOGO-VEC | Logo nur Raster; echte Vektorpfade fehlen für Druck/Plotter |
-| BLK-OEM-LOGO | Herstellerlogos ohne Nutzungsrechte → Textkacheln |
+| BLK-OEM-LOGO | Herstellerlogos nachgezogen (Produktfreigabe); Markenzeichen bleiben OEM-Eigentum |
 
 ## Bewusst nicht
 

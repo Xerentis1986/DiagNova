@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from 'react'
+import { useState, type KeyboardEvent } from 'react'
 import type { Brand } from '../lib/api'
 
 interface Props {
@@ -22,6 +22,9 @@ export function BrandTile({
   tileRef,
   onKeyNavigate,
 }: Props) {
+  const [imgFailed, setImgFailed] = useState(false)
+  const showImage = brand.logo_mode === 'image' && !!brand.logo_url && !imgFailed
+
   return (
     <div className={`dn-brand-tile group relative ${active ? 'dn-brand-tile--active' : ''}`.trim()}>
       <button
@@ -34,11 +37,23 @@ export function BrandTile({
         aria-label={`Marke ${brand.name} wählen`}
       >
         <span
-          className="dn-brand-logo flex h-16 w-16 items-center justify-center text-lg font-semibold tracking-wide"
+          className="dn-brand-logo flex h-16 w-16 items-center justify-center overflow-hidden text-lg font-semibold tracking-wide"
           aria-hidden
-          title="Text-Fallback – Markenlogo-Rechte nicht freigegeben"
         >
-          {brand.logo_initials}
+          {showImage ? (
+            <img
+              src={brand.logo_url!}
+              alt=""
+              width={64}
+              height={64}
+              loading="lazy"
+              decoding="async"
+              className="dn-brand-logo__img max-h-14 max-w-14 object-contain"
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            brand.logo_initials
+          )}
         </span>
         <span className="text-base font-semibold text-[var(--dn-text)]">{brand.name}</span>
         <span className="text-xs text-[var(--dn-muted)]">{brand.group}</span>

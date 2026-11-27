@@ -84,6 +84,7 @@ class BrandOut(BaseModel):
     logo_mode: Literal["text_fallback", "image"]
     logo_initials: str
     logo_rights_cleared: bool
+    logo_url: str | None = None
     coverage_disclaimer_de: str
     model_count: int
 

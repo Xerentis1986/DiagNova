@@ -13,10 +13,9 @@ test.describe('Phase 02 Marken & Auswahl', () => {
     await expect(page.getByRole('heading', { name: 'Fahrzeugmarke auswählen' })).toBeVisible()
   })
 
-  test('Markenkacheln mit Text-Fallback und Suche', async ({ page }) => {
+  test('Markenkacheln mit Logos und Suche', async ({ page }) => {
     await expect(page.getByRole('button', { name: 'Marke VW wählen' })).toBeVisible()
-    // Text-Fallback-Initialen (kein Markenbild)
-    await expect(page.locator('.dn-brand-logo').first()).toBeVisible()
+    await expect(page.locator('.dn-brand-logo__img').first()).toBeVisible()
     await page.getByPlaceholder('Marke suchen…').fill('zzzz-not-a-brand')
     await expect(page.getByText('Keine Marken gefunden')).toBeVisible()
     await page.getByPlaceholder('Marke suchen…').fill('bmw')
