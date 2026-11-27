@@ -26,12 +26,13 @@ export function BrandTile({
   const { resolved } = useTheme()
   const [imgFailed, setImgFailed] = useState(false)
 
+  // Original-Emblem (logos/) für volle, unverzerrte Darstellung;
+  // vorbereitete Kacheln als Fallback; Initialen zuletzt.
   const tileSrc =
     resolved === 'dark'
       ? brand.logo_tile_dark || brand.logo_tile_light
       : brand.logo_tile_light || brand.logo_tile_dark
-  // Kachel bevorzugen (vorbereitet), sonst Original-Emblem; Initialen als Fallback
-  const src = tileSrc || brand.logo_url || null
+  const src = brand.logo_url || tileSrc || null
   const showImage = brand.logo_mode === 'image' && !!src && !imgFailed
 
   return (
