@@ -218,7 +218,10 @@ export interface Brand {
   logo_mode: 'text_fallback' | 'image'
   logo_initials: string
   logo_rights_cleared: boolean
+  logo_asset_id?: string | null
   logo_url?: string | null
+  logo_tile_light?: string | null
+  logo_tile_dark?: string | null
   coverage_disclaimer_de: string
   model_count: number
 }

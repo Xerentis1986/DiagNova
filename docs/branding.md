@@ -53,6 +53,7 @@ PDF-Kopf: Werkstattlogo wenn vorhanden, sonst DiagNova-Symbol.
 ## Hinweise
 
 - Dunkles UI: immer `wordmark-dark` / weißes Monochrom (Kontrast).
-- Herstellerlogos: PNG unter `apps/web/public/brand-logos/` (Dataset-Attribution dort);
-  Katalog liefert `logo_mode=image` / `logo_url` nach Produktfreigabe.
+- Herstellerlogos: Original-Paket unter `apps/web/public/oem-logos/` (`logos/` +
+  `tiles/light|dark` + `brands.json`). Katalog: `logo_url`, `logo_tile_light`,
+  `logo_tile_dark`. BrandTile wählt theme-aware die Kachel, `object-fit: contain`.
 - Mockup unter Store `media/brand/ui-mockup-fahrzeugauswahl.png` ist UX-Ziel, kein Pixel-Clone.

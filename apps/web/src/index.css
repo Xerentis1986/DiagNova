@@ -372,19 +372,38 @@ body {
 }
 
 .dn-brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 9.5rem;
+  height: 4.75rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 0.85rem;
   background: #ffffff;
   color: var(--dn-logo-fg);
   border: 1px solid var(--dn-border);
   box-shadow: var(--dn-shadow-sm);
+  overflow: hidden;
 }
 
 html[data-theme="dark"] .dn-brand-logo {
+  /* Original-Kacheln sind für weiße Fläche optimiert */
   background: #ffffff;
 }
 
 .dn-brand-logo__img {
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.dn-brand-logo__initials {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .dn-brand-mark {

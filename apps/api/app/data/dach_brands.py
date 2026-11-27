@@ -1,13 +1,15 @@
 """DACH-Markenkatalog (Phase 02).
 
 Katalogeinträge sind Navigations-/Auswahlhilfen – KEINE Diagnoseabdeckung.
-Keine Markenlogos: Text-Fallback (Initialen), da Nutzungsrechte ungeklärt (BLK-LOGO).
+Herstellerlogos: Original-Paket unter /oem-logos (Zuordnung via oem_logos.py).
 Modell-/Variantenlisten sind Beispieldaten für den Auswahlfluss, keine OEM-Datenbank.
 """
 
 from __future__ import annotations
 
 from typing import Any
+
+from app.data.oem_logos import logo_fields_for_slug
 
 # Verfügbare Funktionen – ehrlich getrennt (MVP simuliert vs. geplant)
 MVP_SIMULATED_CAPABILITIES = [
@@ -161,15 +163,21 @@ def _brand(
         initials = "MG"
     elif name == "BYD":
         initials = "BYD"
+    logos = logo_fields_for_slug(slug) or {
+        "logo_mode": "text_fallback",
+        "logo_rights_cleared": False,
+        "logo_asset_id": None,
+        "logo_url": None,
+        "logo_tile_light": None,
+        "logo_tile_dark": None,
+    }
     return {
         "slug": slug,
         "name": name,
         "group": group,
         "sort_order": sort,
-        "logo_mode": "image",
         "logo_initials": initials,
-        "logo_rights_cleared": True,
-        "logo_url": f"/brand-logos/{slug}.png",
+        **logos,
         "coverage_disclaimer_de": (
             "Katalogeintrag bedeutet keine Diagnoseabdeckung. "
             "Verfügbare Funktionen werden gesondert angezeigt."
@@ -709,7 +717,10 @@ def _brand_summary(b: dict[str, Any]) -> dict[str, Any]:
         "logo_mode": b["logo_mode"],
         "logo_initials": b["logo_initials"],
         "logo_rights_cleared": b["logo_rights_cleared"],
+        "logo_asset_id": b.get("logo_asset_id"),
         "logo_url": b.get("logo_url"),
+        "logo_tile_light": b.get("logo_tile_light"),
+        "logo_tile_dark": b.get("logo_tile_dark"),
         "coverage_disclaimer_de": b["coverage_disclaimer_de"],
         "model_count": len(b["models"]),
     }

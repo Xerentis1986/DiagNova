@@ -8,6 +8,12 @@ def test_dach_catalog_contains_required_brands():
     assert all(b["logo_mode"] == "image" for b in list_brands())
     assert all(b["logo_rights_cleared"] is True for b in list_brands())
     assert all(b.get("logo_url") for b in list_brands())
+    assert all(b.get("logo_tile_light") for b in list_brands())
+    vw = next(b for b in list_brands() if b["slug"] == "vw")
+    assert vw["logo_asset_id"] == "volkswagen"
+    assert vw["logo_url"].startswith("/oem-logos/logos/")
+    ds = next(b for b in list_brands() if b["slug"] == "ds")
+    assert ds["logo_asset_id"] == "ds-automobiles"
 
 
 def test_catalog_brands_api(client, auth_headers):
@@ -16,7 +22,8 @@ def test_catalog_brands_api(client, auth_headers):
     brands = res.json()
     assert len(brands) >= 38
     assert brands[0]["logo_mode"] == "image"
-    assert brands[0]["logo_url"].startswith("/brand-logos/")
+    assert brands[0]["logo_url"].startswith("/oem-logos/")
+    assert brands[0]["logo_tile_light"].startswith("/oem-logos/tiles/")
 
     search = client.get("/api/catalog/brands?q=bmw", headers=auth_headers)
     assert search.status_code == 200

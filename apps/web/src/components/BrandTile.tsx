@@ -1,5 +1,6 @@
 import { useState, type KeyboardEvent } from 'react'
 import type { Brand } from '../lib/api'
+import { useTheme } from '../lib/theme'
 
 interface Props {
   brand: Brand
@@ -22,8 +23,16 @@ export function BrandTile({
   tileRef,
   onKeyNavigate,
 }: Props) {
+  const { resolved } = useTheme()
   const [imgFailed, setImgFailed] = useState(false)
-  const showImage = brand.logo_mode === 'image' && !!brand.logo_url && !imgFailed
+
+  const tileSrc =
+    resolved === 'dark'
+      ? brand.logo_tile_dark || brand.logo_tile_light
+      : brand.logo_tile_light || brand.logo_tile_dark
+  // Kachel bevorzugen (vorbereitet), sonst Original-Emblem; Initialen als Fallback
+  const src = tileSrc || brand.logo_url || null
+  const showImage = brand.logo_mode === 'image' && !!src && !imgFailed
 
   return (
     <div className={`dn-brand-tile group relative ${active ? 'dn-brand-tile--active' : ''}`.trim()}>
@@ -33,26 +42,23 @@ export function BrandTile({
         tabIndex={tabIndex}
         onClick={onSelect}
         onKeyDown={onKeyNavigate}
-        className="flex min-h-[7.5rem] w-full touch-manipulation flex-col items-center gap-3 p-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--dn-accent)]"
+        className="flex min-h-[8.5rem] w-full touch-manipulation flex-col items-center gap-3 p-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--dn-accent)]"
         aria-label={`Marke ${brand.name} wählen`}
       >
-        <span
-          className="dn-brand-logo flex h-16 w-16 items-center justify-center overflow-hidden text-lg font-semibold tracking-wide"
-          aria-hidden
-        >
+        <span className="dn-brand-logo" aria-hidden>
           {showImage ? (
             <img
-              src={brand.logo_url!}
+              src={src!}
               alt=""
-              width={64}
-              height={64}
+              width={160}
+              height={120}
               loading="lazy"
               decoding="async"
-              className="dn-brand-logo__img max-h-14 max-w-14 object-contain"
+              className="dn-brand-logo__img"
               onError={() => setImgFailed(true)}
             />
           ) : (
-            brand.logo_initials
+            <span className="dn-brand-logo__initials">{brand.logo_initials}</span>
           )}
         </span>
         <span className="text-base font-semibold text-[var(--dn-text)]">{brand.name}</span>
