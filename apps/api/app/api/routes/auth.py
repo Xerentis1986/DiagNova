@@ -18,6 +18,11 @@ def login(body: LoginRequest, db: DbSession) -> LoginResponse:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Benutzer deaktiviert")
     token = create_access_token(user.id, user.role)
     write_audit(db, user_id=user.id, action="login", resource="auth")
+    theme = user.theme_preference if getattr(user, "theme_preference", None) in {
+        "light",
+        "dark",
+        "system",
+    } else "system"
     return LoginResponse(
         access_token=token,
         user=TokenUser(
@@ -26,16 +31,23 @@ def login(body: LoginRequest, db: DbSession) -> LoginResponse:
             full_name=user.full_name,
             role=user.role,  # type: ignore[arg-type]
             is_active=user.is_active,
+            theme_preference=theme,  # type: ignore[arg-type]
         ),
     )
 
 
 @router.get("/me", response_model=TokenUser)
 def me(user: CurrentUser) -> TokenUser:
+    theme = user.theme_preference if getattr(user, "theme_preference", None) in {
+        "light",
+        "dark",
+        "system",
+    } else "system"
     return TokenUser(
         id=user.id,
         email=user.email,
         full_name=user.full_name,
         role=user.role,  # type: ignore[arg-type]
         is_active=user.is_active,
+        theme_preference=theme,  # type: ignore[arg-type]
     )

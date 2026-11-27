@@ -1,3 +1,19 @@
-from app.models.entities import AuditLog, DiagnosticReport, DiagnosticSession, User, Vehicle
+from app.models.entities import (
+    AuditLog,
+    DiagnosticReport,
+    DiagnosticSession,
+    User,
+    UserBrandFavorite,
+    UserRecentSelection,
+    Vehicle,
+)
 
-__all__ = ["AuditLog", "DiagnosticReport", "DiagnosticSession", "User", "Vehicle"]
+__all__ = [
+    "AuditLog",
+    "DiagnosticReport",
+    "DiagnosticSession",
+    "User",
+    "UserBrandFavorite",
+    "UserRecentSelection",
+    "Vehicle",
+]

@@ -22,7 +22,10 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255))
     role: Mapped[str] = mapped_column(String(32), default="technician")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    theme_preference: Mapped[str] = mapped_column(String(16), default="system")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    brand_favorites: Mapped[list[UserBrandFavorite]] = relationship(back_populates="user")
 
 
 class Vehicle(Base):
@@ -36,11 +39,43 @@ class Vehicle(Base):
     license_plate: Mapped[str | None] = mapped_column(String(32), nullable=True)
     engine: Mapped[str | None] = mapped_column(String(64), nullable=True)
     fuel_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    series: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    odometer_km: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    catalog_brand_slug: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    catalog_model_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    catalog_variant_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     is_example_data: Mapped[bool] = mapped_column(Boolean, default=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     sessions: Mapped[list[DiagnosticSession]] = relationship(back_populates="vehicle")
+
+
+class UserBrandFavorite(Base):
+    __tablename__ = "user_brand_favorites"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), index=True)
+    brand_slug: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped[User] = relationship(back_populates="brand_favorites")
+
+
+class UserRecentSelection(Base):
+    __tablename__ = "user_recent_selections"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), index=True)
+    vehicle_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("vehicles.id"), nullable=True)
+    brand_slug: Mapped[str] = mapped_column(String(64))
+    brand_name: Mapped[str] = mapped_column(String(64))
+    model_name: Mapped[str] = mapped_column(String(64))
+    series: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    engine: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    vin: Mapped[str | None] = mapped_column(String(17), nullable=True)
+    used_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class DiagnosticSession(Base):

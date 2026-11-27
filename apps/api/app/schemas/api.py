@@ -17,12 +17,21 @@ class TokenUser(BaseModel):
     full_name: str
     role: Literal["admin", "technician", "viewer"]
     is_active: bool
+    theme_preference: Literal["light", "dark", "system"] = "system"
 
 
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: TokenUser
+
+
+class PreferencesUpdate(BaseModel):
+    theme_preference: Literal["light", "dark", "system"]
+
+
+class PreferencesOut(BaseModel):
+    theme_preference: Literal["light", "dark", "system"]
 
 
 class VehicleOut(BaseModel):
@@ -34,8 +43,95 @@ class VehicleOut(BaseModel):
     license_plate: str | None
     engine: str | None
     fuel_type: str | None
+    series: str | None = None
+    odometer_km: int | None = None
+    catalog_brand_slug: str | None = None
+    catalog_model_id: str | None = None
+    catalog_variant_id: str | None = None
     is_example_data: bool
     notes: str | None
+
+    model_config = {"from_attributes": True}
+
+
+class VehicleConfirmRequest(BaseModel):
+    brand_slug: str = Field(min_length=1, max_length=64)
+    model_id: str = Field(min_length=1, max_length=64)
+    variant_id: str = Field(min_length=1, max_length=64)
+    year: int = Field(ge=1980, le=2100)
+    vin: str = Field(min_length=17, max_length=17)
+    license_plate: str | None = Field(default=None, max_length=32)
+    odometer_km: int | None = Field(default=None, ge=0, le=9_999_999)
+    notes: str | None = Field(default=None, max_length=2000)
+
+
+class VehicleUpdateRequest(BaseModel):
+    vin: str | None = Field(default=None, min_length=17, max_length=17)
+    license_plate: str | None = Field(default=None, max_length=32)
+    odometer_km: int | None = Field(default=None, ge=0, le=9_999_999)
+    notes: str | None = Field(default=None, max_length=2000)
+
+
+class BrandOut(BaseModel):
+    slug: str
+    name: str
+    group: str
+    sort_order: int
+    logo_mode: Literal["text_fallback", "image"]
+    logo_initials: str
+    logo_rights_cleared: bool
+    coverage_disclaimer_de: str
+    model_count: int
+
+
+class CatalogModelOut(BaseModel):
+    id: str
+    name: str
+    variant_count: int
+
+
+class CatalogVariantOut(BaseModel):
+    id: str
+    series: str
+    year_from: int
+    year_to: int
+    engine: str
+    fuel_type: str
+
+
+class CapabilityItem(BaseModel):
+    id: str
+    label_de: str
+    status: Literal["simulated", "planned", "available", "unavailable"]
+    phase: int
+
+
+class CapabilitiesOut(BaseModel):
+    disclaimer_de: str
+    available: list[CapabilityItem]
+    unavailable: list[CapabilityItem]
+    adapter_next_step_de: str
+
+
+class FavoritesOut(BaseModel):
+    brand_slugs: list[str]
+
+
+class FavoritesUpdate(BaseModel):
+    brand_slugs: list[str] = Field(max_length=64)
+
+
+class RecentSelectionOut(BaseModel):
+    id: str
+    vehicle_id: str | None
+    brand_slug: str
+    brand_name: str
+    model_name: str
+    series: str | None
+    year: int | None
+    engine: str | None
+    vin: str | None
+    used_at: datetime
 
     model_config = {"from_attributes": True}
 

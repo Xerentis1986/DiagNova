@@ -1,6 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || ''
 
 export type UserRole = 'admin' | 'technician' | 'viewer'
+export type ThemePreference = 'light' | 'dark' | 'system'
 
 export interface User {
   id: string
@@ -8,6 +9,7 @@ export interface User {
   full_name: string
   role: UserRole
   is_active: boolean
+  theme_preference: ThemePreference
 }
 
 export interface Vehicle {
@@ -19,8 +21,67 @@ export interface Vehicle {
   license_plate: string | null
   engine: string | null
   fuel_type: string | null
+  series: string | null
+  odometer_km: number | null
+  catalog_brand_slug: string | null
+  catalog_model_id: string | null
+  catalog_variant_id: string | null
   is_example_data: boolean
   notes: string | null
+}
+
+export interface Brand {
+  slug: string
+  name: string
+  group: string
+  sort_order: number
+  logo_mode: 'text_fallback' | 'image'
+  logo_initials: string
+  logo_rights_cleared: boolean
+  coverage_disclaimer_de: string
+  model_count: number
+}
+
+export interface CatalogModel {
+  id: string
+  name: string
+  variant_count: number
+}
+
+export interface CatalogVariant {
+  id: string
+  series: string
+  year_from: number
+  year_to: number
+  engine: string
+  fuel_type: string
+}
+
+export interface CapabilityItem {
+  id: string
+  label_de: string
+  status: 'simulated' | 'planned' | 'available' | 'unavailable'
+  phase: number
+}
+
+export interface Capabilities {
+  disclaimer_de: string
+  available: CapabilityItem[]
+  unavailable: CapabilityItem[]
+  adapter_next_step_de: string
+}
+
+export interface RecentSelection {
+  id: string
+  vehicle_id: string | null
+  brand_slug: string
+  brand_name: string
+  model_name: string
+  series: string | null
+  year: number | null
+  engine: string | null
+  vin: string | null
+  used_at: string
 }
 
 export interface DtcEntry {
@@ -85,6 +146,17 @@ export interface Report {
   content: Record<string, unknown>
 }
 
+export interface VehicleConfirmPayload {
+  brand_slug: string
+  model_id: string
+  variant_id: string
+  year: number
+  vin: string
+  license_plate?: string | null
+  odometer_km?: number | null
+  notes?: string | null
+}
+
 class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -130,6 +202,53 @@ export const api = {
   },
   me() {
     return request<User>('/api/auth/me')
+  },
+  updatePreferences(theme_preference: ThemePreference) {
+    return request<{ theme_preference: ThemePreference }>('/api/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify({ theme_preference }),
+    })
+  },
+  getFavorites() {
+    return request<{ brand_slugs: string[] }>('/api/favorites/brands')
+  },
+  putFavorites(brand_slugs: string[]) {
+    return request<{ brand_slugs: string[] }>('/api/favorites/brands', {
+      method: 'PUT',
+      body: JSON.stringify({ brand_slugs }),
+    })
+  },
+  recentSelections() {
+    return request<RecentSelection[]>('/api/recent/selections')
+  },
+  catalogBrands(q?: string) {
+    const qs = q ? `?q=${encodeURIComponent(q)}` : ''
+    return request<Brand[]>(`/api/catalog/brands${qs}`)
+  },
+  catalogModels(slug: string) {
+    return request<CatalogModel[]>(`/api/catalog/brands/${slug}/models`)
+  },
+  catalogVariants(slug: string, modelId: string) {
+    return request<CatalogVariant[]>(`/api/catalog/brands/${slug}/models/${modelId}/variants`)
+  },
+  catalogCapabilities(brandSlug?: string) {
+    const qs = brandSlug ? `?brand_slug=${encodeURIComponent(brandSlug)}` : ''
+    return request<Capabilities>(`/api/catalog/capabilities${qs}`)
+  },
+  confirmVehicle(payload: VehicleConfirmPayload) {
+    return request<Vehicle>('/api/vehicles/confirm', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+  updateVehicle(
+    id: string,
+    payload: { vin?: string; license_plate?: string | null; odometer_km?: number | null; notes?: string | null },
+  ) {
+    return request<Vehicle>(`/api/vehicles/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    })
   },
   dashboard(activeVehicleId?: string | null) {
     const q = activeVehicleId ? `?active_vehicle_id=${encodeURIComponent(activeVehicleId)}` : ''

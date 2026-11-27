@@ -32,17 +32,17 @@ export function LoginPage() {
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-xl font-bold">
             DN
           </div>
-          <h1 className="text-2xl font-semibold text-blue-100">DiagNova</h1>
-          <p className="mt-1 text-sm text-slate-400">Werkstatt-Diagnose · Demo-Anmeldung</p>
+          <h1 className="text-2xl font-semibold">DiagNova</h1>
+          <p className="mt-1 text-sm text-[var(--dn-muted)]">Werkstatt-Diagnose · Demo-Anmeldung</p>
         </div>
         <div className="dn-banner-sim mb-4 rounded-lg px-3 py-2 text-xs">
           Demo-Zugang vorkonfiguriert. Alle Diagnosedaten sind <strong>simuliert</strong>.
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <label className="block text-sm">
-            <span className="mb-1 block text-slate-400">E-Mail</span>
+            <span className="mb-1 block text-[var(--dn-muted)]">E-Mail</span>
             <input
-              className="w-full rounded-md border border-[var(--dn-border)] bg-slate-950 px-3 py-2"
+              className="dn-input w-full"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -50,9 +50,9 @@ export function LoginPage() {
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-slate-400">Passwort</span>
+            <span className="mb-1 block text-[var(--dn-muted)]">Passwort</span>
             <input
-              className="w-full rounded-md border border-[var(--dn-border)] bg-slate-950 px-3 py-2"
+              className="dn-input w-full"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -60,7 +60,7 @@ export function LoginPage() {
               minLength={8}
             />
           </label>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-[var(--dn-danger)]">{error}</p>}
           <button
             type="submit"
             disabled={busy}

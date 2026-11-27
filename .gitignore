@@ -42,3 +42,8 @@ apps/web/dist/
 packages/**/build/
 *.egg-info/
 apps/api/.venv/
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/

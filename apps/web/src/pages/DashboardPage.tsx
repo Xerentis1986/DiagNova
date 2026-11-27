@@ -19,14 +19,14 @@ export function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-blue-100">Werkstatt-Dashboard</h1>
-          <p className="text-sm text-slate-400">Überblick · Demo-Modus {data.demo_mode ? 'aktiv' : 'aus'}</p>
+          <h1 className="text-2xl font-semibold">Werkstatt-Dashboard</h1>
+          <p className="text-sm text-[var(--dn-muted)]">Überblick · Demo-Modus {data.demo_mode ? 'aktiv' : 'aus'}</p>
         </div>
         <div className="flex gap-2">
-          <Link to="/vehicles" className="rounded-md border border-[var(--dn-border)] px-3 py-2 text-sm hover:bg-slate-800">
-            Fahrzeug wählen
+          <Link to="/" className="rounded-md border border-[var(--dn-border)] px-3 py-2 text-sm hover:bg-[var(--dn-hover)]">
+            Marke wählen
           </Link>
-          <Link to="/diagnostics" className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium hover:bg-blue-500">
+          <Link to="/diagnostics" className="rounded-md bg-[var(--dn-accent)] px-3 py-2 text-sm font-medium text-white hover:opacity-90">
             Diagnose starten
           </Link>
         </div>

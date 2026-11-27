@@ -1,7 +1,7 @@
 # DiagNova – Anforderungsmatrix (Phase 00)
 
 **Stand:** 2026-11-27 (Europe/Vienna)  
-**Basis-Commit:** `6adfcc4` (Branch `cursor/diagnova-phase-ab-mvp-bf17` / PR #1)  
+**Basis:** MVP `6adfcc4` + Phase 00; Phase 02 auf Branch `cursor/diagnova-phase-02-brands-c4de`  
 **Quelle:** Master-Prompt 00 sowie Promptpaket Phasen 02–19
 
 ## Statuslegende
@@ -28,6 +28,7 @@
 | BLK-PAY | Zahlungsanbieter erst nach Zustimmung |
 | BLK-LEGAL | Rechtliche Prüfung DACH (Abo/Rechnung/DSGVO-AV) offen |
 | BLK-DEPLOY | Produktives Deployment / Fahrzeug-Schreibtests nur nach Freigabe |
+| BLK-LOGO | Markenlogo-Nutzungsrechte ungeklärt → nur Text-Fallback-Kacheln |
 
 ---
 
@@ -48,12 +49,12 @@
 | REQ-01-RPT | Berichte CSV/PDF (simulierter Inhalt) | 01 | `simuliert getestet` | `services/reports.py` | Export-Tests | — |
 | REQ-01-CONN-SKEL | Windows-Connector Skelett + Stub-Adapter | 01/03 | `implementiert` | `apps/windows-connector` | Quellcode-Review; Build hier nicht | BLK-DOTNET, BLK-HW |
 | REQ-01-AUDIT | Audit-Log Login/Session/Report | 01 | `implementiert` | `services/audit.py` | indirekt über API-Flows | — |
-| REQ-02-TILES | Marken-Kacheln, Logos, Suche, Favoriten | 02 | `geplant` | UI hat Fahrzeugliste, keine Kacheln/Logos | — | Markenlogo-Rechte |
-| REQ-02-SELECT | Marke→Modell→Baureihe→Motor→Bestätigen | 02 | `geplant` | Seed-Liste statt Wizard | — | — |
-| REQ-02-THEME | Hell/Dunkel/System, Persistenz | 02 | `geplant` | nur Dark-Default im MVP | — | — |
-| REQ-02-VIN | VIN-Erkennung + manuelle Korrektur | 02 | `geplant` | simulierte VIN im Seed | — | BLK-HW |
-| REQ-02-CAP | Verfügbare Funktionen pro Fahrzeug anzeigen | 02 | `geplant` | — | — | BLK-OEM |
-| REQ-02-A11Y | Kontrast, Tastatur, mobil | 02 | `geplant` | — | keine E2E | — |
+| REQ-02-TILES | Marken-Kacheln, Logos, Suche, Favoriten | 02 | `simuliert getestet` | `BrandsPage`, Text-Fallback, Favoriten-API | API + E2E | BLK-LOGO |
+| REQ-02-SELECT | Marke→Modell→Baureihe→Motor→Bestätigen | 02 | `simuliert getestet` | `VehicleSelectPage`, `POST /vehicles/confirm` | API + E2E | — |
+| REQ-02-THEME | Hell/Dunkel/System, Persistenz | 02 | `simuliert getestet` | ThemeProvider + `users.theme_preference` | API + E2E | — |
+| REQ-02-VIN | VIN-Erkennung + manuelle Korrektur | 02 | `simuliert getestet` | Formatprüfung + PATCH; keine Hardware-VIN | API | BLK-HW |
+| REQ-02-CAP | Verfügbare Funktionen pro Fahrzeug anzeigen | 02 | `simuliert getestet` | `/catalog/capabilities` (MVP simuliert vs. geplant) | API + UI | BLK-OEM |
+| REQ-02-A11Y | Kontrast, Tastatur, mobil | 02 | `implementiert` | Focus-Styles, Labels, responsive Grid | E2E Desktop | manuelle Kontrastprüfung offen |
 | REQ-03-BT | Bluetooth-Geräteerkennung / SPP | 03 | `geplant` | Connector-Skelett | — | BLK-HW, BLK-ADAPTER |
 | REQ-03-COM | COM-/USB-Inventar, exklusiver Portzugriff | 03 | `geplant` | — | Fake-Port geplant | BLK-DOTNET |
 | REQ-03-PAIR | Browser↔Connector Auth, Loopback, Origin | 03 | `implementiert` (Skelett) | `LocalAuthService`, `docs/windows-connector-auth.md` | nicht automatisiert | Pairing-Flow unvollständig |

@@ -1,8 +1,10 @@
-/** Shared TypeScript contracts for DiagNova Web ↔ API (MVP). */
+/** Shared TypeScript contracts for DiagNova Web ↔ API. */
 
 export type DataSource = "simulated" | "live";
 
 export type UserRole = "admin" | "technician" | "viewer";
+
+export type ThemePreference = "light" | "dark" | "system";
 
 export interface User {
   id: string;
@@ -10,6 +12,7 @@ export interface User {
   full_name: string;
   role: UserRole;
   is_active: boolean;
+  theme_preference: ThemePreference;
 }
 
 export interface Vehicle {
@@ -21,8 +24,25 @@ export interface Vehicle {
   license_plate: string | null;
   engine: string | null;
   fuel_type: string | null;
+  series: string | null;
+  odometer_km: number | null;
+  catalog_brand_slug: string | null;
+  catalog_model_id: string | null;
+  catalog_variant_id: string | null;
   is_example_data: boolean;
   notes: string | null;
+}
+
+export interface Brand {
+  slug: string;
+  name: string;
+  group: string;
+  sort_order: number;
+  logo_mode: "text_fallback" | "image";
+  logo_initials: string;
+  logo_rights_cleared: boolean;
+  coverage_disclaimer_de: string;
+  model_count: number;
 }
 
 export type DtcStatus = "stored" | "pending" | "permanent";

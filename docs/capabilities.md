@@ -1,8 +1,9 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna)  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02  
 **Datenmodus MVP:** ausschließlich **simuliert** (`data_source: "simulated"`).  
-**Echte Fahrzeugkommunikation:** **nicht** vorhanden.
+**Echte Fahrzeugkommunikation:** **nicht** vorhanden.  
+**Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.
 
 ## Architekturüberblick
 
@@ -23,6 +24,11 @@
 | Login (admin/technician) | LoginPage | `POST /api/auth/login`, `GET /api/auth/me` | `users` | Demo-Seed |
 | Dashboard | DashboardPage | `GET /api/dashboard` | Sessions-Liste | Sim-Banner |
 | Fahrzeugliste (9 Demo-Marken) | VehiclesPage | `GET /api/vehicles` | `vehicles.is_example_data=true` | Beispieldaten |
+| Markenübersicht DACH (38) | BrandsPage | `GET /api/catalog/brands` | statischer Katalog | Text-Fallback-Logos |
+| Suche / Favoriten / Recent | BrandsPage | Favorites + Recent APIs | `user_brand_favorites`, `user_recent_selections` | lokal + Profil |
+| Auswahlfluss + VIN | VehicleSelectPage | `POST /vehicles/confirm`, PATCH | vehicles + Katalog | Format-VIN |
+| Theme Hell/Dunkel/System | ThemeToggle | `PATCH /api/preferences` | `users.theme_preference` | + localStorage |
+| Capabilities ehrlich | Select-UI | `GET /catalog/capabilities` | — | nur MVP simuliert |
 | Verbindungstatus Simulator | Diagnose | `GET /api/connection` | — | `mode=simulator` |
 | DTCs stored/pending | DiagnosticsPage | `GET /api/diagnostics/{id}/dtcs` | Snapshot in Session | simulated |
 | Live-PIDs + Diagramm | DiagnosticsPage | `GET /api/diagnostics/{id}/live` | — | simulated |
@@ -56,7 +62,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Mandantenfähigkeit / Kundenverwaltung | fehlt |
 | Abo/Zahlungen | fehlt |
 | Diagnosedaten-Import/Updates | fehlt |
-| Marken-Kacheln / Theme-Switch / Favoriten | fehlt |
+| Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
 | Produktives Deployment | nicht Teil Phase 00 |
@@ -65,13 +71,15 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 
 | Tabelle | Zweck |
 |---------|-------|
-| `users` | Auth, Rolle (`admin`/`technician`/`viewer`) |
-| `vehicles` | Demo-Fahrzeuge inkl. VIN, Kennzeichen, `is_example_data` |
+| `users` | Auth, Rolle, `theme_preference` |
+| `vehicles` | Fahrzeuge inkl. VIN, Kennzeichen, `series`, `odometer_km`, Katalog-IDs |
+| `user_brand_favorites` | Favoriten-Marken pro User |
+| `user_recent_selections` | Zuletzt verwendete Auswahlen |
 | `diagnostic_sessions` | Sitzungen mit `data_source`, DTC-Snapshot JSON |
 | `diagnostic_reports` | Berichtsinhalt JSON |
 | `audit_logs` | Aktion/Resource/Detail |
 
-Migration: `apps/api/alembic/versions/001_initial.py`. Runtime erstellt Tabellen zusätzlich via `Base.metadata.create_all` + Seed.
+Migrationen: `001_initial`, `002_phase02`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -81,6 +89,12 @@ Migration: `apps/api/alembic/versions/001_initial.py`. Runtime erstellt Tabellen
 | POST | `/api/auth/login` | nein |
 | GET | `/api/auth/me` | JWT |
 | GET | `/api/vehicles`, `/api/vehicles/{id}` | JWT |
+| POST | `/api/vehicles/confirm` | JWT |
+| PATCH | `/api/vehicles/{id}` | JWT |
+| GET | `/api/catalog/brands`, `…/models`, `…/variants`, `/capabilities` | JWT |
+| GET/PATCH | `/api/preferences` | JWT |
+| GET/PUT | `/api/favorites/brands` | JWT |
+| GET | `/api/recent/selections` | JWT |
 | GET | `/api/dashboard` | JWT |
 | GET | `/api/connection` | JWT |
 | GET | `/api/diagnostics/pids` | JWT |
@@ -101,8 +115,10 @@ Migration: `apps/api/alembic/versions/001_initial.py`. Runtime erstellt Tabellen
 | Route | Seite | Inhalt |
 |-------|-------|--------|
 | `/login` | LoginPage | Demo-Login |
-| `/` | DashboardPage | Aktives Fahrzeug, Simulator-Status, letzte Sitzungen |
-| `/vehicles` | VehiclesPage | Liste Demo-Fahrzeuge |
+| `/` | BrandsPage | Markenkacheln, Suche, Favoriten, Recent |
+| `/select/:brandSlug` | VehicleSelectPage | Wizard Marke→…→VIN |
+| `/dashboard` | DashboardPage | Aktives Fahrzeug, Simulator-Status |
+| `/vehicles` | VehiclesPage | Fahrzeugliste |
 | `/diagnostics` | DiagnosticsPage | DTCs, Live-Charts, Session |
 | `/reports` | ReportsPage | Berichte / Export |
 | `/planned/:moduleId` | PlannedPage | ecu, service, coding, … |
@@ -111,9 +127,10 @@ Migration: `apps/api/alembic/versions/001_initial.py`. Runtime erstellt Tabellen
 
 | Suite | Datei | Abdeckung |
 |-------|-------|-----------|
-| API | `tests/api/test_auth_and_demo.py` | Health, Login, Seed, Simulator, Session, CSV/PDF, Connection |
+| API | `tests/api/test_auth_and_demo.py` | Health, Login, Seed, Simulator, Session, CSV/PDF |
+| API Phase 02 | `tests/api/test_phase02_catalog.py` | Katalog, Theme, Favoriten, VIN, Capabilities |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
-| Frontend | — | kein Unit-/E2E-Test; Build als Smoke |
+| E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | — | keine automatisierten Tests |
 | Docker | — | in dieser Umgebung nicht ausgeführt |
 
