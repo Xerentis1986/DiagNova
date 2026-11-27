@@ -79,9 +79,9 @@
 | REQ-06-IMPORT | JSON/CSV-Import, Quarantäne, Rollback | 06 | `simuliert getestet` | `import_pipeline.py` + `/api/diagnostic-data/import/*` | `test_phase06_diagnostic_data` | — |
 | REQ-06-ODX | ODX/PDX nur mit Lizenz | 06 | `implementiert` (gesperrt) | POST `/import/odx` → 403 | API-Test | BLK-OEM |
 | REQ-06-LIC | Lizenzherkunft / Attribution | 06 | `simuliert getestet` | `data_license_sources` + UI/Lookup Provenance | API + Docs | DTC-Volltexte nicht redistribuierbar |
-| REQ-07-SCHED | Scheduler Diagnosedaten-Updates | 07 | `geplant` | — | — | Quellenrechte |
-| REQ-07-SAFE | SSRF-/Integritäts-/Staging-Schutz | 07 | `geplant` | — | — | — |
-| REQ-07-PUB | Atomare Veröffentlichung + Rollback | 07 | `geplant` | — | — | — |
+| REQ-07-SCHED | Scheduler Diagnosedaten-Updates | 07 | `simuliert getestet` | Intervall 24h, Lock, Retry/Backoff; Scheduler default aus | `test_phase07_data_updates` | Keine echten Feeds ohne Rechte |
+| REQ-07-SAFE | SSRF-/Integritäts-/Staging-Schutz | 07 | `simuliert getestet` | HTTPS-Allowlist, Hash/HMAC, Schema-Staging | Phase-07-Tests | — |
+| REQ-07-PUB | Atomare Veröffentlichung + Rollback | 07 | `simuliert getestet` | Auto nur DTC-Texte; Prozeduren/Adressen manuell | Phase-07-Tests | Admin-Freigabe |
 | REQ-08-WS | Werkstattprofil, Rollen, Kunden | 08 | `geplant` | nur User-Rollen ohne Mandant | — | — |
 | REQ-08-CUST | Kunden/Fahrzeuge CRUD, Dubletten | 08 | `geplant` | Fahrzeuge read-only Seed | — | — |
 | REQ-08-TENANT | Mandanten-ID serverseitig | 08 | `geplant` | kein Multi-Tenant | — | — |

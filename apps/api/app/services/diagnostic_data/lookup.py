@@ -25,12 +25,24 @@ def provenance_for_source(source: DataLicenseSource) -> ProvenanceOut:
 
 def lookup_dtc(db: Session, code: str) -> DtcLookupOut:
     normalized = code.strip().upper().replace(" ", "")
-    row = db.scalar(
-        select(DiagDtcDefinition)
-        .where(DiagDtcDefinition.code == normalized)
-        .order_by(DiagDtcDefinition.data_scope.asc())  # generic vor oem
-        .limit(1)
-    )
+    # Bevorzuge bekannte Beschreibungstexte (z. B. nach Phase-07-Update) vor „unknown“-Baseline
+    rows = db.scalars(
+        select(DiagDtcDefinition).where(DiagDtcDefinition.code == normalized)
+    ).all()
+    row = None
+    if rows:
+        known = [
+            r
+            for r in rows
+            if r.description_status == "known" and (r.description_de or "").strip()
+        ]
+        if known:
+            # generic vor oem
+            known.sort(key=lambda r: 0 if r.data_scope == "generic" else 1)
+            row = known[0]
+        else:
+            rows_sorted = sorted(rows, key=lambda r: 0 if r.data_scope == "generic" else 1)
+            row = rows_sorted[0]
     if row is None:
         return DtcLookupOut(
             code=normalized,

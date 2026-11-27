@@ -294,6 +294,74 @@ export interface ImportBatch {
   quarantine_count: number
 }
 
+export interface UpdateChannel {
+  id: string
+  key: string
+  name: string
+  fetch_mode: string
+  url: string
+  enabled: boolean
+  rights_verified: boolean
+  interval_hours: number
+  expected_license: string
+  source_key: string
+  content_kind: string
+  auto_activate_allowed: boolean
+  max_bytes: number
+  require_signature: boolean
+  signature_key_id: string | null
+  last_etag: string | null
+  last_version: string | null
+  last_content_hash: string | null
+  last_run_at: string | null
+  next_run_at: string | null
+  notes_de: string | null
+}
+
+export interface UpdateRun {
+  id: string
+  channel_id: string
+  channel_key: string | null
+  trigger: string
+  status: string
+  etag: string | null
+  version_label: string | null
+  content_hash: string | null
+  signature_ok: boolean | null
+  license_changed: boolean
+  detected_license: string | null
+  http_status: number | null
+  error_de: string | null
+  summary: Record<string, unknown>
+  import_batch_id: string | null
+  dataset_version_id: string | null
+  started_at: string
+  finished_at: string | null
+}
+
+export interface UpdateChangelog {
+  id: string
+  run_id: string
+  channel_key: string
+  event: string
+  detail_de: string
+  created_at: string
+}
+
+export interface DataUpdatesDashboard {
+  scheduler_enabled: boolean
+  default_interval_hours: number
+  lock_held: boolean
+  lock_by: string | null
+  channels: UpdateChannel[]
+  recent_runs: UpdateRun[]
+  pending_approvals: UpdateRun[]
+  recent_changelog: UpdateChangelog[]
+  next_scheduled_at: string | null
+  last_run_at: string | null
+  disclaimer_de: string
+}
+
 export interface VehicleConfirmPayload {
   brand_slug: string
   model_id: string
@@ -518,6 +586,36 @@ export const api = {
   },
   importRollback(batchId: string) {
     return request<ImportBatch>(`/api/diagnostic-data/import/${batchId}/rollback`, { method: 'POST' })
+  },
+  dataUpdatesDashboard() {
+    return request<DataUpdatesDashboard>('/api/data-updates/dashboard')
+  },
+  dataUpdateChannels() {
+    return request<UpdateChannel[]>('/api/data-updates/channels')
+  },
+  patchUpdateChannel(key: string, body: Partial<Pick<UpdateChannel, 'enabled' | 'rights_verified' | 'interval_hours' | 'auto_activate_allowed' | 'notes_de'>>) {
+    return request<UpdateChannel>(`/api/data-updates/channels/${encodeURIComponent(key)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    })
+  },
+  runUpdateChannel(key: string, force = false) {
+    return request<UpdateRun>(`/api/data-updates/channels/${encodeURIComponent(key)}/run`, {
+      method: 'POST',
+      body: JSON.stringify({ force }),
+    })
+  },
+  approveUpdateRun(runId: string) {
+    return request<UpdateRun>(`/api/data-updates/runs/${runId}/approve`, { method: 'POST' })
+  },
+  rejectUpdateRun(runId: string, reason_de?: string) {
+    return request<UpdateRun>(`/api/data-updates/runs/${runId}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de }),
+    })
+  },
+  rollbackUpdateRun(runId: string) {
+    return request<UpdateRun>(`/api/data-updates/runs/${runId}/rollback`, { method: 'POST' })
   },
 }
 

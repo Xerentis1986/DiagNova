@@ -86,7 +86,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Mandantenfähigkeit / Kundenverwaltung | fehlt |
 | Abo/Zahlungen | fehlt |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
-| Automatische Daten-Updates | fehlt (Phase 07) |
+| Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
 | LKW / Tuning | optional später; gesperrt |
@@ -106,8 +106,12 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `data_license_sources` | Lizenz/Attribution/Prüfdatum |
 | `diag_*` | Versionierte Hersteller/Modelle/ECU/DTC/PID/Units/Service |
 | `import_*` | Batches, Quarantäne, Applied-Records für Rollback |
+| `update_channels` | Freigegebene Update-Quellen (HTTPS/Fixture), Rechteflag |
+| `update_runs` | Update-Läufe inkl. Staging/Freigabe/Rollback |
+| `update_changelogs` | Änderungsprotokoll |
+| `update_job_locks` | Sperre gegen parallele Jobs |
 
-Migrationen: `001_initial`, `002_phase02`, `003_phase06`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 
@@ -140,6 +144,10 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`. Runtime zusätzlich `c
 | POST | `/api/diagnostic-data/import/preview` · `preview-csv` · `preview-file` | JWT admin/technician |
 | POST | `/api/diagnostic-data/import/{id}/apply` · `rollback` | JWT admin/technician |
 | POST | `/api/diagnostic-data/import/odx` | JWT → 403 |
+| GET | `/api/data-updates/dashboard` · `/channels` · `/runs` · `/changelog` | JWT admin |
+| PATCH | `/api/data-updates/channels/{key}` | JWT admin |
+| POST | `/api/data-updates/channels/{key}/run` · `/runs/{id}/approve|reject|rollback` | JWT admin |
+| POST | `/api/data-updates/ssrf-check` · `/run-due` | JWT admin |
 
 **Hinweis:** WebSocket-Endpunkte sind im MVP **nicht** implementiert (README erwähnt REST + WebSocket als Zielarchitektur; aktuell nur REST).
 
@@ -156,6 +164,7 @@ Migrationen: `001_initial`, `002_phase02`, `003_phase06`. Runtime zusätzlich `c
 | `/reports` | ReportsPage | Berichte / Export |
 | `/ecu` | EcuPage | OBD-Mehr-ECU simuliert; kein Blindscan |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
+| `/data-updates` | DataUpdatesPage | Admin: Kanäle, Läufe, Freigabe, Rollback |
 | `/planned/:moduleId` | PlannedPage | service, coding, … |
 
 ## Test-Inventar

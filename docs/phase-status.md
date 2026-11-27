@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 06 abgeschlossen (simuliert getestet). **Phase 07 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-05-Branch `cursor/diagnova-phase-05-multiprotocol-dd50`; Arbeit auf `cursor/diagnova-phase-06-database-80ce`.
+**Aktuelle Arbeitsphase:** 07 abgeschlossen (simuliert getestet). **Phase 08 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-06-Branch `cursor/diagnova-phase-06-database-80ce` (PR #11); Arbeit auf `cursor/diagnova-phase-07-updates-4111`.
 
 ## Phasenübersicht
 
@@ -15,7 +15,7 @@
 | **04** | Echte OBD-II/EOBD | **Simuliert getestet** | Parser/Allowlist/Clear-Gate; **keine HW-Freigabe** |
 | **05** | Multiprotokoll / Mehr-ECU | **Simuliert getestet** | Schichten, Matrix, ISO-TP/UDS-NRC, OBD-ECUs; DoIP/J2534 Prep |
 | **06** | Diagnosedatenbank & Importe | **Simuliert getestet** | Modell/Import/Quarantäne/Rollback; DTC unbekannt; ODX 403 |
-| 07 | Automatische Daten-Updates | Offen | |
+| **07** | Automatische Daten-Updates | **Simuliert getestet** | Scheduler/SSRF/Signatur/Staging/Freigabe/Rollback; keine echten Feeds |
 | 08 | Werkstatt- & Kundenverwaltung | Offen | |
 | 09 | Fahrzeug-History / Akte | Offen | |
 | 10 | PDF-Berichte & Archiv | Offen | MVP-PDF rudimentär |
@@ -28,6 +28,19 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 07 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Kanäle | Allowlist Fixture/HTTPS; default disabled; keine kommerziellen Feeds |
+| Scheduler | Intervall 24h, Lock, Retry/Backoff; default aus |
+| Sicherheit | SSRF, Größenlimit, keine Archive, Hash/HMAC |
+| Publish | Auto nur DTC-beschreibend; Prozeduren/Adressen manuell |
+| UI | `/data-updates` Admin-Dashboard |
+| Blocker | BLK-OEM (echte Quellen), BLK-HW, BLK-DOCKER |
+
+Details: [phase-07-abschluss.md](./phase-07-abschluss.md).
 
 ## Phase 06 – Kurzfazit
 
