@@ -1,9 +1,10 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–05  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–17 Abnahme  
 **Datenmodus API-UI:** Standard **simuliert** (`data_source: "simulated"`).  
 **Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben.  
-**Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.
+**Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.  
+**Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt; Phase 18/19 nicht gestartet.
 
 ## Architekturüberblick
 
@@ -99,9 +100,10 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Software-/Connector-Updates | Phase 14/15 Versionen 0.15.x; Signatur/Staging/Admin-Freigabe/Rollback/Busy-Gate; Prod-Auto ohne Zertifikat gesperrt |
 | Sicherheit / Datenschutz / QA | Phase 15: Threat Model, Rate-Limits, Audit-Redaction, Security-Header, DSGVO-Prozess-Docs, Backup-Hinweise; UI `/security` |
 | World4You / Plesk Deploy | Phase 16: Install-Doku, Compose Prod, Proxy/WS, Backup/Rollback; Live verifiziert (Smoke) |
+| Gesamtabnahme / Freigabe | Phase 17: Checkliste + Go/No-Go; **kein** `freigegeben`; STOP vor Prod-Rollout |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
-| LKW / Tuning | optional später; gesperrt |
+| LKW / Tuning | optional Phase 18/19; **nicht gestartet**; gesperrt |
 | Produktives Deployment | Phase 16: Docs/Compose/Proxy/Backup; Live Ist unter diagnova.codekreativ.at; Redeploy nur mit Freigabe |
 
 ## Datenbank-Inventar
@@ -217,6 +219,8 @@ Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` +
 | `/data-updates` | DataUpdatesPage | Admin: Diagnosedaten-Kanäle, Läufe, Freigabe, Rollback |
 | `/software-updates` | SoftwareUpdatesPage | Admin: Software/Connector-Versionen, Signatur, Freigabe, Rollback |
 | `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
+| `/security` | SecurityPage | Threat-/Backup-Hinweise (Phase 15) |
+| `/workshop`, `/customers`, `/work-orders` | Workshop/Kunden | Phase 08 |
 
 ## Test-Inventar
 
