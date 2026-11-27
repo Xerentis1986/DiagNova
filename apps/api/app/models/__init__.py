@@ -37,13 +37,23 @@ from app.models.vehicle_history import (
 from app.models.service import ServiceRun
 from app.models.coding import CodingRun
 from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
+from app.models.subscriptions import (
+    CriticalOperationLock,
+    DeviceBinding,
+    PaymentWebhookEvent,
+    Subscription,
+    TenantRegistration,
+    WorkshopInvitation,
+)
 
 __all__ = [
     "AuditLog",
     "CodingRun",
+    "CriticalOperationLock",
     "Customer",
     "CustomerVehicleLink",
     "DataLicenseSource",
+    "DeviceBinding",
     "DiagDatasetVersion",
     "DiagDtcDefinition",
     "DiagEcuDefinition",
@@ -58,10 +68,13 @@ __all__ = [
     "ImportAppliedRecord",
     "ImportBatch",
     "ImportQuarantineItem",
+    "PaymentWebhookEvent",
     "ServiceRun",
     "SessionDtcResult",
     "SessionEcuResult",
     "SessionMeasurementSample",
+    "Subscription",
+    "TenantRegistration",
     "UpdateChangelog",
     "UpdateChannel",
     "UpdateJobLock",
@@ -73,4 +86,5 @@ __all__ = [
     "VehicleRecordNote",
     "WorkOrder",
     "Workshop",
+    "WorkshopInvitation",
 ]

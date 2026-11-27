@@ -15,6 +15,8 @@ PLANNED = [
     {"id": "service", "label": "Servicefunktionen (Gates, deaktiviert)", "status": "simulated"},
     {"id": "guided", "label": "Geführte Diagnose", "status": "simulated"},
     {"id": "coding", "label": "Codierung / Programmierung (Gates)", "status": "simulated"},
+    {"id": "subscriptions", "label": "Abos & Lizenzen (Stub)", "status": "simulated"},
+    {"id": "admin", "label": "Administration", "status": "simulated"},
     {"id": "actuator", "label": "Stellglieddiagnose (Gerüst)", "status": "planned"},
     {"id": "flash", "label": "Flash Live", "status": "planned"},
 ]

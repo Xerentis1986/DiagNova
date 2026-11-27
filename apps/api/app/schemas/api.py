@@ -19,6 +19,7 @@ class TokenUser(BaseModel):
     is_active: bool
     theme_preference: Literal["light", "dark", "system"] = "system"
     workshop_id: str | None = None
+    is_platform_admin: bool = False
 
 
 class LoginResponse(BaseModel):

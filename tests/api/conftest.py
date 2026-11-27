@@ -19,6 +19,7 @@ os.environ["SEED_ADMIN_EMAIL"] = "admin@example.com"
 os.environ["SEED_ADMIN_PASSWORD"] = "AdminDemo123!"
 os.environ["SEED_TECH_EMAIL"] = "tech@example.com"
 os.environ["SEED_TECH_PASSWORD"] = "TechDemo123!"
+os.environ["PAYMENT_WEBHOOK_DEMO_SECRET"] = "diagnova-phase13-payment-stub-hmac-not-for-prod"
 
 # Clear settings cache / re-import engine with sqlite
 from app.core.config import get_settings

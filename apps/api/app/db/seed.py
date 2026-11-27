@@ -27,6 +27,7 @@ from app.models.diagnostic_data import (
     DiagUnitDefinition,
 )
 from app.services.simulator import simulated_vin
+from app.services.subscriptions import ensure_demo_subscription
 
 DEMO_WORKSHOP_NAME = "Demo-Werkstatt DiagNova"
 
@@ -225,6 +226,7 @@ def seed_all(db: Session) -> None:
                 hashed_password=hash_password(settings.seed_admin_password),
                 role="admin",
                 workshop_id=workshop.id,
+                is_platform_admin=True,
             )
         )
         db.add(
@@ -234,6 +236,7 @@ def seed_all(db: Session) -> None:
                 hashed_password=hash_password(settings.seed_tech_password),
                 role="technician",
                 workshop_id=workshop.id,
+                is_platform_admin=False,
             )
         )
         db.commit()
@@ -242,7 +245,19 @@ def seed_all(db: Session) -> None:
         for u in db.query(User).filter(User.workshop_id.is_(None)).all():
             u.workshop_id = workshop.id
             db.add(u)
+        # Seed-Admin als Plattform-Admin markieren (Phase 13)
+        admin = (
+            db.query(User)
+            .filter(User.email == settings.seed_admin_email.lower())
+            .first()
+        )
+        if admin and not getattr(admin, "is_platform_admin", False):
+            admin.is_platform_admin = True
+            db.add(admin)
         db.commit()
+
+    # Phase 13 – Demo-Abo Stub
+    ensure_demo_subscription(db, workshop)
 
     customers = (
         db.query(Customer).filter(Customer.workshop_id == workshop.id).order_by(Customer.display_name).all()

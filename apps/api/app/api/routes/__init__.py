@@ -1,7 +1,9 @@
 from fastapi import APIRouter
 
 from app.api.routes import (
+    admin,
     auth,
+    billing,
     catalog,
     coding,
     customers,
@@ -10,10 +12,12 @@ from app.api.routes import (
     diagnostic_data,
     diagnostics,
     guided,
+    invitations,
     preferences,
     protocols,
     reports,
     service,
+    subscriptions,
     vehicle_history,
     vehicles,
     work_orders,
@@ -38,3 +42,7 @@ api_router.include_router(data_updates.router)
 api_router.include_router(service.router)
 api_router.include_router(guided.router)
 api_router.include_router(coding.router)
+api_router.include_router(subscriptions.router)
+api_router.include_router(invitations.router)
+api_router.include_router(billing.router)
+api_router.include_router(admin.router)

@@ -22,6 +22,8 @@ import { VehiclesPage } from './pages/VehiclesPage'
 import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import { WorkshopPage } from './pages/WorkshopPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { SubscriptionsPage } from './pages/SubscriptionsPage'
+import { AdminPage } from './pages/AdminPage'
 import type { ReactNode } from 'react'
 
 const qc = new QueryClient({
@@ -70,6 +72,8 @@ export default function App() {
                 <Route path="service" element={<ServicePage />} />
                 <Route path="guided" element={<GuidedPage />} />
                 <Route path="coding" element={<CodingPage />} />
+                <Route path="subscriptions" element={<SubscriptionsPage />} />
+                <Route path="admin" element={<AdminPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="settings" element={<SettingsPage />} />

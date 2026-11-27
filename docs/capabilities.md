@@ -40,7 +40,9 @@
 | Servicekatalog + Gates | ServicePage `/service` | `/api/service/*` | `service_runs` | Live deaktiviert; DPF-Off excluded |
 | Geführte Diagnose | GuidedPage `/guided` | `/api/guided/*` | — | simuliert; keine Auto-Reparatur |
 | Codierung / Programmierung Gates | CodingPage `/coding` | `/api/coding/*` | `coding_runs` | Flash/Schreiben DEAKTIVIERT; Identifikation lesend |
-| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live); Codierung → `/coding` |
+| Abos / Lizenzen (Stub) | SubscriptionsPage `/subscriptions` | `/api/subscriptions/*`, `/api/billing/*` | `subscriptions`, Geräte, Webhooks | SIMULATION – keine echte Zahlung |
+| Plattform-Admin | AdminPage `/admin` | `/api/admin/*` | Audit/Abos/Nutzer | nur `is_platform_admin` |
+| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live); Abos/Admin → UI |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
 
@@ -90,8 +92,8 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Codierung / Flash | Phase 12 Gates/UI `/coding`; Identifikation lesend; Schreiben/Flash DEAKTIVIERT; J2534 Prep |
 | Stellglieder | Gerüst im Servicekatalog, deaktiviert |
 | DPF-Off / Abgas-Deaktivierung | ausgeschlossen |
-| Mandantenfähigkeit / Kundenverwaltung | Phase 08 simuliert (serverseitige `workshop_id`, CRUD, DSGVO-Export) |
-| Abo/Zahlungen | fehlt |
+| Mandantenfähigkeit / Kundenverwaltung | Phase 08 + 13: Registrierung/Einladungen/Geräte; serverseitige Isolation |
+| Abo/Zahlungen | Phase 13 Stub/Simulation (HMAC-Webhooks); **kein** echter PSP (BLK-PAY) |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
 | Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
@@ -103,8 +105,14 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 
 | Tabelle | Zweck |
 |---------|-------|
-| `users` | Auth, Rolle, `theme_preference`, `workshop_id` (Mandant) |
+| `users` | Auth, Rolle, `theme_preference`, `workshop_id`, `is_platform_admin` |
 | `workshops` | Werkstattprofil, Logo, Aufbewahrungstage |
+| `subscriptions` | Abo/Lizenzstatus, Entitlements (Phase 13 Stub) |
+| `workshop_invitations` | Mandanten-Einladungen |
+| `device_bindings` | Gerätebindung an Lizenz |
+| `payment_webhook_events` | Idempotente Stub-Webhooks |
+| `critical_operation_locks` | Laufende kritische Ops (kein Abrupt-Abbruch) |
+| `tenant_registrations` | Selbstregistrierung Mandant |
 | `customers` | Kunden mandantengebunden, Archiv/Anonymisierung |
 | `customer_vehicles` | Zuordnung Kunde↔Fahrzeug |
 | `work_orders` | Aufträge mit Status/Notizen/Reparatur |
@@ -189,6 +197,8 @@ Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich
 | `/service` | ServicePage | Servicekatalog + Gates |
 | `/guided` | GuidedPage | Geführte Diagnose |
 | `/coding` | CodingPage | Identifikation, Kompatibilitäts-/Spannungs-Gates; Flash aus |
+| `/subscriptions` | SubscriptionsPage | Tarife, Stub-Zahlung, Geräte, Einladungen |
+| `/admin` | AdminPage | Plattform-Admin: Nutzer, Abos, Audit, Support |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/data-updates` | DataUpdatesPage | Admin: Kanäle, Läufe, Freigabe, Rollback |
 | `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
@@ -203,6 +213,7 @@ Migrationen: `001_initial` … `008_phase11`, `009_phase12`. Runtime zusätzlich
 | API Phase 09 | `tests/api/test_phase09_vehicle_history.py` | Akte, Lookup, Abort, Vergleich, Mandant, Persistenz |
 | API Phase 11 | `tests/api/test_phase11_service.py` | Servicekatalog, Gates, Guided |
 | API Phase 12 | `tests/api/test_phase12_coding.py` | Identifikation, Spannungs-/VIN-Gates, Flash 403 |
+| API Phase 13 | `tests/api/test_phase13_subscriptions.py` | Abos, Webhook-Stub, Kündigung, Mandanten, Admin |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

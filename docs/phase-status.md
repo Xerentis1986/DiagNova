@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 12 abgeschlossen (simuliert getestet). **STOP** – Phase 13 nicht starten (Coordinator).  
-**Basis:** Phase-11-Branch `cursor/diagnova-phase-11-service-8820` (PR #19); Arbeit auf `cursor/diagnova-phase-12-coding-2dd5`.
+**Aktuelle Arbeitsphase:** 13 abgeschlossen (simuliert getestet). **STOP** – Phase 14 nicht starten (Coordinator).  
+**Basis:** Phase-12-Branch `cursor/diagnova-phase-12-coding-2dd5` (PR #20); Arbeit auf `cursor/diagnova-phase-13-subscriptions-66ed`.
 
 ## Phasenübersicht
 
@@ -22,13 +22,29 @@
 | **10B** | Premium-Branding | **Simuliert getestet** | Designsystem/Shell |
 | **11** | Erweiterte Diagnose / Service | **Simuliert getestet** | Katalog/Gates/Guided; Live deaktiviert; DPF-Off excluded |
 | **12** | Codierung / Programmierung | **Simuliert getestet** | Identifikation + Gates; Flash/Schreiben DEAKTIVIERT; J2534 Prep |
-| 13 | Abos & Administration | Offen | |
+| **13** | Abos & Administration | **Simuliert getestet** | Stub-Zahlung, Entitlements, Mandanten/Einladungen, Admin-UI; kein echter PSP |
 | 14 | Software-/Connector-Updates | Offen | |
 | 15 | Sicherheit / Datenschutz / QA | Offen | Auth-Basis vorhanden |
 | 16 | World4You Ubuntu/Plesk Deploy | Offen / parallel vorbereitet | kein Prod-Deploy |
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 13 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Tarife | PKW Trial/Basic/Pro; LKW/Kombi geplant (nicht buchbar) |
+| Zahlung | Nur Mock/Stub, HMAC-Webhooks, Idempotenz; keine echten Abbuchungen |
+| Entitlements | Serverseitig; past_due/canceled sperren neue Ops |
+| Kritische Ops | Abo-Ablauf/Kündigung bricht laufende Ops nicht ab |
+| Mandanten | Registrierung, Einladungen, Gerätebindung, Isolation |
+| Admin | Plattform-Dashboard Nutzer/Abos/Audit/Support/Datenversionen |
+| UI | `/subscriptions`, `/admin` – Designsystem 10B |
+| Tests | pytest **104 passed**; Build OK |
+| Blocker | BLK-PAY, BLK-LEGAL |
+
+Details: [phase-13-abschluss.md](./phase-13-abschluss.md).
 
 ## Phase 12 – Kurzfazit
 

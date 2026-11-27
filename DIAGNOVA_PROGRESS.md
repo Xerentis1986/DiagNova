@@ -23,6 +23,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-10B-Branch | `cursor/diagnova-phase-10b-brand-4bc4` |
 | Phase-11-Branch | `cursor/diagnova-phase-11-service-8820` |
 | Phase-12-Branch | `cursor/diagnova-phase-12-coding-2dd5` |
+| Phase-13-Branch | `cursor/diagnova-phase-13-subscriptions-66ed` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -42,13 +43,34 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 10 PDF-Berichte/Archiv | 🟢 Simuliert getestet | A4/Unicode/Snapshot/Archiv |
 | 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens |
 | 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided |
-| 12 Codierung/Programmierung | 🟢 Simuliert getestet | Gates/Identifikation; Flash DEAKTIVIERT; **Phase 13 nicht gestartet** |
-| 13–15 | ⚪ Offen | |
+| 12 Codierung/Programmierung | 🟢 Simuliert getestet | Gates/Identifikation; Flash DEAKTIVIERT |
+| 13 Abos/Administration | 🟢 Simuliert getestet | Stub-Zahlung; Entitlements; Admin; **Phase 14 nicht gestartet** |
+| 14–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 13 Abonnements und Administration
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-12-coding-2dd5` (PR #20)
+- Tarife PKW + LKW/Kombi geplant; Entitlements serverseitig; Trial/Kündigung
+- Payment nur Stub (HMAC-Webhooks, Idempotenz); keine echten Abbuchungen
+- Mandantenregistrierung, Einladungen, Gerätebindung; kritische Ops ohne Abrupt-Abbruch
+- Admin-UI `/admin`, Abo-UI `/subscriptions` (Designsystem 10B); Alembic `010_phase13`
+- Tests: pytest **104 passed**, Frontend build OK
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 14 nicht gestartet**
+- Kein echter Payment-Provider; DACH-Steuer/AVV offen; kein Prod-Deploy
+
+**Nächster Schritt:** Coordinator orchestriert Phase 14.
+
+Details: [docs/phase-13-abschluss.md](docs/phase-13-abschluss.md)
 
 ### 2026-11-27 – Phase 12 Steuergerätecodierung und Programmierung
 

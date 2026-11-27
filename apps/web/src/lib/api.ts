@@ -11,6 +11,85 @@ export interface User {
   is_active: boolean
   theme_preference: ThemePreference
   workshop_id?: string | null
+  is_platform_admin?: boolean
+}
+
+export interface SubscriptionPlan {
+  code: string
+  name_de: string
+  vehicle_scope: 'pkw' | 'lkw' | 'kombi'
+  billing_period: string
+  price_cents_demo: number | null
+  currency: string
+  trial_days: number
+  max_devices: number
+  release_status: 'available' | 'planned'
+  description_de: string
+  entitlements: string[]
+  payment_note_de: string
+}
+
+export interface SubscriptionInfo {
+  id: string
+  workshop_id: string
+  plan_code: string
+  plan_name_de?: string | null
+  status: string
+  payment_provider: string
+  external_ref?: string | null
+  trial_ends_at?: string | null
+  current_period_start?: string | null
+  current_period_end?: string | null
+  cancel_at_period_end: boolean
+  canceled_at?: string | null
+  grace_until?: string | null
+  entitlements: string[]
+  is_example_data: boolean
+  license_active: boolean
+  allows_new_operations: boolean
+  has_running_critical_ops: boolean
+  message_de: string
+  payment_note_de: string
+}
+
+export interface DeviceBinding {
+  id: string
+  workshop_id: string
+  device_name: string
+  device_fingerprint: string
+  platform: string
+  last_seen_at: string | null
+  revoked_at: string | null
+  is_example_data: boolean
+}
+
+export interface Invitation {
+  id: string
+  workshop_id: string
+  email: string
+  role: UserRole
+  status: string
+  expires_at: string
+  accepted_at: string | null
+  token?: string | null
+}
+
+export interface AdminDashboard {
+  payment_mode: string
+  payment_note_de: string
+  workshops_count: number
+  users_count: number
+  active_subscriptions: number
+  past_due_subscriptions: number
+  canceled_subscriptions: number
+  invitations_pending: number
+  devices_bound: number
+  data_versions: { id: string; label: string; status: string; created_at: string | null }[]
+  adapter_summary: Record<string, unknown>[]
+  recent_audit: Record<string, unknown>[]
+  recent_webhooks: Record<string, unknown>[]
+  subscriptions: SubscriptionInfo[]
+  legal_open_items_de: string[]
 }
 
 export interface Vehicle {
@@ -1331,6 +1410,167 @@ export const api = {
     return request<unknown>(`/api/coding/operations/${encodeURIComponent(code)}/flash`, {
       method: 'POST',
     })
+  },
+  subscriptionPlans() {
+    return request<SubscriptionPlan[]>('/api/subscriptions/plans')
+  },
+  mySubscription() {
+    return request<SubscriptionInfo>('/api/subscriptions/me')
+  },
+  startTrial(plan_code = 'pkw_trial') {
+    return request<SubscriptionInfo>('/api/subscriptions/me/trial', {
+      method: 'POST',
+      body: JSON.stringify({ plan_code }),
+    })
+  },
+  activateStubPlan(plan_code: string, acknowledge_stub_payment: boolean) {
+    return request<SubscriptionInfo>('/api/subscriptions/me/activate-stub', {
+      method: 'POST',
+      body: JSON.stringify({ plan_code, acknowledge_stub_payment }),
+    })
+  },
+  cancelSubscription(at_period_end = true, reason_de?: string) {
+    return request<SubscriptionInfo>('/api/subscriptions/me/cancel', {
+      method: 'POST',
+      body: JSON.stringify({ at_period_end, reason_de }),
+    })
+  },
+  checkEntitlement(feature: string, for_new_operation = true) {
+    const qs = `?for_new_operation=${for_new_operation ? 'true' : 'false'}`
+    return request<{
+      feature: string
+      allowed: boolean
+      subscription_status: string | null
+      reason_de: string
+      running_critical_ops: number
+      interrupt_forbidden: boolean
+    }>(`/api/subscriptions/me/entitlements/${encodeURIComponent(feature)}${qs}`)
+  },
+  listDevices() {
+    return request<DeviceBinding[]>('/api/subscriptions/me/devices')
+  },
+  bindDevice(body: { device_name: string; device_fingerprint: string; platform?: string }) {
+    return request<DeviceBinding>('/api/subscriptions/me/devices', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  revokeDevice(deviceId: string) {
+    return request<DeviceBinding>(`/api/subscriptions/me/devices/${deviceId}/revoke`, {
+      method: 'POST',
+    })
+  },
+  listInvitations() {
+    return request<Invitation[]>('/api/workshop/me/invitations')
+  },
+  createInvitation(email: string, role: UserRole = 'technician') {
+    return request<Invitation>('/api/workshop/me/invitations', {
+      method: 'POST',
+      body: JSON.stringify({ email, role }),
+    })
+  },
+  acceptInvitation(body: { token: string; full_name: string; password: string }) {
+    return request<Invitation>('/api/invitations/accept', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  registerTenant(body: {
+    workshop_name: string
+    admin_email: string
+    admin_full_name: string
+    password: string
+    country?: string
+    plan_code?: string
+    acknowledge_demo: boolean
+  }) {
+    return request<{
+      workshop_id: string
+      user_id: string
+      subscription_id: string
+      message_de: string
+      is_example_data: boolean
+    }>('/api/tenants/register', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  billingStubInfo() {
+    return request<{
+      provider: string
+      live_payments: boolean
+      message_de: string
+      legal_note_de: string
+    }>('/api/billing/stub-info')
+  },
+  signStubWebhook(body: Record<string, unknown>) {
+    return request<{
+      signature: string
+      header: string
+      body_raw: string
+      payment_note_de: string
+    }>('/api/billing/demo/sign-payload', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  postStubWebhook(bodyRaw: string, signatureHeader: string) {
+    return request<{
+      id: string
+      event_id: string
+      status: string
+      signature_valid: boolean
+      message_de: string
+      subscription: SubscriptionInfo | null
+    }>('/api/billing/webhooks/mock', {
+      method: 'POST',
+      body: bodyRaw,
+      headers: { 'X-DiagNova-Stub-Signature': signatureHeader },
+    })
+  },
+  startCriticalOp(operation_kind: string, resource_ref: string, message_de?: string) {
+    return request<{
+      id: string
+      status: string
+      operation_kind: string
+      resource_ref: string
+      message_de: string | null
+    }>('/api/subscriptions/me/critical-ops', {
+      method: 'POST',
+      body: JSON.stringify({ operation_kind, resource_ref, message_de }),
+    })
+  },
+  finishCriticalOp(opId: string) {
+    return request<{ id: string; status: string }>(
+      `/api/subscriptions/me/critical-ops/${opId}/finish`,
+      { method: 'POST' },
+    )
+  },
+  adminDashboard() {
+    return request<AdminDashboard>('/api/admin/dashboard')
+  },
+  adminUsers() {
+    return request<
+      {
+        id: string
+        email: string
+        full_name: string
+        role: string
+        workshop_id: string | null
+        workshop_name: string | null
+        is_active: boolean
+        is_platform_admin: boolean
+      }[]
+    >('/api/admin/users')
+  },
+  adminSupport() {
+    return request<{
+      past_due: SubscriptionInfo[]
+      pending_invitations: number
+      running_critical_ops: Record<string, unknown>[]
+      payment_note_de: string
+      legal_open_items_de: string[]
+    }>('/api/admin/support')
   },
 }
 

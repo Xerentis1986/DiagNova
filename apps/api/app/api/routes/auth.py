@@ -43,6 +43,7 @@ def login(body: LoginRequest, db: DbSession) -> LoginResponse:
             is_active=user.is_active,
             theme_preference=theme,  # type: ignore[arg-type]
             workshop_id=user.workshop_id,
+            is_platform_admin=bool(getattr(user, "is_platform_admin", False)),
         ),
     )
 
@@ -62,4 +63,5 @@ def me(user: CurrentUser) -> TokenUser:
         is_active=user.is_active,
         theme_preference=theme,  # type: ignore[arg-type]
         workshop_id=user.workshop_id,
+        is_platform_admin=bool(getattr(user, "is_platform_admin", False)),
     )

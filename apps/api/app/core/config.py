@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     update_scheduler_poll_sec: int = 60
     # HMAC-Schlüssel nur für Demo/Tests (nie Produktion-Secret committen)
     update_hmac_demo_secret: str = "diagnova-phase07-demo-hmac-not-for-prod"
+    # Phase 13 – Payment-Stub Webhook-HMAC (kein echter PSP)
+    payment_webhook_demo_secret: str = "diagnova-phase13-payment-stub-hmac-not-for-prod"
 
     @property
     def cors_origin_list(self) -> list[str]:

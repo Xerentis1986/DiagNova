@@ -25,6 +25,8 @@ class User(Base):
     workshop_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("workshops.id"), nullable=True, index=True
     )
+    # Phase 13 – plattformweite Admin-UI (nicht Mandanten-Admin)
+    is_platform_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     theme_preference: Mapped[str] = mapped_column(String(16), default="system")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

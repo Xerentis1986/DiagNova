@@ -97,8 +97,8 @@
 | REQ-11-ACT | Stellgliedtests | 11 | `implementiert` (Gerüst, deaktiviert) | Katalog `ACTUATOR_TEST_GENERIC` ohne Routine-IDs | Gate-Tests | Freigabe + Hardware + OEM |
 | REQ-12-CODE | Steuergerätecodierung | 12 | `simuliert getestet` | Katalog/Gates `/api/coding/*`, UI `/coding`; Schreiben ohne Spec/Berechtigung DEAKTIVIERT | `test_phase12_*` | BLK-OEM, BLK-RELEASE |
 | REQ-12-FLASH | Programmierung / J2534 | 12 | `simuliert getestet` (Framework) | Flash-Pfad immer 403; J2534/D-PDU Prep; Spannungs-/Kompatibilitäts-Gates | `test_phase12_*` | BLK-OEM, BLK-HW, BLK-J2534, Freigabe |
-| REQ-13-SUB | Abos, Entitlements, Tarife | 13 | `geplant` | — | — | BLK-PAY, BLK-LEGAL |
-| REQ-13-ADMIN | Admin-Dashboard Nutzer/Abo/Audit | 13 | `geplant` | — | — | — |
+| REQ-13-SUB | Abos, Entitlements, Tarife | 13 | `simuliert getestet` | Tarife PKW + LKW/Kombi geplant; Trial/Kündigung; Stub-Zahlung; Geräte; kritische Ops ohne Abrupt-Abbruch | `test_phase13_*` | BLK-PAY, BLK-LEGAL |
+| REQ-13-ADMIN | Admin-Dashboard Nutzer/Abo/Audit | 13 | `simuliert getestet` | `/api/admin/*`, UI `/admin`; Einladungen/Registrierung; Audit/Support | `test_phase13_*` | Plattform-Admin; kein echter PSP |
 | REQ-14-UPD | Software-/Connector-Updates, Signatur | 14 | `geplant` | Version API `0.1.0` hardcodiert | — | Zertifikat |
 | REQ-14-MIG | DB-Migrationen mit Backup-Plan | 14 | `geplant` | Alembic `001_initial` vorhanden | — | — |
 | REQ-15-SEC | Threat Model, Rate Limits, IDOR, CSRF | 15 | `geplant` (Basis Auth vorhanden) | bcrypt/JWT/CORS/Audit | Auth-Tests | — |
