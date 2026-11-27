@@ -37,7 +37,9 @@
 | Bericht erzeugen | ReportsPage | `POST /api/reports` | `diagnostic_reports` Snapshot+Hash | Demo/Simulation markiert |
 | CSV-/PDF-Export | ReportsPage | `…/export.csv`, `…/export.pdf` | — | A4 Unicode, Demo-WM |
 | Berichtsarchiv | ReportsPage | `GET /api/reports`, `…/archive`, Purge | `007_phase10` | Mandant 404 |
-| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ |
+| Servicekatalog + Gates | ServicePage `/service` | `/api/service/*` | `service_runs` | Live deaktiviert; DPF-Off excluded |
+| Geführte Diagnose | GuidedPage `/guided` | `/api/guided/*` | — | simuliert; keine Auto-Reparatur |
+| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Codierung/Flash) |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
 
@@ -83,7 +85,10 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 |-------|--------|
 | Hardwaregetestete OBD-Kommunikation | fehlt (BLK-HW) – Parser/Simulator OK |
 | Live-Clear ohne Freigabe | deaktiviert; Gate Pflicht |
-| OEM-Service / Codierung / Flash / Stellglieder | UI „Geplant“, keine Logik |
+| OEM-Service Live-Schreiben | Katalog Phase 11 mit Gates; Ausführung deaktiviert (BLK-OEM/HW/RELEASE) |
+| Codierung / Flash | UI „Geplant“, keine Logik |
+| Stellglieder | Gerüst im Servicekatalog, deaktiviert |
+| DPF-Off / Abgas-Deaktivierung | ausgeschlossen |
 | Mandantenfähigkeit / Kundenverwaltung | Phase 08 simuliert (serverseitige `workshop_id`, CRUD, DSGVO-Export) |
 | Abo/Zahlungen | fehlt |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
@@ -118,8 +123,9 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `update_runs` | Update-Läufe inkl. Staging/Freigabe/Rollback |
 | `update_changelogs` | Änderungsprotokoll |
 | `update_job_locks` | Sperre gegen parallele Jobs |
+| `service_runs` | Phase-11 Gate-/Audit-Läufe (kein Live-Schreiben) |
 
-Migrationen: `001_initial`, `002_phase02`, `003_phase06`, `004_phase07`, `005_phase08`, `006_phase09`. Runtime zusätzlich `create_all` + Seed.
+Migrationen: `001_initial` … `007_phase10`, `008_phase11`. Runtime zusätzlich `create_all` + Seed.
 
 ## API-Inventar (MVP)
 

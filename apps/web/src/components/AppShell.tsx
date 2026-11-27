@@ -45,7 +45,8 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/vehicle-record', label: 'Fahrzeugakte', icon: <IconFleet /> },
   { to: '/reports', label: 'Berichte', icon: <IconReports /> },
   { to: '/ecu', label: 'Steuergeräte', icon: <IconDiagnose /> },
-  { to: '/planned/service', label: 'Service', planned: true, icon: <IconWorkshop /> },
+  { to: '/guided', label: 'Geführte Diagnose', icon: <IconDiagnose /> },
+  { to: '/service', label: 'Service', icon: <IconWorkshop /> },
   { to: '/planned/coding', label: 'Codierung', planned: true, icon: <IconSettings /> },
 ]
 

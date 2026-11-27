@@ -11,8 +11,10 @@ import { CustomersPage } from './pages/CustomersPage'
 import { DataUpdatesPage } from './pages/DataUpdatesPage'
 import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
 import { EcuPage } from './pages/EcuPage'
+import { GuidedPage } from './pages/GuidedPage'
 import { PlannedPage } from './pages/PlannedPage'
 import { ReportsPage } from './pages/ReportsPage'
+import { ServicePage } from './pages/ServicePage'
 import { VehicleSelectPage } from './pages/VehicleSelectPage'
 import { VehicleRecordPage } from './pages/VehicleRecordPage'
 import { VehiclesPage } from './pages/VehiclesPage'
@@ -64,6 +66,8 @@ export default function App() {
                 <Route path="diagnostics" element={<DiagnosticsPage />} />
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="ecu" element={<EcuPage />} />
+                <Route path="service" element={<ServicePage />} />
+                <Route path="guided" element={<GuidedPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="settings" element={<SettingsPage />} />

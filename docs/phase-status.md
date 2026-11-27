@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 10 abgeschlossen (simuliert getestet). **Phase 11 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-09-Branch `cursor/diagnova-phase-09-history-f3fe` (PR #14); Arbeit auf `cursor/diagnova-phase-10-pdf-7d82`.
+**Aktuelle Arbeitsphase:** 11 abgeschlossen (simuliert getestet). **STOP** – Phase 12 nicht starten (Coordinator).  
+**Basis:** Phase-10B-Branch `cursor/diagnova-phase-10b-brand-4bc4` (PR #18); Arbeit auf `cursor/diagnova-phase-11-service-8820`.
 
 ## Phasenübersicht
 
@@ -19,7 +19,8 @@
 | **08** | Werkstatt- & Kundenverwaltung | **Simuliert getestet** | Mandant/Rollen/Kunden/Aufträge/DSGVO; keine Produktivdaten |
 | **09** | Fahrzeug-History / Akte | **Simuliert getestet** | Zeitstrahl, Vergleich, Messwerte; Demo getrennt |
 | **10** | PDF-Berichte & Archiv | **Simuliert getestet** | A4/Unicode/Archiv/Snapshot; Demo-WM |
-| 11 | Erweiterte Diagnose / Service | Offen | UI-Platzhalter |
+| **10B** | Premium-Branding | **Simuliert getestet** | Designsystem/Shell |
+| **11** | Erweiterte Diagnose / Service | **Simuliert getestet** | Katalog/Gates/Guided; Live deaktiviert; DPF-Off excluded |
 | 12 | Codierung / Programmierung | Offen | UI-Platzhalter; Schreibpfade gesperrt |
 | 13 | Abos & Administration | Offen | |
 | 14 | Software-/Connector-Updates | Offen | |
@@ -28,6 +29,19 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 11 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Katalog | Öl/Batterie/EPB/DPF/Injektor/Drossel/Lenkwinkel/Stellglied/Grundeinstellung – Specs + Gates |
+| Safety | Voraussetzungen, Phrase, Timeout, Abbruch, Audit; Live 403; DPF-Off excluded |
+| Guided | ECU-Überblick, Messwertgruppen, DTC-Hilfe (unbekannt bleibt unbekannt) |
+| UI | `/service`, `/guided` – Designsystem 10B |
+| Tests | pytest **90 passed**; Build OK |
+| Blocker | BLK-OEM, BLK-HW, BLK-RELEASE, BLK-SAFETY |
+
+Details: [phase-11-abschluss.md](./phase-11-abschluss.md).
 
 ## Phase 10 – Kurzfazit
 

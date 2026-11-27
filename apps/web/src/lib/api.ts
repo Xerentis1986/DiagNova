@@ -588,6 +588,89 @@ export interface VehicleConfirmPayload {
   notes?: string | null
 }
 
+export interface ServiceProcedure {
+  code: string
+  name_de: string
+  category: string
+  safety_class: string
+  release_status: string
+  enabled: boolean
+  write_allowed: boolean
+  prerequisites: { id: string; label_de: string }[]
+  confirmation_phrase: string | null
+  timeout_seconds: number
+  abort_strategy_de: string
+  result_checks_de: string[]
+  ecu_roles: string[]
+  compatibility_de: string
+  source_license_de: string
+  notes_de: string
+  blockers: string[]
+  data_source: string
+  oem_procedure_invented: boolean
+}
+
+export interface ServiceCatalog {
+  data_source: string
+  disclaimer_de: string
+  procedures: ServiceProcedure[]
+  excluded: { code: string; name_de: string; reason_de?: string; safety_class?: string }[]
+  live_execution_available: boolean
+  hardware_live: boolean
+}
+
+export interface ServiceVehicleState {
+  ignition_on?: boolean
+  adapter_connected?: boolean
+  battery_voltage_ok?: boolean
+  operator_confirm?: boolean
+  oem_spec_present?: boolean
+  safe_work_area?: boolean
+  exhaust_safe?: boolean
+}
+
+export interface ServiceRun {
+  id: string
+  procedure_code: string
+  status: string
+  scenario: string | null
+  data_source: string
+  prerequisites: { id: string; label_de: string; met: boolean; detail_de?: string | null }[]
+  result: Record<string, unknown>
+  message_de: string | null
+  abort_reason_de: string | null
+  write_commands_sent: boolean
+  started_at: string
+  ended_at: string | null
+}
+
+export interface MeasurementGroup {
+  id: string
+  label_de: string
+  pid_names: string[]
+  notes_de: string
+  data_source: string
+}
+
+export interface DtcHelp {
+  code: string
+  description_de: string | null
+  description_status: string
+  severity: string | null
+  help_de: string
+  source: string
+  data_source: string
+  repair_auto_generated: boolean
+}
+
+export interface GuidedOverview {
+  data_source: string
+  disclaimer_de: string
+  ecu_summary: Record<string, unknown>
+  measurement_groups: MeasurementGroup[]
+  dtc_help_hint_de: string
+}
+
 class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -1011,6 +1094,62 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(body),
     })
+  },
+  serviceCatalog() {
+    return request<ServiceCatalog>('/api/service/catalog')
+  },
+  serviceProcedure(code: string) {
+    return request<ServiceProcedure>(`/api/service/procedures/${encodeURIComponent(code)}`)
+  },
+  startServiceRun(
+    code: string,
+    body: {
+      vehicle_id?: string | null
+      confirmation_phrase?: string | null
+      vehicle_state?: ServiceVehicleState
+      scenario?: 'normal' | 'missing_prereq' | 'abort' | 'comm_loss'
+      acknowledge_disabled?: boolean
+      acknowledge_no_oem_write?: boolean
+    },
+  ) {
+    return request<ServiceRun>(`/api/service/procedures/${encodeURIComponent(code)}/start`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  abortServiceRun(runId: string, reason_de?: string) {
+    return request<ServiceRun>(`/api/service/runs/${runId}/abort`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de: reason_de || 'Bedienerabbruch' }),
+    })
+  },
+  serviceRuns() {
+    return request<ServiceRun[]>('/api/service/runs')
+  },
+  serviceRun(id: string) {
+    return request<ServiceRun>(`/api/service/runs/${id}`)
+  },
+  executeServiceLive(code: string) {
+    return request<unknown>(`/api/service/procedures/${encodeURIComponent(code)}/execute-live`, {
+      method: 'POST',
+    })
+  },
+  guidedOverview() {
+    return request<GuidedOverview>('/api/guided/overview')
+  },
+  measurementGroups() {
+    return request<MeasurementGroup[]>('/api/guided/measurement-groups')
+  },
+  measurementGroup(groupId: string, vehicleId: string) {
+    return request<{
+      data_source: string
+      group: MeasurementGroup
+      readings: { name: string; value: number; unit?: string }[]
+      message_de: string
+    }>(`/api/guided/measurement-groups/${encodeURIComponent(groupId)}?vehicle_id=${encodeURIComponent(vehicleId)}`)
+  },
+  dtcHelp(code: string) {
+    return request<DtcHelp>(`/api/guided/dtc/${encodeURIComponent(code)}`)
   },
 }
 
