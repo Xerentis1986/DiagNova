@@ -27,6 +27,8 @@ bin/
 obj/
 *.user
 *.suo
+**/publish/
+*.exe
 
 # IDE / OS
 .idea/

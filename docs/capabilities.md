@@ -1,12 +1,13 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–19 integriert; Phase 20 Audit  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–20 (20 = Systemprüfung / NO-GO kommerziell)  
 **Datenmodus API-UI:** Standard **simuliert** (`data_source: "simulated"`).  
-**Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben.  
-**Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.  
+**Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben; **keine** fertige EXE im Repo.  
+**Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung; Logos Text-Fallback.  
 **Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt.  
 **Phase 18:** Chiptuning-Architektur `/tuning` – **Geplant/deaktiviert**; keine Maps/Flash.  
-**Phase 19:** LKW Architektur/Flags/UI „Geplant“ – **keine** J1939-Diagnose.
+**Phase 19:** LKW Architektur/Flags/UI „Geplant“ – **keine** J1939-Diagnose.  
+**Phase 20:** Integration 18+19; kommerziell **NO-GO**; siehe `docs/phase-20-commercial-readiness.md`.
 
 ## Architekturüberblick
 

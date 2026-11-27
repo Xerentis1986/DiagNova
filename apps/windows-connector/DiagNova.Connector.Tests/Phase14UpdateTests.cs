@@ -1,4 +1,5 @@
 using DiagNova.Connector.Updates;
+using Xunit;
 
 namespace DiagNova.Connector.Tests;
 

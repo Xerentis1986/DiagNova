@@ -29,7 +29,7 @@
 | **17** | Gesamtabnahme | **Erledigt (Docs/Abnahme)** | Checkliste + Go/No-Go; **NO-GO** Voll-Launch; STOP Prod-Rollout |
 | **18** | Chiptuning (optional) | **Simuliert getestet** (Architektur) | Baselines/Gates/UI; Map/Flash/Aktivierung **gesperrt**; keine Algorithmen |
 | **19** | LKW (optional, Architektur) | **Architektur (Docs/Flags/UI)** | J1939/RP1210 Prep; Diagnose bewusst aus; UI „Geplant“ |
-| **20** | Systemprüfung / Einsatzbereitschaft | **In Arbeit** | Audit, Fixes, GO/NO-GO kommerziell |
+| **20** | Systemprüfung / Einsatzbereitschaft | **Erledigt (Docs/Audit)** | 18+19 integriert; **NO-GO** kommerziell; Smoke + Fixes |
 
 ## Phase 19 – Kurzfazit
 
@@ -54,9 +54,21 @@ Details: [phase-19-abschluss.md](./phase-19-abschluss.md), [lkw-j1939-architectu
 | Persistenz | Alembic `013_phase18` |
 | Abnahme | Rollen, Dokumente, Versionen, Simulation getestet |
 | Blocker | BLK-LEGAL, BLK-OEM, BLK-HW, BLK-RELEASE |
-| Nächste Phase | **19 nicht gestartet** |
+| Nächste Phase | Phase 20 Systemprüfung (18+19 integriert) |
 
 Details: [phase-18-abschluss.md](./phase-18-abschluss.md).
+
+## Phase 20 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Basis | Merge Phase 18 + 19 auf Phase-17-Tip |
+| Fixes | Doppelter Dashboard-LKW-Eintrag; fehlendes `using Xunit` in Phase14UpdateTests; csproj-Version 0.15.0 |
+| Tests | pytest **148 passed**; Web-Build OK; `dotnet test` **32 passed** |
+| Live Smoke | `/` + `/health` 200 (read-only); kein Redeploy |
+| Verdict | **NO-GO** kommerzieller Vollbetrieb; Pilot-Demo bedingt |
+
+Details: [phase-20-abschluss.md](./phase-20-abschluss.md), [phase-20-commercial-readiness.md](./phase-20-commercial-readiness.md).
 
 ## Phase 17 – Kurzfazit
 

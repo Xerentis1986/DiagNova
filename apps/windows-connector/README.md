@@ -22,6 +22,16 @@ dotnet test
 dotnet run --project DiagNova.Connector
 ```
 
+### Windows-EXE / Publish (ehrlicher Stand)
+
+Im Repo liegt **keine** fertige `.exe` und kein Installer-Artefakt. Für eine lokale Self-Contained-EXE (nur manuell, nicht CI-Ship):
+
+```powershell
+dotnet publish DiagNova.Connector -c Release -r win-x64 --self-contained true -o .\publish\win-x64
+```
+
+Ausgabe landet unter `publish/win-x64/` (gitignored). Ohne Code-Signing-Zertifikat **kein** produktives Auto-Update (siehe `docs/connector-installer.md`). Bluetooth-SPP-Connect und echte COM-Hardware sind **nicht** hardwaregetestet.
+
 ## API (Auszug, alle außer `/pair*` mit Bearer)
 
 | Methode | Pfad | Zweck |

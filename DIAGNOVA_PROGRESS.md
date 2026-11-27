@@ -58,9 +58,30 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 17 Abnahme | 🟢 Docs/Abnahme | Checkliste + **NO-GO** Voll-Launch; **STOP** Prod-Rollout |
 | 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
-| 20 Systemprüfung | 🟡 In Arbeit | Audit / Fixes / GO-NO-GO kommerziell |
+| 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
 
 ## Chronik
+
+### 2026-11-27 – Phase 20 Systemprüfung und Einsatzbereitschaft
+
+**Erledigt**
+
+- Basis: Merge Phase 18 (PR #29) + Phase 19 (PR #27) auf Phase-17-Tip (PR #26) → `cursor/diagnova-phase-20-readiness-e3f2`
+- Audit-Matrix implementiert / getestet / simuliert / nicht verifiziert
+- Fixes: doppelter Dashboard-`lkw`, `using Xunit` Phase14-Tests, csproj-Version 0.15.0, Publish-Doku, `.gitignore`
+- Tests: pytest **148 passed**, Web-Build OK, `dotnet test` **32 passed**
+- Live Smoke read-only: `/` + `/health` 200; kein Redeploy
+- Berichte: `docs/phase-20-abschluss.md`, `phase-20-commercial-readiness.md`, `phase-20-checklist.md`
+
+**Nicht gemacht (bewusst)**
+
+- Keine Flash-/Service-Schreibfreigaben
+- Kein Prod-Redeploy
+- Keine erfundenen HW-/Lizenz-Ergebnisse
+
+**Verdict:** **NO-GO** kommerzieller Vollbetrieb; Pilot-Demo bedingt nach Betreiberfreigabe.
+
+Details: [docs/phase-20-abschluss.md](docs/phase-20-abschluss.md)
 
 ### 2026-11-27 – Phase 19 LKW/Nutzfahrzeug Architektur
 
