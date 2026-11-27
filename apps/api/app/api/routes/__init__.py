@@ -6,6 +6,7 @@ from app.api.routes import (
     billing,
     catalog,
     coding,
+    commerce,
     customers,
     dashboard,
     data_updates,
@@ -54,3 +55,4 @@ api_router.include_router(software_updates.router)
 api_router.include_router(security.router)
 api_router.include_router(tuning.router)
 api_router.include_router(lkw.router)
+api_router.include_router(commerce.router)

@@ -7,7 +7,8 @@
 **Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt.  
 **Phase 18:** Chiptuning-Architektur `/tuning` – **Geplant/deaktiviert**; keine Maps/Flash.  
 **Phase 19:** LKW Architektur/Flags/UI „Geplant“ – **keine** J1939-Diagnose.  
-**Phase 20:** Integration 18+19; kommerziell **NO-GO**; siehe `docs/phase-20-commercial-readiness.md`.
+**Phase 20:** Integration 18+19; kommerziell **NO-GO**; siehe `docs/phase-20-commercial-readiness.md`.  
+**Phase 21:** B2B/B2C Commerce `/commerce` (Simulation); OBD-DIAG/Delphi **blocked**; Steuer `draft_needs_review`.
 
 ## Architekturüberblick
 

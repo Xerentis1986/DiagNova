@@ -25,6 +25,9 @@ builder.Services.AddSingleton<ISerialTransportFactory, SerialTransportFactory>()
 builder.Services.AddSingleton<Elm327DriverPrep>();
 builder.Services.AddSingleton<AdapterConnectionManager>();
 builder.Services.AddSingleton<IDiagnosticAdapter>(sp => sp.GetRequiredService<AdapterConnectionManager>());
+builder.Services.AddSingleton<AdapterRegistry>();
+builder.Services.AddSingleton<HardwareInventoryProbe>();
+builder.Services.AddSingleton<J2534PassThruAbstraction>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
@@ -120,16 +123,17 @@ app.MapPost("/pair", async (HttpRequest req, PairingService pairingSvc, Diagnost
     });
 });
 
-app.MapGet("/health", (IDiagnosticAdapter adapter) => Results.Json(new
+app.MapGet("/health", (IDiagnosticAdapter adapter, AdapterRegistry registry) => Results.Json(new
 {
     status = "ok",
-    phase = 14,
+    phase = 21,
     version = ConnectorVersion.Version,
     adapter = adapter.Name,
+    selected_adapter_id = registry.SelectedAdapterId,
     data_source = adapter.DataSource,
     is_simulator = adapter.IsSimulator,
     platform = RuntimeInformation.OSDescription,
-    message_de = "Connector Phase 14 – Software-Updates/Busy-Gate (Simulator). Hardwarefreigabe ausstehend."
+    message_de = "Connector Phase 21 – Multi-Adapter + Inventur. Keine erfundenen HW-Erfolge. Hardwarefreigabe ausstehend."
 }));
 
 app.MapGet("/version", () => Results.Json(new
@@ -180,6 +184,46 @@ app.MapPost("/updates/rollback", (UpdateService updates) => Results.Json(updates
 app.MapGet("/protocols", () => Results.Json(ProtocolCatalog.Summary()));
 app.MapGet("/capability-matrix", () => Results.Json(AdapterCapabilityMatrix.Matrix()));
 app.MapGet("/ecu/categories", () => Results.Json(MultiEcuService.CategoriesOverview()));
+
+app.MapGet("/adapters", (AdapterRegistry registry) => Results.Json(registry.ListProfiles()));
+app.MapGet("/adapters/{adapterId}", (string adapterId, AdapterRegistry registry) =>
+{
+    var profile = registry.GetProfile(adapterId);
+    return profile is null ? Results.NotFound(new { error = "adapter_not_found" }) : Results.Json(profile);
+});
+app.MapPost("/adapters/select", async (HttpRequest req, AdapterRegistry registry) =>
+{
+    var body = await req.ReadFromJsonAsync<SelectAdapterRequest>();
+    if (body is null || string.IsNullOrWhiteSpace(body.AdapterId))
+    {
+        return Results.BadRequest(new { error = "adapter_id_required" });
+    }
+    try
+    {
+        return Results.Json(registry.Select(body.AdapterId));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
+});
+app.MapPost("/adapters/auto-detect", async (AdapterRegistry registry, CancellationToken ct) =>
+    Results.Json(await registry.AutoDetectAsync(ct)));
+app.MapPost("/adapters/connection-test", (AdapterRegistry registry) => Results.Json(registry.ConnectionTest()));
+app.MapGet("/adapters/selected/capabilities", (AdapterRegistry registry) => Results.Json(registry.Capabilities()));
+app.MapGet("/hardware/inventory", async (HardwareInventoryProbe probe, CancellationToken ct) =>
+    Results.Json(await probe.ProbeAsync(ct)));
+app.MapGet("/hardware/manufacturer-inquiry-draft", () => Results.Json(new
+{
+    draft_de = HardwareInventoryProbe.ManufacturerInquiryDraft(),
+    note_de = "Nur Textvorlage – kein automatischer Versand an Hersteller."
+}));
+app.MapGet("/j2534/status", (J2534PassThruAbstraction j2534) => Results.Json(j2534.Describe()));
+app.MapPost("/j2534/open", async (HttpRequest req, J2534PassThruAbstraction j2534) =>
+{
+    var body = await req.ReadFromJsonAsync<J2534OpenRequest>();
+    return Results.Json(j2534.TryOpen(body?.DllPath));
+});
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 
@@ -424,7 +468,9 @@ app.MapGet("/capabilities", () => Results.Json(new
         new { id = "j2534-passthru", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "doip-ethernet", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "vgate-vlinker-mc-plus", status = "blocked", note_de = "Windows-SPP-Variante nicht verifiziert (BLK-ADAPTER)" },
-        new { id = "delphi-autocom", status = "blocked", note_de = "Keine dokumentierte öffentliche Schnittstelle" }
+        new { id = "obd-diag-2055", status = "blocked", note_de = "Keine freie Entwickler-API nachgewiesen; ELM nicht angenommen" },
+        new { id = "delphi-autocom", status = "blocked", note_de = "Keine dokumentierte öffentliche Schnittstelle; Herstellerfreigabe nötig" },
+        new { id = "j2534-passthru", status = "planned", note_de = "Abstraktion ohne DLL-Bindung" }
     },
     limitations_de = new[]
     {
@@ -455,3 +501,5 @@ public sealed record ClearApproveRequest(
     string? OperatorNote = null);
 public sealed record ClearDtcRequest(string ApprovalToken);
 public sealed record StageUpdateRequest(string TargetVersion, bool AdminApproved = false);
+public sealed record SelectAdapterRequest(string AdapterId);
+public sealed record J2534OpenRequest(string? DllPath = null);

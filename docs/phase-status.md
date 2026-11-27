@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 20 Systemprüfung / kommerzielle Einsatzbereitschaft. Phase 17–19 integriert (18+19 auf 17). **STOP** vor Prod-Rollout.  
-**Basis:** Merge `cursor/diagnova-phase-18-chiptuning-c46a` + `cursor/diagnova-phase-19-lkw-arch-9892` → `cursor/diagnova-phase-20-readiness-e3f2`.
+**Aktuelle Arbeitsphase:** 21 B2B/B2C-Abrechnung + Adapter-Recherche. **STOP** vor Prod-Rollout / HW-Claims.  
+**Basis:** Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` → `cursor/diagnova-phase-21-billing-adapters-e3f2`.
 
 ## Phasenübersicht
 
@@ -30,6 +30,7 @@
 | **18** | Chiptuning (optional) | **Simuliert getestet** (Architektur) | Baselines/Gates/UI; Map/Flash/Aktivierung **gesperrt**; keine Algorithmen |
 | **19** | LKW (optional, Architektur) | **Architektur (Docs/Flags/UI)** | J1939/RP1210 Prep; Diagnose bewusst aus; UI „Geplant“ |
 | **20** | Systemprüfung / Einsatzbereitschaft | **Erledigt (Docs/Audit)** | 18+19 integriert; **NO-GO** kommerziell; Smoke + Fixes |
+| **21** | B2B/B2C Billing + Adapter | **Simuliert getestet / Docs** | Commerce+VIES+Steuer draft; OBD-DIAG/Delphi blocked |
 
 ## Phase 19 – Kurzfazit
 

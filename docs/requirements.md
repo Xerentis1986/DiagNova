@@ -110,6 +110,9 @@
 | REQ-18-TUNE | Optionales Chiptuning (Architektur) | 18 | `simuliert getestet` (Framework; **Aktivierung gesperrt**) | `/api/tuning/*`, UI `/tuning`; Baselines/Historie/Genehmigungen/Gates; Map/Flash/Aktivierung 403; keine Abgasmanipulation | `test_phase18_*` | BLK-LEGAL, BLK-OEM, BLK-HW, BLK-RELEASE |
 | REQ-19-LKW | LKW/J1939/RP1210 Architektur | 19 | `documented_prep` | Architektur/Flags/UI „Geplant“; Diagnose-POSTs 403; kein Parser/Simulator | `test_phase19_*` | BLK-HW (24 V/RP1210), BLK-OEM |
 | REQ-20-AUDIT | Systemprüfung, Integration, kommerzielle Einsatzbereitschaft | 20 | `implementiert` (Docs/Audit) | `docs/phase-20-abschluss.md` | pytest + Web-Build + Live Smoke | BLK-HW, BLK-OEM, BLK-DEPLOY, BLK-LEGAL, BLK-PAY |
+| REQ-21-BILL | B2B/B2C Abrechnung, VIES, Rechnungen, Kündigung | 21 | `simuliert getestet` | `/api/commerce/*`, UI `/commerce` | `test_phase21_*` | BLK-PAY, BLK-LEGAL |
+| REQ-21-TAX | AT-Steuer/OSS/Reverse-Charge konfigurierbar | 21 | `implementiert` (`draft_needs_review`) | `tax_engine.py`, `DIAGNOVA_TAX_CONFIGURATION.md` | Unit/API | Fachprüfung vor Prod |
+| REQ-21-ADP | Multi-Adapter + OBD-DIAG/Delphi Recherche | 21 | `implementiert` / blocked HW | Connector Registry + Status-Docs | `Phase21AdapterRegistryTests` | BLK-ADAPTER, BLK-HW |
 
 ---
 

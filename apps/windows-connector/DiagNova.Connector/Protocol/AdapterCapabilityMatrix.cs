@@ -76,13 +76,25 @@ public static class AdapterCapabilityMatrix
             },
             new
             {
+                adapter_id = "obd-diag-2055",
+                hardware_tested = false,
+                protocols = new Dictionary<string, string>
+                {
+                    ["sae_j1979_obd"] = "blocked_undocumented_api",
+                },
+                blocker = "BLK-ADAPTER",
+                notes_de = "moDiag: OBD-DIAG 2055 / DIAMEX DX 25 USB – keine freie API; ELM nicht angenommen."
+            },
+            new
+            {
                 adapter_id = "delphi-autocom",
                 hardware_tested = false,
                 protocols = new Dictionary<string, string>
                 {
                     ["sae_j2534"] = "blocked",
                 },
-                blocker = "BLK-ADAPTER"
+                blocker = "BLK-ADAPTER",
+                notes_de = "DS150E USB/BT dokumentiert für Delphi-Software – keine Drittanbieter-API."
             },
             new
             {

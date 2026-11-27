@@ -2105,6 +2105,33 @@ export const api = {
   lkwCapabilities() {
     return request<LkwCapabilities>('/api/lkw/capabilities')
   },
+  commerceOverview() {
+    return request<{
+      phase: number
+      live_payments: boolean
+      payment_note_de: string
+      supports: string[]
+      tax_review_status: string
+      message_de: string
+      consumer_disclaimers_de: Record<string, string>
+    }>('/api/commerce/overview')
+  },
+  commerceAccounts() {
+    return request<{ count: number; accounts: Record<string, unknown>[] }>('/api/commerce/accounts')
+  },
+  commerceInvoices(accountId?: string) {
+    const qs = accountId ? `?account_id=${encodeURIComponent(accountId)}` : ''
+    return request<{ count: number; invoices: Record<string, unknown>[] }>(`/api/commerce/invoices${qs}`)
+  },
+  commerceCancel(accountId: string, atPeriodEnd = true) {
+    return request<Record<string, unknown>>(`/api/commerce/accounts/${accountId}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ at_period_end: atPeriodEnd }),
+    })
+  },
+  commerceInvoiceDownloadUrl(invoiceId: string) {
+    return `/api/commerce/invoices/${invoiceId}/download`
+  },
   logout() {
     return request<{ status: string; message_de: string }>('/api/auth/logout', { method: 'POST' })
   },

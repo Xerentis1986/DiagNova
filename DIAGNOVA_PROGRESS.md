@@ -31,6 +31,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-18-Branch | `cursor/diagnova-phase-18-chiptuning-c46a` |
 | Phase-19-Branch | `cursor/diagnova-phase-19-lkw-arch-9892` |
 | Phase-20-Branch | `cursor/diagnova-phase-20-readiness-e3f2` |
+| Phase-21-Branch | `cursor/diagnova-phase-21-billing-adapters-e3f2` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -59,8 +60,25 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 | 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
+| 21 Billing + Adapter | 🟢 Simuliert / Docs | B2B/B2C Commerce; Adapter-Recherche; HW blocked |
 
 ## Chronik
+
+### 2026-11-27 – Phase 21 B2B/B2C-Abrechnung und Adapter
+
+**Erledigt**
+
+- Basis: Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` (PR #30)
+- Commerce API `/api/commerce/*` + UI `/commerce`; VIES-Stub; Steuerengine AT/OSS draft
+- Multi-Adapter-Registry, Inventur, J2534-Abstraktion; OBD-DIAG/Delphi ehrlich blocked
+- Docs: `DIAGNOVA_B2B_B2C_BILLING.md`, `DIAGNOVA_TAX_CONFIGURATION.md`, Adapter-Statusdateien
+- Tests: pytest **154**, dotnet **37**
+
+**Nicht gemacht (bewusst)**
+
+- Kein echter PSP; keine Steuer-Prod-Freigabe; keine erfundenen HW-Tests; kein Herstellerkontakt
+
+Details: [docs/phase-21-abschluss.md](docs/phase-21-abschluss.md)
 
 ### 2026-11-27 – Phase 20 Systemprüfung und Einsatzbereitschaft
 

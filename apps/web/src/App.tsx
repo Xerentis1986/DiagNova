@@ -25,6 +25,7 @@ import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import { WorkshopPage } from './pages/WorkshopPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SubscriptionsPage } from './pages/SubscriptionsPage'
+import { CommercePage } from './pages/CommercePage'
 import { AdminPage } from './pages/AdminPage'
 import { SoftwareUpdatesPage } from './pages/SoftwareUpdatesPage'
 import { SecurityPage } from './pages/SecurityPage'
@@ -78,6 +79,7 @@ export default function App() {
                 <Route path="coding" element={<CodingPage />} />
                 <Route path="tuning" element={<TuningPage />} />
                 <Route path="subscriptions" element={<SubscriptionsPage />} />
+                <Route path="commerce" element={<CommercePage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
