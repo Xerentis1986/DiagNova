@@ -8,6 +8,7 @@ using DiagNova.Connector.Logging;
 using DiagNova.Connector.Obd;
 using DiagNova.Connector.Protocol;
 using DiagNova.Connector.Transport;
+using DiagNova.Connector.Updates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,16 +29,18 @@ builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
 builder.Services.AddSingleton<ClearDtcGate>();
+builder.Services.AddSingleton<UpdateBusyGate>();
+builder.Services.AddSingleton<UpdateService>();
 
 var app = builder.Build();
 var log = app.Services.GetRequiredService<DiagnosticProtocolLog>();
 var pairing = app.Services.GetRequiredService<PairingService>();
 
-log.Info("startup", "DiagNova Connector Phase 05 startet", loopbackUrl);
+log.Info("startup", "DiagNova Connector Phase 14 startet", loopbackUrl);
 log.Info("startup", "Pairing-Code erzeugt", pairing.GetPairingInfo().PairingCode);
-Console.WriteLine($"DiagNova Connector – Loopback {loopbackUrl}");
+Console.WriteLine($"DiagNova Connector {ConnectorVersion.Version} – Loopback {loopbackUrl}");
 Console.WriteLine($"Pairing-Code: {pairing.GetPairingInfo().PairingCode} (gilt bis {pairing.GetPairingInfo().PairingExpiresAt:u})");
-Console.WriteLine("Phase 05: Multiprotokoll-Katalog + Mehr-ECU (OBD-Standardadressen). Kein Blindscan.");
+Console.WriteLine("Phase 14: Software-Updates Busy-Gate. Kein ungeprüftes Auto-Install. Kein Blindscan.");
 
 app.Use(async (ctx, next) =>
 {
@@ -120,13 +123,59 @@ app.MapPost("/pair", async (HttpRequest req, PairingService pairingSvc, Diagnost
 app.MapGet("/health", (IDiagnosticAdapter adapter) => Results.Json(new
 {
     status = "ok",
-    phase = 5,
+    phase = 14,
+    version = ConnectorVersion.Version,
     adapter = adapter.Name,
     data_source = adapter.DataSource,
     is_simulator = adapter.IsSimulator,
     platform = RuntimeInformation.OSDescription,
-    message_de = "Connector Phase 05 – Multiprotokoll/Mehr-ECU (Simulator). Hardwarefreigabe ausstehend."
+    message_de = "Connector Phase 14 – Software-Updates/Busy-Gate (Simulator). Hardwarefreigabe ausstehend."
 }));
+
+app.MapGet("/version", () => Results.Json(new
+{
+    component = "connector",
+    version = ConnectorVersion.Version,
+    channel = ConnectorVersion.Channel,
+    note_de = ConnectorVersion.PhaseNoteDe
+}));
+
+app.MapGet("/updates/status", (UpdateService updates) => Results.Json(updates.Status()));
+
+app.MapGet("/updates/busy", (UpdateBusyGate gate) =>
+{
+    var snap = gate.Snapshot();
+    return Results.Json(new
+    {
+        allowed = snap.Allowed,
+        reason_de = snap.ReasonDe,
+        blockers = snap.Blockers
+    });
+});
+
+app.MapPost("/updates/busy/diagnosis/begin", (UpdateBusyGate gate) =>
+{
+    gate.BeginDiagnosis();
+    return Results.Json(gate.Snapshot());
+});
+
+app.MapPost("/updates/busy/diagnosis/end", (UpdateBusyGate gate) =>
+{
+    gate.EndDiagnosis();
+    return Results.Json(gate.Snapshot());
+});
+
+app.MapPost("/updates/stage", async (HttpRequest req, UpdateService updates) =>
+{
+    var body = await req.ReadFromJsonAsync<StageUpdateRequest>();
+    if (body is null || string.IsNullOrWhiteSpace(body.TargetVersion))
+    {
+        return Results.BadRequest(new { error = "target_version_required" });
+    }
+    return Results.Json(updates.TryStageInstall(body.TargetVersion, body.AdminApproved));
+});
+
+app.MapPost("/updates/rollback", (UpdateService updates) => Results.Json(updates.Rollback()));
 
 app.MapGet("/protocols", () => Results.Json(ProtocolCatalog.Summary()));
 app.MapGet("/capability-matrix", () => Results.Json(AdapterCapabilityMatrix.Matrix()));
@@ -405,3 +454,4 @@ public sealed record ClearApproveRequest(
     bool PreReportSaved,
     string? OperatorNote = null);
 public sealed record ClearDtcRequest(string ApprovalToken);
+public sealed record StageUpdateRequest(string TargetVersion, bool AdminApproved = false);

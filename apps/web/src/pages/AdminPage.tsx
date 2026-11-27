@@ -32,7 +32,7 @@ export function AdminPage() {
     <div className="space-y-6">
       <PageHeader
         title="Administration"
-        description="Nutzer, Abos, Datenversionen, Adapter, Support und Audit. Zahlung nur Stub."
+        description="Nutzer, Abos, Datenversionen, Software-Updates, Adapter, Support und Audit. Zahlung nur Stub."
       />
 
       <Panel>
@@ -60,9 +60,12 @@ export function AdminPage() {
               <li key={t}>{t}</li>
             ))}
           </ul>
-          <p className="mt-3 text-sm">
+          <p className="mt-3 flex flex-wrap gap-3 text-sm">
             <Link to="/subscriptions" className="text-[var(--dn-accent)] underline">
               Zur Abo-Verwaltung
+            </Link>
+            <Link to="/software-updates" className="text-[var(--dn-accent)] underline">
+              Software-Updates
             </Link>
           </p>
         </Panel>

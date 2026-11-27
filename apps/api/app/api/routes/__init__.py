@@ -17,6 +17,7 @@ from app.api.routes import (
     protocols,
     reports,
     service,
+    software_updates,
     subscriptions,
     vehicle_history,
     vehicles,
@@ -46,3 +47,4 @@ api_router.include_router(subscriptions.router)
 api_router.include_router(invitations.router)
 api_router.include_router(billing.router)
 api_router.include_router(admin.router)
+api_router.include_router(software_updates.router)

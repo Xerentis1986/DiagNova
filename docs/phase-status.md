@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 13 abgeschlossen (simuliert getestet). **STOP** – Phase 14 nicht starten (Coordinator).  
-**Basis:** Phase-12-Branch `cursor/diagnova-phase-12-coding-2dd5` (PR #20); Arbeit auf `cursor/diagnova-phase-13-subscriptions-66ed`.
+**Aktuelle Arbeitsphase:** 14 abgeschlossen (simuliert getestet). **STOP** – Phase 15 nicht starten (Coordinator).  
+**Basis:** Phase-13-Branch `cursor/diagnova-phase-13-subscriptions-66ed` (PR #21); Arbeit auf `cursor/diagnova-phase-14-software-updates-8f1e`.
 
 ## Phasenübersicht
 
@@ -23,12 +23,29 @@
 | **11** | Erweiterte Diagnose / Service | **Simuliert getestet** | Katalog/Gates/Guided; Live deaktiviert; DPF-Off excluded |
 | **12** | Codierung / Programmierung | **Simuliert getestet** | Identifikation + Gates; Flash/Schreiben DEAKTIVIERT; J2534 Prep |
 | **13** | Abos & Administration | **Simuliert getestet** | Stub-Zahlung, Entitlements, Mandanten/Einladungen, Admin-UI; kein echter PSP |
-| 14 | Software-/Connector-Updates | Offen | |
+| **14** | Software-/Connector-Updates | **Simuliert getestet** | Versionierung/Signatur/Staging/Freigabe/Rollback; getrennt von Daten-Updates; kein Auto-Install |
 | 15 | Sicherheit / Datenschutz / QA | Offen | Auth-Basis vorhanden |
 | 16 | World4You Ubuntu/Plesk Deploy | Offen / parallel vorbereitet | kein Prod-Deploy |
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 14 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Trennung | Software-Updates ≠ Diagnosedaten-Updates (Phase 07) |
+| Versionen | API/Web/Connector `0.14.0` + Kompatibilitätsmatrix |
+| Integrität | SHA-256 + HMAC; manipulierte Pakete abgelehnt |
+| Freigabe | Staging → Admin-Freigabe; keine ungeprüften Auto-Installs |
+| Busy-Gate | Keine Installation während Diagnose/Service/Flash |
+| Rollback | Manuell + automatisch bei Healthcheck-Fail |
+| Prod | Auto-Updates ohne Signaturzertifikat gesperrt |
+| UI | `/software-updates` – Designsystem 10B |
+| Tests | pytest **113 passed**; Web-Build OK |
+| Blocker | BLK-CERT (echtes Code-Signing) |
+
+Details: [phase-14-abschluss.md](./phase-14-abschluss.md).
 
 ## Phase 13 – Kurzfazit
 

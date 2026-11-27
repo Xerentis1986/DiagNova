@@ -24,6 +24,7 @@ import { WorkshopPage } from './pages/WorkshopPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SubscriptionsPage } from './pages/SubscriptionsPage'
 import { AdminPage } from './pages/AdminPage'
+import { SoftwareUpdatesPage } from './pages/SoftwareUpdatesPage'
 import type { ReactNode } from 'react'
 
 const qc = new QueryClient({
@@ -76,6 +77,7 @@ export default function App() {
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
+                <Route path="software-updates" element={<SoftwareUpdatesPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="planned/:moduleId" element={<PlannedPage />} />
               </Route>

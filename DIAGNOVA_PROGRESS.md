@@ -24,6 +24,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-11-Branch | `cursor/diagnova-phase-11-service-8820` |
 | Phase-12-Branch | `cursor/diagnova-phase-12-coding-2dd5` |
 | Phase-13-Branch | `cursor/diagnova-phase-13-subscriptions-66ed` |
+| Phase-14-Branch | `cursor/diagnova-phase-14-software-updates-8f1e` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -44,13 +45,34 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 10B Premium-Branding | 🟢 Simuliert getestet | Designsystem + Shell + Tokens |
 | 11 Erweiterte Diagnose/Service | 🟢 Simuliert getestet | Katalog/Gates/Guided |
 | 12 Codierung/Programmierung | 🟢 Simuliert getestet | Gates/Identifikation; Flash DEAKTIVIERT |
-| 13 Abos/Administration | 🟢 Simuliert getestet | Stub-Zahlung; Entitlements; Admin; **Phase 14 nicht gestartet** |
-| 14–15 | ⚪ Offen | |
+| 13 Abos/Administration | 🟢 Simuliert getestet | Stub-Zahlung; Entitlements; Admin |
+| 14 Software-/Connector-Updates | 🟢 Simuliert getestet | Signatur/Staging/Freigabe/Rollback; **Phase 15 nicht gestartet** |
+| 15 Sicherheit/QA | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 14 Software- und Connector-Updates
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-13-subscriptions-66ed` (PR #21)
+- Software-Updates getrennt von Diagnosedaten-Updates; Versionen API/Web/Connector `0.14.0`
+- Checksum/HMAC, Kompatibilitätsmatrix, Staging, Admin-Freigabe, Healthcheck, Rollback
+- Busy-Gate (Diagnose/Service/Flash); Prod-Auto-Updates ohne Zertifikat gesperrt
+- UI `/software-updates` (Designsystem 10B); Connector `/version` + Update-Busy-Gate; Alembic `011_phase14`
+- Tests: pytest **113 passed**, Frontend build OK
+
+**Nicht gemacht (bewusst)**
+
+- **Phase 15 nicht gestartet**
+- Kein echtes Code-Signing-Zertifikat / kein Prod-Auto-Update; kein Prod-Deploy
+
+**Nächster Schritt:** Coordinator orchestriert Phase 15.
+
+Details: [docs/phase-14-abschluss.md](docs/phase-14-abschluss.md)
 
 ### 2026-11-27 – Phase 13 Abonnements und Administration
 
@@ -65,10 +87,8 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 
 **Nicht gemacht (bewusst)**
 
-- **Phase 14 nicht gestartet**
+- **Phase 14 nicht gestartet** (zum Zeitpunkt des Phase-13-Abschlusses)
 - Kein echter Payment-Provider; DACH-Steuer/AVV offen; kein Prod-Deploy
-
-**Nächster Schritt:** Coordinator orchestriert Phase 14.
 
 Details: [docs/phase-13-abschluss.md](docs/phase-13-abschluss.md)
 
