@@ -1,0 +1,49 @@
+# Env & secrets
+.env
+.env.local
+*.local.php
+.deploy.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+apps/web/dist/
+*.tsbuildinfo
+.npm
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.log
+
+# Docker / data
+postgres_data/
+*.sqlite3
+apps/web/dist/
+
+packages/**/build/
+*.egg-info/
+apps/api/.venv/
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/

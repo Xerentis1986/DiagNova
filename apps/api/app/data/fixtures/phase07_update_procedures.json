@@ -1,0 +1,25 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "phase07-sim-proc-v1",
+  "source_key": "diagnova-structural",
+  "license_name": "DiagNova structural",
+  "manufacturers": [],
+  "models": [],
+  "variants": [],
+  "ecus": [],
+  "dtcs": [],
+  "pids": [],
+  "units": [],
+  "service_procedures": [
+    {
+      "code": "demo-oil-reset",
+      "name_de": "Demo Serviceprozedur (deaktiviert, keine OEM-Schritte)",
+      "prerequisites": [
+        "Zündung an"
+      ],
+      "data_scope": "generic",
+      "enabled": false,
+      "notes_de": "Gerüst ohne ausführbare Schritte – manuelle Freigabe"
+    }
+  ]
+}
