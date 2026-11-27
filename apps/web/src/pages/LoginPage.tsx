@@ -5,8 +5,8 @@ import { ApiError } from '../lib/api'
 
 export function LoginPage() {
   const { user, login, loading } = useAuth()
-  const [email, setEmail] = useState('admin@example.com')
-  const [password, setPassword] = useState('AdminDemo123!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -33,10 +33,10 @@ export function LoginPage() {
             DN
           </div>
           <h1 className="text-2xl font-semibold text-blue-100">DiagNova</h1>
-          <p className="mt-1 text-sm text-slate-400">Werkstatt-Diagnose · Demo-Anmeldung</p>
+          <p className="mt-1 text-sm text-slate-400">Werkstatt-Diagnose · Demo-Umgebung</p>
         </div>
         <div className="dn-banner-sim mb-4 rounded-lg px-3 py-2 text-xs">
-          Demo-Zugang vorkonfiguriert. Alle Diagnosedaten sind <strong>simuliert</strong>.
+          Alle Diagnosedaten sind <strong>simuliert</strong> – keine echte Fahrzeugkommunikation.
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <label className="block text-sm">
@@ -44,6 +44,7 @@ export function LoginPage() {
             <input
               className="w-full rounded-md border border-[var(--dn-border)] bg-slate-950 px-3 py-2"
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -54,6 +55,7 @@ export function LoginPage() {
             <input
               className="w-full rounded-md border border-[var(--dn-border)] bg-slate-950 px-3 py-2"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -69,9 +71,6 @@ export function LoginPage() {
             {busy ? 'Anmelden…' : 'Anmelden'}
           </button>
         </form>
-        <p className="mt-4 text-xs text-slate-500">
-          Seed: admin@example.com / AdminDemo123! · tech@example.com / TechDemo123!
-        </p>
       </div>
     </div>
   )
