@@ -1,10 +1,11 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–17 Abnahme  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–17 Abnahme + Phase 19 Architektur  
 **Datenmodus API-UI:** Standard **simuliert** (`data_source: "simulated"`).  
 **Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben.  
 **Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.  
-**Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt; Phase 18/19 nicht gestartet.
+**Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt.  
+**Phase 19:** LKW Architektur/Flags/UI „Geplant“ – **keine** J1939-Diagnose.
 
 ## Architekturüberblick
 
@@ -43,7 +44,8 @@
 | Codierung / Programmierung Gates | CodingPage `/coding` | `/api/coding/*` | `coding_runs` | Flash/Schreiben DEAKTIVIERT; Identifikation lesend |
 | Abos / Lizenzen (Stub) | SubscriptionsPage `/subscriptions` | `/api/subscriptions/*`, `/api/billing/*` | `subscriptions`, Geräte, Webhooks | SIMULATION – keine echte Zahlung |
 | Plattform-Admin | AdminPage `/admin` | `/api/admin/*` | Audit/Abos/Nutzer | nur `is_platform_admin` |
-| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live); Abos/Admin → UI |
+| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live, LKW); Abos/Admin → UI |
+| LKW Architektur (Phase 19) | LkwPage `/lkw` | `/api/lkw/*` | — | Marken Nav; Caps planned; Diagnose 403 |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
 
@@ -79,7 +81,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Hardware-Live-OBD | Codepfad `data_source=live` für System-COM | BLK-HW Freigabe + realer Test |
 | OEM ABS/Airbag/Komfort | Kategorien unavailable | BLK-OEM / Phase 06 Definitionen |
 | DoIP / J2534 Live | nur Prep-Docs | BLK-HW |
-| J1939 / RP1210 | geplant Phase 19 | BLK-HW |
+| J1939 / RP1210 | Architektur Phase 19 (`documented_prep`); Diagnose aus | BLK-HW |
 | nginx-Conf | Proxy `/api` + SPA + WS-Header; Plesk-Proxy-Snippet | Staging-Subdomain optional |
 | Browser-Pairing-UI | Connector-API fertig | Web-UI Pairing-Seite optional später |
 
@@ -103,7 +105,8 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Gesamtabnahme / Freigabe | Phase 17: Checkliste + Go/No-Go; **kein** `freigegeben`; STOP vor Prod-Rollout |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
-| LKW / Tuning | optional Phase 18/19; **nicht gestartet**; gesperrt |
+| LKW | Phase 19 Architektur; Diagnose gesperrt (403) |
+| Tuning | optional Phase 18; **nicht gestartet**; gesperrt |
 | Produktives Deployment | Phase 16: Docs/Compose/Proxy/Backup; Live Ist unter diagnova.codekreativ.at; Redeploy nur mit Freigabe |
 
 ## Datenbank-Inventar
@@ -218,7 +221,8 @@ Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` +
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/data-updates` | DataUpdatesPage | Admin: Diagnosedaten-Kanäle, Läufe, Freigabe, Rollback |
 | `/software-updates` | SoftwareUpdatesPage | Admin: Software/Connector-Versionen, Signatur, Freigabe, Rollback |
-| `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
+| `/lkw` | LkwPage | Architektur / Caps „Geplant“ |
+| `/planned/:moduleId` | PlannedPage | Flash Live, LKW-Platzhalter u. a. |
 | `/security` | SecurityPage | Threat-/Backup-Hinweise (Phase 15) |
 | `/workshop`, `/customers`, `/work-orders` | Workshop/Kunden | Phase 08 |
 

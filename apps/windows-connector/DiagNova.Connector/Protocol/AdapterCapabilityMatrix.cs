@@ -84,6 +84,20 @@ public static class AdapterCapabilityMatrix
                 },
                 blocker = "BLK-ADAPTER"
             },
+            new
+            {
+                adapter_id = "rp1210-commercial",
+                hardware_tested = false,
+                protocols = new Dictionary<string, string>
+                {
+                    ["rp1210"] = "planned",
+                    ["sae_j1939"] = "planned",
+                    ["sae_j1708_j1587"] = "planned",
+                    ["sae_j1979_obd"] = "not_supported",
+                },
+                blocker = "BLK-HW",
+                notes_de = "Phase 19 Architektur – keine RP1210-DLL-Bindung. PKW-ELM ≠ RP1210."
+            },
         }
     };
 }

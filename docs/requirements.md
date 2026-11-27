@@ -108,7 +108,7 @@
 | REQ-16-TLS | HTTPS Reverse Proxy, WS | 16 | `implementiert` (Ist + Conf) | LE via Plesk; `web.conf` + `plesk-proxy.conf` mit Upgrade-Headern | manuell | Staging optional nicht angelegt |
 | REQ-17-ACC | Gesamtabnahme, Abdeckungsmatrix, Go/No-Go | 17 | `implementiert` (Docs/Abnahme; **NO-GO** Voll-Launch) | `docs/phase-17-abschluss.md`, `docs/phase-17-acceptance-checklist.md` | pytest 126; Web-Build; Live Smoke | BLK-HW, BLK-OEM, BLK-DEPLOY, BLK-LEGAL, BLK-PAY, … – STOP vor Prod-Rollout |
 | REQ-18-TUNE | Optionales Chiptuning (gesperrt) | 18 | `geplant` | bewusst nicht aktiv; Phase nicht gestartet | — | Rechtlich/technisch |
-| REQ-19-LKW | LKW/J1939/RP1210 | 19 | `geplant` | bewusst nicht aktiv; Phase nicht gestartet | — | Hardware 24 V, Spezifikationen |
+| REQ-19-LKW | LKW/J1939/RP1210 Architektur | 19 | `documented_prep` | Architektur/Flags/UI „Geplant“; Diagnose-POSTs 403; kein Parser/Simulator | `test_phase19_*` | BLK-HW (24 V/RP1210), BLK-OEM |
 
 ---
 

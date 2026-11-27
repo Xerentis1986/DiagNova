@@ -17,6 +17,7 @@ PLANNED = [
     {"id": "coding", "label": "Codierung / Programmierung (Gates)", "status": "simulated"},
     {"id": "subscriptions", "label": "Abos & Lizenzen (Stub)", "status": "simulated"},
     {"id": "admin", "label": "Administration", "status": "simulated"},
+    {"id": "lkw", "label": "LKW / Nutzfahrzeug (J1939/RP1210)", "status": "planned"},
     {"id": "actuator", "label": "Stellglieddiagnose (Gerüst)", "status": "planned"},
     {"id": "flash", "label": "Flash Live", "status": "planned"},
 ]
