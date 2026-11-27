@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 07 abgeschlossen (simuliert getestet). **Phase 08 nicht gestartet** – Coordinator orchestriert.  
-**Basis:** Phase-06-Branch `cursor/diagnova-phase-06-database-80ce` (PR #11); Arbeit auf `cursor/diagnova-phase-07-updates-4111`.
+**Aktuelle Arbeitsphase:** 08 abgeschlossen (simuliert getestet). **Phase 09 nicht gestartet** – Coordinator orchestriert.  
+**Basis:** Phase-07-Branch `cursor/diagnova-phase-07-updates-4111` (PR #12); Arbeit auf `cursor/diagnova-phase-08-workshop-d09b`.
 
 ## Phasenübersicht
 
@@ -16,7 +16,7 @@
 | **05** | Multiprotokoll / Mehr-ECU | **Simuliert getestet** | Schichten, Matrix, ISO-TP/UDS-NRC, OBD-ECUs; DoIP/J2534 Prep |
 | **06** | Diagnosedatenbank & Importe | **Simuliert getestet** | Modell/Import/Quarantäne/Rollback; DTC unbekannt; ODX 403 |
 | **07** | Automatische Daten-Updates | **Simuliert getestet** | Scheduler/SSRF/Signatur/Staging/Freigabe/Rollback; keine echten Feeds |
-| 08 | Werkstatt- & Kundenverwaltung | Offen | |
+| **08** | Werkstatt- & Kundenverwaltung | **Simuliert getestet** | Mandant/Rollen/Kunden/Aufträge/DSGVO; keine Produktivdaten |
 | 09 | Fahrzeug-History / Akte | Offen | |
 | 10 | PDF-Berichte & Archiv | Offen | MVP-PDF rudimentär |
 | 11 | Erweiterte Diagnose / Service | Offen | UI-Platzhalter |
@@ -28,6 +28,20 @@
 | 17 | Gesamtabnahme | Offen | |
 | 18 | Chiptuning (optional) | Später | standardmäßig gesperrt |
 | 19 | LKW (optional) | Später | J1939/RP1210 |
+
+## Phase 08 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Mandant | `workshop_id` serverseitig aus Sitzung/JWT; Cross-Tenant → 404 |
+| Werkstatt | Profil, Logo-Data-URL, Aufbewahrungstage, Mitglieder/Rollen |
+| Kunden | CRUD, Suche, Dubletten 409 + Merge, Archiv/Anonymize |
+| Aufträge | Status/Notizen/Reparatur; Löschkonflikt bei offenen Aufträgen |
+| Fahrzeuge | Mandantenfilter, VIN/Kennzeichen/km-Validierung |
+| UI | `/workshop`, `/customers`, `/work-orders` |
+| Blocker | BLK-LEGAL (Rechtsberatung DSGVO), BLK-HW, BLK-DOCKER |
+
+Details: [phase-08-abschluss.md](./phase-08-abschluss.md).
 
 ## Phase 07 – Kurzfazit
 

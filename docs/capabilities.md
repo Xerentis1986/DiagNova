@@ -83,7 +83,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Hardwaregetestete OBD-Kommunikation | fehlt (BLK-HW) – Parser/Simulator OK |
 | Live-Clear ohne Freigabe | deaktiviert; Gate Pflicht |
 | OEM-Service / Codierung / Flash / Stellglieder | UI „Geplant“, keine Logik |
-| Mandantenfähigkeit / Kundenverwaltung | fehlt |
+| Mandantenfähigkeit / Kundenverwaltung | Phase 08 simuliert (serverseitige `workshop_id`, CRUD, DSGVO-Export) |
 | Abo/Zahlungen | fehlt |
 | Diagnosedaten-Import (JSON/CSV) | Phase 06 simuliert (Quarantäne/Rollback); ODX gesperrt |
 | Automatische Daten-Updates | Phase 07 simuliert (Kanäle/Staging/Freigabe/Rollback); keine echten Feeds |
@@ -96,8 +96,12 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 
 | Tabelle | Zweck |
 |---------|-------|
-| `users` | Auth, Rolle, `theme_preference` |
-| `vehicles` | Fahrzeuge inkl. VIN, Kennzeichen, `series`, `odometer_km`, Katalog-IDs |
+| `users` | Auth, Rolle, `theme_preference`, `workshop_id` (Mandant) |
+| `workshops` | Werkstattprofil, Logo, Aufbewahrungstage |
+| `customers` | Kunden mandantengebunden, Archiv/Anonymisierung |
+| `customer_vehicles` | Zuordnung Kunde↔Fahrzeug |
+| `work_orders` | Aufträge mit Status/Notizen/Reparatur |
+| `vehicles` | Fahrzeuge inkl. VIN, Kennzeichen, `workshop_id`/`customer_id`, Archiv |
 | `user_brand_favorites` | Favoriten-Marken pro User |
 | `user_recent_selections` | Zuletzt verwendete Auswahlen |
 | `diagnostic_sessions` | Sitzungen mit `data_source`, DTC-Snapshot JSON |

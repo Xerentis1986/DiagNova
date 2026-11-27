@@ -10,10 +10,13 @@ export interface User {
   role: UserRole
   is_active: boolean
   theme_preference: ThemePreference
+  workshop_id?: string | null
 }
 
 export interface Vehicle {
   id: string
+  workshop_id?: string | null
+  customer_id?: string | null
   make: string
   model: string
   year: number
@@ -28,6 +31,67 @@ export interface Vehicle {
   catalog_variant_id: string | null
   is_example_data: boolean
   notes: string | null
+  archived_at?: string | null
+}
+
+export interface Workshop {
+  id: string
+  name: string
+  legal_name: string | null
+  email: string | null
+  phone: string | null
+  street: string | null
+  postal_code: string | null
+  city: string | null
+  country: string
+  vat_id: string | null
+  has_logo: boolean
+  retention_days: number
+  notes: string | null
+  is_example_data: boolean
+  archived_at: string | null
+}
+
+export interface WorkshopMember {
+  id: string
+  email: string
+  full_name: string
+  role: UserRole
+  is_active: boolean
+}
+
+export interface Customer {
+  id: string
+  workshop_id: string
+  display_name: string
+  email: string | null
+  phone: string | null
+  street: string | null
+  postal_code: string | null
+  city: string | null
+  country: string | null
+  notes: string | null
+  is_example_data: boolean
+  archived_at: string | null
+  anonymized_at: string | null
+  created_at?: string | null
+}
+
+export interface WorkOrder {
+  id: string
+  workshop_id: string
+  customer_id: string | null
+  vehicle_id: string | null
+  created_by_user_id: string | null
+  title: string
+  status: 'open' | 'in_progress' | 'done' | 'cancelled'
+  notes: string | null
+  repair_summary: string | null
+  odometer_km: number | null
+  is_example_data: boolean
+  archived_at: string | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 export interface Brand {
@@ -616,6 +680,89 @@ export const api = {
   },
   rollbackUpdateRun(runId: string) {
     return request<UpdateRun>(`/api/data-updates/runs/${runId}/rollback`, { method: 'POST' })
+  },
+  workshopMe() {
+    return request<Workshop>('/api/workshop/me')
+  },
+  workshopMembers() {
+    return request<WorkshopMember[]>('/api/workshop/me/members')
+  },
+  updateWorkshop(body: Partial<Workshop> & { logo_data_url?: string | null; clear_logo?: boolean }) {
+    return request<Workshop>('/api/workshop/me', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    })
+  },
+  customers(params?: { q?: string; city?: string; include_archived?: boolean }) {
+    const sp = new URLSearchParams()
+    if (params?.q) sp.set('q', params.q)
+    if (params?.city) sp.set('city', params.city)
+    if (params?.include_archived) sp.set('include_archived', 'true')
+    const qs = sp.toString()
+    return request<Customer[]>(`/api/customers${qs ? `?${qs}` : ''}`)
+  },
+  createCustomer(body: {
+    display_name: string
+    email?: string | null
+    phone?: string | null
+    city?: string | null
+    postal_code?: string | null
+    country?: string | null
+    notes?: string | null
+    force?: boolean
+  }) {
+    return request<Customer>('/api/customers', { method: 'POST', body: JSON.stringify(body) })
+  },
+  updateCustomer(id: string, body: Partial<Customer>) {
+    return request<Customer>(`/api/customers/${id}`, { method: 'PATCH', body: JSON.stringify(body) })
+  },
+  mergeCustomer(targetId: string, source_customer_id: string) {
+    return request<Customer>(`/api/customers/${targetId}/merge`, {
+      method: 'POST',
+      body: JSON.stringify({ source_customer_id }),
+    })
+  },
+  async exportCustomer(id: string) {
+    const res = await fetch(`${API_BASE}/api/customers/${id}/export`, { headers: { ...authHeader() } })
+    if (!res.ok) throw new ApiError(res.status, 'Export fehlgeschlagen')
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `customer-${id}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  },
+  deleteCustomer(id: string, mode: 'archive' | 'anonymize' | 'delete', force = false) {
+    return request<{ status: string; customer_id: string }>(`/api/customers/${id}/delete`, {
+      method: 'POST',
+      body: JSON.stringify({ mode, force }),
+    })
+  },
+  workOrders(params?: { status?: string; q?: string; customer_id?: string }) {
+    const sp = new URLSearchParams()
+    if (params?.status) sp.set('status', params.status)
+    if (params?.q) sp.set('q', params.q)
+    if (params?.customer_id) sp.set('customer_id', params.customer_id)
+    const qs = sp.toString()
+    return request<WorkOrder[]>(`/api/work-orders${qs ? `?${qs}` : ''}`)
+  },
+  createWorkOrder(body: {
+    title: string
+    customer_id?: string | null
+    vehicle_id?: string | null
+    notes?: string | null
+    repair_summary?: string | null
+    odometer_km?: number | null
+    status?: WorkOrder['status']
+  }) {
+    return request<WorkOrder>('/api/work-orders', { method: 'POST', body: JSON.stringify(body) })
+  },
+  updateWorkOrder(id: string, body: Partial<WorkOrder>) {
+    return request<WorkOrder>(`/api/work-orders/${id}`, { method: 'PATCH', body: JSON.stringify(body) })
+  },
+  archiveWorkOrder(id: string) {
+    return request<WorkOrder>(`/api/work-orders/${id}/archive`, { method: 'POST' })
   },
 }
 

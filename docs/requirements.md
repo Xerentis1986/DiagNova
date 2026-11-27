@@ -82,10 +82,10 @@
 | REQ-07-SCHED | Scheduler Diagnosedaten-Updates | 07 | `simuliert getestet` | Intervall 24h, Lock, Retry/Backoff; Scheduler default aus | `test_phase07_data_updates` | Keine echten Feeds ohne Rechte |
 | REQ-07-SAFE | SSRF-/Integritäts-/Staging-Schutz | 07 | `simuliert getestet` | HTTPS-Allowlist, Hash/HMAC, Schema-Staging | Phase-07-Tests | — |
 | REQ-07-PUB | Atomare Veröffentlichung + Rollback | 07 | `simuliert getestet` | Auto nur DTC-Texte; Prozeduren/Adressen manuell | Phase-07-Tests | Admin-Freigabe |
-| REQ-08-WS | Werkstattprofil, Rollen, Kunden | 08 | `geplant` | nur User-Rollen ohne Mandant | — | — |
-| REQ-08-CUST | Kunden/Fahrzeuge CRUD, Dubletten | 08 | `geplant` | Fahrzeuge read-only Seed | — | — |
-| REQ-08-TENANT | Mandanten-ID serverseitig | 08 | `geplant` | kein Multi-Tenant | — | — |
-| REQ-08-DSGVO | Export/Löschung/Aufbewahrung | 08 | `geplant` | — | — | BLK-LEGAL |
+| REQ-08-WS | Werkstattprofil, Rollen, Kunden | 08 | `simuliert getestet` | `/api/workshop/*`, Rollen admin/tech/viewer | `test_phase08_*` | — |
+| REQ-08-CUST | Kunden/Fahrzeuge CRUD, Dubletten | 08 | `simuliert getestet` | CRUD, Suche, Merge, Aufträge | Phase-08-Tests | — |
+| REQ-08-TENANT | Mandanten-ID serverseitig | 08 | `simuliert getestet` | `workshop_id` in JWT/User; Cross-Tenant 404 | Isolationstest | — |
+| REQ-08-DSGVO | Export/Löschung/Aufbewahrung | 08 | `simuliert getestet` | JSON-Export, Archiv/Anonymize, Löschkonflikt | Phase-08-Tests | BLK-LEGAL (Rechtsberatung) |
 | REQ-09-HIST | Fahrzeugakte / Zeitstrahl | 09 | `geplant` | Sessions-Liste rudimentär | — | — |
 | REQ-09-CMP | Vorher/Nachher DTC-Vergleich | 09 | `geplant` | — | — | — |
 | REQ-09-TREND | Messwertverlauf begrenzt speichern | 09 | `geplant` | — | — | — |

@@ -16,6 +16,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-05-Branch | `cursor/diagnova-phase-05-multiprotocol-dd50` |
 | Phase-06-Branch | `cursor/diagnova-phase-06-database-80ce` |
 | Phase-07-Branch | `cursor/diagnova-phase-07-updates-4111` |
+| Phase-08-Branch | `cursor/diagnova-phase-08-workshop-d09b` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -29,31 +30,36 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 04 OBD-II/EOBD | 🟢 Simuliert getestet | Parser/Allowlist/Clear-Gate – **keine HW-Freigabe** |
 | 05 Multiprotokoll / Mehr-ECU | 🟢 Simuliert getestet | Schichten/Matrix/ISO-TP/UDS |
 | 06 Diagnosedatenbank | 🟢 Simuliert getestet | Modell/Import/Quarantäne; DTC unbekannt |
-| 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe; **Phase 08 nicht gestartet** |
-| 08–15 | ⚪ Offen | |
+| 07 Auto-Daten-Updates | 🟢 Simuliert getestet | Kanäle/SSRF/Signatur/Staging/Freigabe |
+| 08 Werkstatt/Kunden | 🟢 Simuliert getestet | Mandant/Rollen/CRUD/DSGVO; **Phase 09 nicht gestartet** |
+| 09–15 | ⚪ Offen | |
 | 16 Deploy-Vorbereitung | 🟡 Parallel | World4You/Plesk außerhalb; kein Prod |
 | 17 Abnahme | ⚪ Offen | |
 | 18–19 Optional | ⚪ Später | J1939 in 19 |
 
 ## Chronik
 
-### 2026-11-27 – Phase 07 Automatische Diagnosedaten-Updates
+### 2026-11-27 – Phase 08 Werkstatt- und Kundenverwaltung
 
 **Erledigt**
 
-- Branch von `origin/cursor/diagnova-phase-06-database-80ce` (PR #11)
-- Alembic `004_phase07` + Update-Kanäle/Läufe/Changelog/Lock
-- Scheduler (default aus), SSRF, Hash/HMAC, Staging, Auto nur DTC-Texte, manuelle Freigabe, Rollback
-- Admin-UI `/data-updates`; keine kommerziellen Feeds; HTTPS ohne Rechte gesperrt
-- Tests: pytest **66 passed**
+- Branch von `origin/cursor/diagnova-phase-07-updates-4111` (PR #12)
+- Alembic `005_phase08` + Werkstatt/Kunden/Aufträge; `workshop_id` serverseitig
+- Rollen admin/technician/viewer; Cross-Tenant 404; DSGVO-Export/Archiv/Anonymize
+- UI `/workshop`, `/customers`, `/work-orders`; nur Beispieldaten im Seed
+- Tests: pytest **73 passed**
 
 **Nicht gemacht (bewusst)**
 
-- Keine ungeprüften Auto-Downloads / keine erfundenen kommerziellen Feeds
-- **Phase 08 nicht gestartet**
+- Keine Produktivdaten / keine Rechtsfreigabe DSGVO
+- **Phase 09 nicht gestartet**
 - Kein Prod-Deploy
 
-**Nächster Schritt:** Coordinator orchestriert Phase 08.
+**Nächster Schritt:** Coordinator orchestriert Phase 09.
+
+### 2026-11-27 – Phase 07 Automatische Diagnosedaten-Updates
+
+Details: `docs/phase-07-abschluss.md`.
 
 ### 2026-11-27 – Phase 06 Diagnosedatenbank und Datenimporte
 
@@ -88,6 +94,7 @@ Simuliertes Monorepo. Details: `docs/phase-ab-mvp-plan.md`.
 - Matrix: [docs/requirements.md](docs/requirements.md)
 - Fähigkeiten: [docs/capabilities.md](docs/capabilities.md)
 - Phasenstatus: [docs/phase-status.md](docs/phase-status.md)
+- Phase-08-Abschluss: [docs/phase-08-abschluss.md](docs/phase-08-abschluss.md)
 - Phase-07-Abschluss: [docs/phase-07-abschluss.md](docs/phase-07-abschluss.md)
 - Phase-06-Abschluss: [docs/phase-06-abschluss.md](docs/phase-06-abschluss.md)
 - Freie Quellen: [docs/free-data-sources.md](docs/free-data-sources.md)
