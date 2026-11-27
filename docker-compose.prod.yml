@@ -1,0 +1,61 @@
+# DiagNova production-lean stack for Plesk/World4You
+# - Ports nur auf 127.0.0.1 (Reverse-Proxy)
+# - Memory-Limits wegen knapper RAM (~helix-ki läuft parallel)
+# - helix-ki / helix-ollama NICHT anfassen
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diagnova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-diagnova}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diagnova}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 256m
+    cpus: 0.5
+    # kein Host-Port – nur Docker-Netz
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-diagnova}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-diagnova}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://diagnova.codekreativ.at}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      SEED_TECH_EMAIL: ${SEED_TECH_EMAIL:-tech@example.com}
+      SEED_TECH_PASSWORD: ${SEED_TECH_PASSWORD}
+      DEMO_MODE: ${DEMO_MODE:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 384m
+    cpus: 0.75
+    # kein Host-Port – Web-Nginx proxyt intern
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ""
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3080:80"
+    depends_on:
+      - api
+    mem_limit: 64m
+    cpus: 0.25
+
+volumes:
+  postgres_data:
