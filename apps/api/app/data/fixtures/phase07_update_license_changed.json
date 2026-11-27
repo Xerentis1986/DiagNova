@@ -1,0 +1,21 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "phase07-sim-license-v1",
+  "source_key": "diagnova-structural",
+  "license_name": "Some Other License",
+  "manufacturers": [],
+  "models": [],
+  "variants": [],
+  "ecus": [],
+  "dtcs": [
+    {
+      "code": "P0420",
+      "description_de": "Simuliert: Katalysatorwirkungsgrad (Demo)",
+      "description_status": "known",
+      "data_scope": "generic"
+    }
+  ],
+  "pids": [],
+  "units": [],
+  "service_procedures": []
+}
