@@ -86,9 +86,9 @@
 | REQ-08-CUST | Kunden/Fahrzeuge CRUD, Dubletten | 08 | `simuliert getestet` | CRUD, Suche, Merge, Aufträge | Phase-08-Tests | — |
 | REQ-08-TENANT | Mandanten-ID serverseitig | 08 | `simuliert getestet` | `workshop_id` in JWT/User; Cross-Tenant 404 | Isolationstest | — |
 | REQ-08-DSGVO | Export/Löschung/Aufbewahrung | 08 | `simuliert getestet` | JSON-Export, Archiv/Anonymize, Löschkonflikt | Phase-08-Tests | BLK-LEGAL (Rechtsberatung) |
-| REQ-09-HIST | Fahrzeugakte / Zeitstrahl | 09 | `geplant` | Sessions-Liste rudimentär | — | — |
-| REQ-09-CMP | Vorher/Nachher DTC-Vergleich | 09 | `geplant` | — | — | — |
-| REQ-09-TREND | Messwertverlauf begrenzt speichern | 09 | `geplant` | — | — | — |
+| REQ-09-HIST | Fahrzeugakte / Zeitstrahl | 09 | `simuliert getestet` | `/api/vehicle-records/*`, UI `/vehicle-record`; Authentizität markiert | `test_phase09_*` | Keine erfundenen Historien als echt |
+| REQ-09-CMP | Vorher/Nachher DTC-Vergleich | 09 | `simuliert getestet` | `/api/sessions/compare`; nicht beobachtet ≠ behoben ohne ECU-Check | Incomplete-Scan-Test | — |
+| REQ-09-TREND | Messwertverlauf begrenzt speichern | 09 | `simuliert getestet` | `session_measurement_samples`; 500/Sitzung, 5000/Fahrzeug | Phase-09-Tests | — |
 | REQ-10-PDF | A4-PDF Werkstattlayout, Wasserzeichen Demo | 10 | `geplant` (MVP-PDF rudimentär) | `report_to_pdf` ReportLab | Export-Test | Layout/Archiv fehlen |
 | REQ-10-ARCH | Archiv, Suche, unveränderlicher Snapshot | 10 | `geplant` | Reports in DB | — | — |
 | REQ-10-CSV | CSV-Export | 10 / 01 | `simuliert getestet` | Export-Endpoint | API-Test | — |

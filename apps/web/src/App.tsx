@@ -14,6 +14,7 @@ import { EcuPage } from './pages/EcuPage'
 import { PlannedPage } from './pages/PlannedPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { VehicleSelectPage } from './pages/VehicleSelectPage'
+import { VehicleRecordPage } from './pages/VehicleRecordPage'
 import { VehiclesPage } from './pages/VehiclesPage'
 import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import { WorkshopPage } from './pages/WorkshopPage'
@@ -60,6 +61,8 @@ export default function App() {
               <Route path="customers" element={<CustomersPage />} />
               <Route path="work-orders" element={<WorkOrdersPage />} />
               <Route path="vehicles" element={<VehiclesPage />} />
+              <Route path="vehicle-record" element={<VehicleRecordPage />} />
+              <Route path="vehicle-record/:vehicleId" element={<VehicleRecordPage />} />
               <Route path="diagnostics" element={<DiagnosticsPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="ecu" element={<EcuPage />} />

@@ -94,6 +94,122 @@ export interface WorkOrder {
   updated_at?: string | null
 }
 
+export interface TimelineItem {
+  id: string
+  kind: 'session' | 'note' | 'work_order' | 'report'
+  at: string
+  title_de: string
+  summary_de: string
+  data_source?: string | null
+  status?: string | null
+  odometer_km?: number | null
+  session_id?: string | null
+  work_order_id?: string | null
+  report_id?: string | null
+  is_example_data: boolean
+  authenticity: 'recorded' | 'example_seed' | 'simulated'
+}
+
+export interface VehicleRecord {
+  vehicle_id: string
+  make: string
+  model: string
+  year: number
+  vin: string
+  license_plate: string | null
+  odometer_km: number | null
+  is_example_data: boolean
+  customer_id: string | null
+  workshop_id: string | null
+  session_count: number
+  open_session_count: number
+  timeline: TimelineItem[]
+  disclaimer_de: string
+}
+
+export interface SessionDetail {
+  id: string
+  vehicle_id: string
+  vehicle_label: string
+  workshop_id: string | null
+  user_id: string
+  user_name: string | null
+  work_order_id: string | null
+  status: 'open' | 'closed' | 'aborted'
+  data_source: 'simulated' | 'live'
+  started_at: string
+  ended_at: string | null
+  auto_saved_at: string | null
+  odometer_km: number | null
+  adapter_name: string | null
+  protocol_name: string | null
+  abort_reason: string | null
+  notes: string | null
+  dtc_count: number
+  ecus: {
+    ecu_code: string
+    ecu_label_de: string
+    checked: boolean
+    protocol_name: string | null
+    address_hex: string | null
+    status: string
+  }[]
+  dtcs: {
+    ecu_code: string
+    code: string
+    dtc_status: string
+    description_de: string
+    severity: string
+  }[]
+  freeze_frame: Record<string, unknown> | null
+  readiness: Record<string, unknown> | null
+  report_ids: string[]
+  measurement_sample_count: number
+}
+
+export interface SessionCompare {
+  before_session_id: string
+  after_session_id: string
+  vehicle_id: string
+  incomplete_scan: boolean
+  unchecked_ecus_in_after: string[]
+  items: {
+    ecu_code: string
+    code: string
+    dtc_status: string
+    description_de: string
+    outcome: 'neu' | 'weiterhin_vorhanden' | 'nicht_erneut_beobachtet'
+    ecu_checked_in_after: boolean
+    may_interpret_as_resolved: boolean
+    note_de: string
+  }[]
+  disclaimer_de: string
+}
+
+export interface MeasurementSeries {
+  vehicle_id: string
+  pid: number | null
+  name: string | null
+  unit: string | null
+  from_at: string | null
+  to_at: string | null
+  count: number
+  truncated: boolean
+  max_samples: number
+  samples: {
+    id: string
+    session_id: string
+    pid: number
+    pid_hex: string
+    name: string
+    value: number
+    unit: string
+    recorded_at: string
+    data_source: 'simulated' | 'live'
+  }[]
+  disclaimer_de: string
+}
+
 export interface Brand {
   slug: string
   name: string
@@ -248,7 +364,7 @@ export interface SessionSummary {
   ended_at: string | null
   data_source: 'simulated' | 'live'
   dtc_count: number
-  status: 'open' | 'closed'
+  status: 'open' | 'closed' | 'aborted'
 }
 
 export interface DashboardData {
@@ -763,6 +879,71 @@ export const api = {
   },
   archiveWorkOrder(id: string) {
     return request<WorkOrder>(`/api/work-orders/${id}/archive`, { method: 'POST' })
+  },
+  lookupVehicleRecord(params: { vin?: string; license_plate?: string }) {
+    const sp = new URLSearchParams()
+    if (params.vin) sp.set('vin', params.vin)
+    if (params.license_plate) sp.set('license_plate', params.license_plate)
+    return request<{ query: string; matches: VehicleRecord[]; disclaimer_de: string }>(
+      `/api/vehicle-records/lookup?${sp.toString()}`,
+    )
+  },
+  vehicleRecord(vehicleId: string) {
+    return request<VehicleRecord>(`/api/vehicle-records/${vehicleId}`)
+  },
+  vehicleMeasurements(vehicleId: string, params?: { pid?: number; limit?: number }) {
+    const sp = new URLSearchParams()
+    if (params?.pid != null) sp.set('pid', String(params.pid))
+    if (params?.limit != null) sp.set('limit', String(params.limit))
+    const qs = sp.toString()
+    return request<MeasurementSeries>(
+      `/api/vehicle-records/${vehicleId}/measurements${qs ? `?${qs}` : ''}`,
+    )
+  },
+  addVehicleNote(
+    vehicleId: string,
+    body: {
+      body: string
+      note_type?: 'note' | 'service' | 'repair'
+      odometer_km?: number | null
+      work_order_id?: string | null
+      session_id?: string | null
+    },
+  ) {
+    return request<{ id: string; authenticity: string }>(`/api/vehicle-records/${vehicleId}/notes`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  sessionDetail(sessionId: string) {
+    return request<SessionDetail>(`/api/sessions/${sessionId}`)
+  },
+  compareSessions(before: string, after: string) {
+    return request<SessionCompare>(
+      `/api/sessions/compare?before=${encodeURIComponent(before)}&after=${encodeURIComponent(after)}`,
+    )
+  },
+  abortSession(sessionId: string, reason: string) {
+    return request<SessionDetail>(`/api/sessions/${sessionId}/abort`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    })
+  },
+  closeSession(sessionId: string) {
+    return request<SessionSummary>(`/api/sessions/${sessionId}/close`, { method: 'POST' })
+  },
+  startSessionV2(body: {
+    vehicle_id: string
+    odometer_km?: number | null
+    work_order_id?: string | null
+    notes?: string | null
+    idempotency_key?: string | null
+    ecu_codes?: string[] | null
+  }) {
+    return request<SessionDetail>('/api/sessions/v2', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
   },
 }
 

@@ -6,9 +6,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import Response
+from pydantic import BaseModel, Field
 
 from app.api.deps import CurrentUser, DbSession, require_roles
-from app.models import DiagnosticReport, DiagnosticSession, User, Vehicle
+from app.models import DiagnosticReport, DiagnosticSession, User, Vehicle, WorkOrder
 from app.schemas.api import (
     ClearDtcRequest,
     ConnectionStatusOut,
@@ -18,7 +19,14 @@ from app.schemas.api import (
     ReportCreate,
     ReportOut,
 )
+from app.schemas.vehicle_history import (
+    SessionAbortRequest,
+    SessionCompareOut,
+    SessionDetailOut,
+    SessionStartRequest,
+)
 from app.services import simulator
+from app.services import vehicle_history as vh
 from app.services.audit import write_audit
 from app.services.reports import create_report, report_to_csv, report_to_pdf
 from app.services.tenant import require_workshop_id
@@ -36,8 +44,22 @@ def _tenant_vehicle(db: DbSession, user: User, vehicle_id: str) -> Vehicle:
     return vehicle
 
 
+def _tenant_session(db: DbSession, user: User, session_id: str) -> tuple[DiagnosticSession, Vehicle]:
+    wid = require_workshop_id(user)
+    session = db.get(DiagnosticSession, session_id)
+    if session is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    vehicle = db.get(Vehicle, session.vehicle_id)
+    if vehicle is None or vehicle.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    if session.workshop_id and session.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    return session, vehicle
+
+
 def _session_out(session: DiagnosticSession, vehicle: Vehicle) -> DiagnosticSessionOut:
     dtcs = json.loads(session.dtc_snapshot_json or "[]")
+    status_val = session.status if session.status in ("open", "closed", "aborted") else "closed"
     return DiagnosticSessionOut(
         id=session.id,
         vehicle_id=session.vehicle_id,
@@ -46,8 +68,18 @@ def _session_out(session: DiagnosticSession, vehicle: Vehicle) -> DiagnosticSess
         ended_at=session.ended_at,
         data_source=session.data_source,  # type: ignore[arg-type]
         dtc_count=len(dtcs),
-        status=session.status,  # type: ignore[arg-type]
+        status=status_val,  # type: ignore[arg-type]
     )
+
+
+class SessionStartBody(BaseModel):
+    """Optionaler Body; Query vehicle_id bleibt für Abwärtskompatibilität."""
+
+    odometer_km: int | None = Field(default=None, ge=0, le=9_999_999)
+    work_order_id: str | None = None
+    notes: str | None = None
+    idempotency_key: str | None = Field(default=None, min_length=8, max_length=64)
+    ecu_codes: list[str] | None = None
 
 
 @router.get("/connection", response_model=ConnectionStatusOut)
@@ -116,28 +148,97 @@ def start_session(
     user: Technician,
     db: DbSession,
     vehicle_id: str = Query(...),
+    body: SessionStartBody | None = None,
 ) -> DiagnosticSessionOut:
+    """Startet Sitzung; idempotency_key liefert bei Wiederholung dieselbe Sitzung."""
+    wid = require_workshop_id(user)
     vehicle = _tenant_vehicle(db, user, vehicle_id)
+    payload = body or SessionStartBody()
+
+    if payload.idempotency_key:
+        existing = vh.find_by_idempotency(db, wid, payload.idempotency_key)
+        if existing is not None:
+            return _session_out(existing, vehicle)
+
+    if payload.work_order_id:
+        wo = db.get(WorkOrder, payload.work_order_id)
+        if wo is None or wo.workshop_id != wid:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auftrag nicht gefunden")
+
+    conn = simulator.connection_status()
     dtcs = simulator.list_dtcs(vehicle.id)
     session = DiagnosticSession(
         vehicle_id=vehicle.id,
         user_id=user.id,
+        workshop_id=wid,
+        work_order_id=payload.work_order_id,
         status="open",
         data_source="simulated",
         dtc_snapshot_json=json.dumps([d.model_dump() for d in dtcs], ensure_ascii=False),
+        odometer_km=payload.odometer_km if payload.odometer_km is not None else vehicle.odometer_km,
+        adapter_name=conn.adapter_name,
+        protocol_name=vh.DEFAULT_PROTOCOL,
+        notes=payload.notes,
+        idempotency_key=payload.idempotency_key,
     )
     db.add(session)
+    db.flush()
+    vh.capture_session_snapshot(db, session, vehicle, ecu_codes=payload.ecu_codes)
     db.commit()
     db.refresh(session)
     write_audit(
         db,
         user_id=user.id,
-        workshop_id=vehicle.workshop_id,
+        workshop_id=wid,
         action="session.start",
         resource=f"session:{session.id}",
-        detail=f"vehicle={vehicle.id}",
+        detail=f"vehicle={vehicle.id};data_source=simulated",
     )
     return _session_out(session, vehicle)
+
+
+@router.post("/sessions/v2", response_model=SessionDetailOut)
+def start_session_v2(body: SessionStartRequest, user: Technician, db: DbSession) -> SessionDetailOut:
+    """JSON-Body-Variante mit vollem Detail-Response (Phase 09)."""
+    wid = require_workshop_id(user)
+    vehicle = _tenant_vehicle(db, user, body.vehicle_id)
+    if body.idempotency_key:
+        existing = vh.find_by_idempotency(db, wid, body.idempotency_key)
+        if existing is not None:
+            return SessionDetailOut(**vh.session_detail(db, existing, vehicle))
+    if body.work_order_id:
+        wo = db.get(WorkOrder, body.work_order_id)
+        if wo is None or wo.workshop_id != wid:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auftrag nicht gefunden")
+    conn = simulator.connection_status()
+    session = DiagnosticSession(
+        vehicle_id=vehicle.id,
+        user_id=user.id,
+        workshop_id=wid,
+        work_order_id=body.work_order_id,
+        status="open",
+        data_source="simulated",
+        dtc_snapshot_json="[]",
+        odometer_km=body.odometer_km if body.odometer_km is not None else vehicle.odometer_km,
+        adapter_name=conn.adapter_name,
+        protocol_name=vh.DEFAULT_PROTOCOL,
+        notes=body.notes,
+        idempotency_key=body.idempotency_key,
+    )
+    db.add(session)
+    db.flush()
+    vh.capture_session_snapshot(db, session, vehicle, ecu_codes=body.ecu_codes)
+    db.commit()
+    db.refresh(session)
+    write_audit(
+        db,
+        user_id=user.id,
+        workshop_id=wid,
+        action="session.start",
+        resource=f"session:{session.id}",
+        detail="v2;data_source=simulated",
+    )
+    return SessionDetailOut(**vh.session_detail(db, session, vehicle))
 
 
 @router.get("/sessions", response_model=list[DiagnosticSessionOut])
@@ -145,16 +246,17 @@ def list_sessions(
     user: CurrentUser,
     db: DbSession,
     limit: int = Query(20, ge=1, le=100),
+    vehicle_id: str | None = Query(default=None),
 ) -> list[DiagnosticSessionOut]:
     wid = require_workshop_id(user)
-    rows = (
+    q = (
         db.query(DiagnosticSession)
         .join(Vehicle, Vehicle.id == DiagnosticSession.vehicle_id)
         .filter(Vehicle.workshop_id == wid)
-        .order_by(DiagnosticSession.started_at.desc())
-        .limit(limit)
-        .all()
     )
+    if vehicle_id:
+        q = q.filter(DiagnosticSession.vehicle_id == vehicle_id)
+    rows = q.order_by(DiagnosticSession.started_at.desc()).limit(limit).all()
     result: list[DiagnosticSessionOut] = []
     for session in rows:
         vehicle = db.get(Vehicle, session.vehicle_id)
@@ -164,17 +266,52 @@ def list_sessions(
     return result
 
 
+@router.get("/sessions/compare", response_model=SessionCompareOut)
+def compare_sessions(
+    user: CurrentUser,
+    db: DbSession,
+    before: str = Query(..., description="Frühere Sitzungs-ID"),
+    after: str = Query(..., description="Spätere Sitzungs-ID"),
+) -> SessionCompareOut:
+    wid = require_workshop_id(user)
+    before_s, before_v = _tenant_session(db, user, before)
+    after_s, after_v = _tenant_session(db, user, after)
+    if before_v.id != after_v.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Vergleich nur für dasselbe Fahrzeug",
+        )
+    if before_s.workshop_id != wid or after_s.workshop_id != wid:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
+    if before_s.started_at and after_s.started_at and before_s.started_at > after_s.started_at:
+        before_s, after_s = after_s, before_s
+    return SessionCompareOut(**vh.compare_sessions(db, before_s, after_s))
+
+
+@router.get("/sessions/{session_id}", response_model=SessionDetailOut)
+def get_session_detail(session_id: str, user: CurrentUser, db: DbSession) -> SessionDetailOut:
+    session, vehicle = _tenant_session(db, user, session_id)
+    return SessionDetailOut(**vh.session_detail(db, session, vehicle))
+
+
+@router.post("/sessions/{session_id}/snapshot", response_model=SessionDetailOut)
+def refresh_snapshot(session_id: str, user: Technician, db: DbSession) -> SessionDetailOut:
+    session, vehicle = _tenant_session(db, user, session_id)
+    if session.status != "open":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nur offene Sitzungen")
+    vh.capture_session_snapshot(db, session, vehicle)
+    db.commit()
+    db.refresh(session)
+    return SessionDetailOut(**vh.session_detail(db, session, vehicle))
+
+
 @router.post("/sessions/{session_id}/close", response_model=DiagnosticSessionOut)
 def close_session(session_id: str, user: Technician, db: DbSession) -> DiagnosticSessionOut:
     wid = require_workshop_id(user)
-    session = db.get(DiagnosticSession, session_id)
-    if session is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
-    vehicle = db.get(Vehicle, session.vehicle_id)
-    if vehicle is None or vehicle.workshop_id != wid:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitzung nicht gefunden")
-    session.status = "closed"
-    session.ended_at = datetime.now(timezone.utc)
+    session, vehicle = _tenant_session(db, user, session_id)
+    if session.status != "open":
+        return _session_out(session, vehicle)
+    vh.close_session(db, session, vehicle)
     db.commit()
     db.refresh(session)
     write_audit(
@@ -183,8 +320,34 @@ def close_session(session_id: str, user: Technician, db: DbSession) -> Diagnosti
         workshop_id=wid,
         action="session.close",
         resource=f"session:{session.id}",
+        detail="auto_saved",
     )
     return _session_out(session, vehicle)
+
+
+@router.post("/sessions/{session_id}/abort", response_model=SessionDetailOut)
+def abort_session(
+    session_id: str,
+    body: SessionAbortRequest,
+    user: Technician,
+    db: DbSession,
+) -> SessionDetailOut:
+    wid = require_workshop_id(user)
+    session, vehicle = _tenant_session(db, user, session_id)
+    if session.status != "open":
+        return SessionDetailOut(**vh.session_detail(db, session, vehicle))
+    vh.abort_session(db, session, vehicle, body.reason)
+    db.commit()
+    db.refresh(session)
+    write_audit(
+        db,
+        user_id=user.id,
+        workshop_id=wid,
+        action="session.abort",
+        resource=f"session:{session.id}",
+        detail=body.reason,
+    )
+    return SessionDetailOut(**vh.session_detail(db, session, vehicle))
 
 
 def _tenant_report(db: DbSession, user: User, report_id: str) -> DiagnosticReport:

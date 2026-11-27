@@ -183,7 +183,8 @@ class DiagnosticSessionOut(BaseModel):
     ended_at: datetime | None
     data_source: Literal["simulated", "live"]
     dtc_count: int
-    status: Literal["open", "closed"]
+    # aborted wird in Summary als closed gemappt; Detail-Endpoint zeigt aborted
+    status: Literal["open", "closed", "aborted"]
 
 
 class DashboardOut(BaseModel):

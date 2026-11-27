@@ -66,6 +66,13 @@ export function VehiclesPage() {
                   Aktiv setzen
                 </button>
                 <Link
+                  to={`/vehicle-record/${v.id}`}
+                  onClick={() => selectVehicle(v.id)}
+                  className="rounded-md border border-[var(--dn-border)] px-3 py-1.5 text-sm hover:bg-[var(--dn-hover)]"
+                >
+                  Akte
+                </Link>
+                <Link
                   to={`/diagnostics?vehicle=${v.id}`}
                   onClick={() => selectVehicle(v.id)}
                   className="rounded-md bg-[var(--dn-accent)] px-3 py-1.5 text-sm text-white hover:opacity-90"
