@@ -60,9 +60,23 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 | 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
-| 21 Billing + Adapter | 🟢 Simuliert / Docs | B2B/B2C Commerce; Adapter-Recherche; HW blocked |
+| 21 Billing + Adapter | 🟢 Simuliert / Docs | B2B/B2C; CDP+ Safe-Reads sim; Live-HW NO-GO |
 
 ## Chronik
+
+### 2026-11-27 – Phase 21 Ergänzung: Delphi/Autocom CDP+ (GitHub-Forschung)
+
+**Erledigt**
+
+- Recherche smooker/obd (GPL-3.0) – Protokollfakten, **kein** Code-Copy
+- Eigenes Modul `Adapters/DelphiCdp` (Codec, Session-Allowlist, Fake/FTDI-Transport, Matrix)
+- Connector API `/adapters/delphi-cdp/*`, Probe `DiagNova.CdpProbe`
+- Docs: `DIAGNOVA_DELPHI_GITHUB_RESEARCH.md`, `PROTOCOL_SPEC`, `DRIVER_STATUS`, `HARDWARE_TEST`, `LICENSE_REVIEW`
+- Katalog `delphi-autocom` → `PartiallySupported` (nur Geräte-Lese-Sim; CAN/Relais/Flash gesperrt)
+
+**Nicht gemacht (bewusst)**
+
+- Kein Live-Labor, kein Auto-Firmwareupdate, keine Fahrzeugbefehle, kein GPL in Binary
 
 ### 2026-11-27 – Phase 21 B2B/B2C-Abrechnung und Adapter
 
@@ -70,9 +84,9 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 
 - Basis: Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` (PR #30)
 - Commerce API `/api/commerce/*` + UI `/commerce`; VIES-Stub; Steuerengine AT/OSS draft
-- Multi-Adapter-Registry, Inventur, J2534-Abstraktion; OBD-DIAG/Delphi ehrlich blocked
+- Multi-Adapter-Registry, Inventur, J2534-Abstraktion; OBD-DIAG blocked; Delphi CDP+ später ergänzt
 - Docs: `DIAGNOVA_B2B_B2C_BILLING.md`, `DIAGNOVA_TAX_CONFIGURATION.md`, Adapter-Statusdateien
-- Tests: pytest **154**, dotnet **37**
+- Tests: pytest **154**, dotnet **37** (vor CDP+-Erweiterung)
 
 **Nicht gemacht (bewusst)**
 

@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagNova.Connector", "DiagN
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagNova.Connector.Tests", "DiagNova.Connector.Tests\DiagNova.Connector.Tests.csproj", "{6A0F09A6-7848-4B8C-8CC6-3A08F34F7A36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagNova.CdpProbe", "DiagNova.CdpProbe\DiagNova.CdpProbe.csproj", "{99872788-4208-493D-84C4-941E613B3E39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{6A0F09A6-7848-4B8C-8CC6-3A08F34F7A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A0F09A6-7848-4B8C-8CC6-3A08F34F7A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A0F09A6-7848-4B8C-8CC6-3A08F34F7A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99872788-4208-493D-84C4-941E613B3E39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99872788-4208-493D-84C4-941E613B3E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99872788-4208-493D-84C4-941E613B3E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99872788-4208-493D-84C4-941E613B3E39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using DiagNova.Connector.Adapters;
+using DiagNova.Connector.Adapters.DelphiCdp;
 using DiagNova.Connector.Auth;
 using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Ecu;
@@ -28,6 +29,7 @@ builder.Services.AddSingleton<IDiagnosticAdapter>(sp => sp.GetRequiredService<Ad
 builder.Services.AddSingleton<AdapterRegistry>();
 builder.Services.AddSingleton<HardwareInventoryProbe>();
 builder.Services.AddSingleton<J2534PassThruAbstraction>();
+builder.Services.AddSingleton<DelphiCdpAdapterService>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
@@ -224,6 +226,21 @@ app.MapPost("/j2534/open", async (HttpRequest req, J2534PassThruAbstraction j253
     var body = await req.ReadFromJsonAsync<J2534OpenRequest>();
     return Results.Json(j2534.TryOpen(body?.DllPath));
 });
+
+app.MapGet("/adapters/delphi-cdp/status", (DelphiCdpAdapterService cdp) => Results.Json(cdp.Status()));
+app.MapGet("/adapters/delphi-cdp/compatibility", (DelphiCdpAdapterService cdp) => Results.Json(cdp.Compatibility()));
+app.MapGet("/adapters/delphi-cdp/encode-demo", (DelphiCdpAdapterService cdp) => Results.Json(cdp.EncodeDemo()));
+app.MapPost("/adapters/delphi-cdp/identify-sim", async (DelphiCdpAdapterService cdp, CancellationToken ct) =>
+    Results.Json(await cdp.IdentifySimulatedAsync(ct)));
+app.MapPost("/adapters/delphi-cdp/open-live", (DelphiCdpAdapterService cdp) => Results.Json(cdp.TryOpenLive()));
+app.MapPost("/adapters/delphi-cdp/vehicle-command", () => Results.Json(new
+{
+    ok = false,
+    status = 403,
+    message_de =
+        "Fahrzeug-/CAN-/Relais-Befehle sind deaktiviert. " +
+        "Keine ungeprüfte OBD-Pin-Umschaltung, kein ECU-Schreiben, kein Auto-Firmwareupdate."
+}, statusCode: StatusCodes.Status403Forbidden));
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 
@@ -469,7 +486,7 @@ app.MapGet("/capabilities", () => Results.Json(new
         new { id = "doip-ethernet", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "vgate-vlinker-mc-plus", status = "blocked", note_de = "Windows-SPP-Variante nicht verifiziert (BLK-ADAPTER)" },
         new { id = "obd-diag-2055", status = "blocked", note_de = "Keine freie Entwickler-API nachgewiesen; ELM nicht angenommen" },
-        new { id = "delphi-autocom", status = "blocked", note_de = "Keine dokumentierte öffentliche Schnittstelle; Herstellerfreigabe nötig" },
+        new { id = "delphi-autocom", status = "partial_cdp_ascii_sim", note_de = "Eigenes CDP+-Safe-Read-Modul (*200/*201/*203/*20A); Live-FTDI/CAN gesperrt; hardware_tested=false" },
         new { id = "j2534-passthru", status = "planned", note_de = "Abstraktion ohne DLL-Bindung" }
     },
     limitations_de = new[]
@@ -480,7 +497,7 @@ app.MapGet("/capabilities", () => Results.Json(new
         "ABS/Airbag/Komfort ohne verifizierte OEM-Definitionen.",
         "DoIP/CAN-FD/J2534 nur vorbereitet, nicht implementiert.",
         "J1939/RP1210 → Phase 19.",
-        "Delphi/Autocom nicht angebunden.",
+        "Delphi/Autocom CDP+: nur Geräte-Lese-Sim; kein Live-Labor, kein CAN/Relais/Flash.",
         "Mode 04 nur mit Freigabe; permanente DTCs nicht löschbar.",
         "HTTPS-Browser: Mixed-Content zu http://127.0.0.1 je nach Browser eingeschränkt."
     }

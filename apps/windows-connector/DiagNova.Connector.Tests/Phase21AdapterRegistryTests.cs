@@ -23,7 +23,7 @@ public class Phase21AdapterRegistryTests
     }
 
     [Fact]
-    public void Catalog_Contains_ObdDiag_And_Delphi_Blocked()
+    public void Catalog_Contains_ObdDiag_Blocked_And_Delphi_Partial()
     {
         var obd = AdapterCatalog.Get("obd-diag-2055");
         Assert.NotNull(obd);
@@ -33,8 +33,23 @@ public class Phase21AdapterRegistryTests
 
         var delphi = AdapterCatalog.Get("delphi-autocom");
         Assert.NotNull(delphi);
-        Assert.Equal(AdapterCompatibilityStatus.ManufacturerApprovalRequired, delphi!.Status);
+        Assert.Equal(AdapterCompatibilityStatus.PartiallySupported, delphi!.Status);
         Assert.False(delphi.ManufacturerApiDocumented);
+        Assert.False(delphi.HardwareTested);
+        Assert.True(delphi.LawfulToIntegrate);
+        Assert.Contains("cdp-ascii-device-read", delphi.Protocols);
+    }
+
+    [Fact]
+    public void Select_Delphi_Allows_Safe_Read_Path_Only()
+    {
+        var registry = CreateRegistry();
+        var result = registry.Select("delphi-autocom");
+        var ok = (bool)result.GetType().GetProperty("ok")!.GetValue(result)!;
+        Assert.True(ok);
+        Assert.Equal("delphi-autocom", registry.SelectedAdapterId);
+        Assert.Equal(false, result.GetType().GetProperty("vehicle_commands")!.GetValue(result));
+        Assert.Equal(false, result.GetType().GetProperty("hardware_tested")!.GetValue(result));
     }
 
     [Fact]

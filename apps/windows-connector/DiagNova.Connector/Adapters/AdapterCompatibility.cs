@@ -84,18 +84,20 @@ public static class AdapterCatalog
         ),
         new(
             "delphi-autocom",
-            "Delphi DS150E / Autocom (Recherche)",
-            "Delphi Autoparts",
-            AdapterCompatibilityStatus.ManufacturerApprovalRequired,
+            "Delphi DS150E / Autocom CDP+ (ASCII-Forschung)",
+            "Autocom CDP+ / Delphi DS150E Varianten",
+            AdapterCompatibilityStatus.PartiallySupported,
             HardwareTested: false,
             VehicleTested: false,
             ManufacturerApiDocumented: false,
-            LawfulToIntegrate: false,
-            Protocols: [],
-            Transports: ["usb", "bluetooth-spp-candidate"],
-            Blockers: ["BLK-ADAPTER"],
-            NotesDe: "Offizielle Software nutzt USB/BT – belegt keine Drittanbieter-API. Keine proprietären DLLs ohne Rechte.",
-            DocsPath: "docs/DIAGNOVA_DELPHI_AUTOCOM_STATUS.md"
+            LawfulToIntegrate: true,
+            Protocols: ["cdp-ascii-device-read"],
+            Transports: ["ftdi-0403-d6da", "fake-cdp"],
+            Blockers: ["BLK-HW"],
+            NotesDe:
+                "Eigenständiges Protokollmodul (Safe-Reads *200/*201/*203/*20A). " +
+                "USB-Forschung 0403:D6DA. CAN/Relais gesperrt. Kein GPL-Code. Kein HW-Labor bislang.",
+            DocsPath: "docs/DIAGNOVA_DELPHI_DRIVER_STATUS.md"
         ),
         new(
             "j2534-passthru",

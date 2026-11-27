@@ -9,6 +9,8 @@
 
 Verbindliche Ergänzung: vollständiges kaufmännisches Backend B2B+B2C (AT-Steuer/OSS/VIES), Multi-Adapter-Connector, Recherche OBD-DIAG 2055+ und Delphi/Autocom – ohne erfundene Hardwareerfolge und ohne proprietäre DLLs ohne Rechte.
 
+**Ergänzung Delphi GitHub:** unabhängige CDP+-Protokollimplementierung (smooker/obd als Forschungsquelle, kein GPL-Copy).
+
 ## Erledigt
 
 ### Commerce
@@ -26,8 +28,9 @@ Verbindliche Ergänzung: vollständiges kaufmännisches Backend B2B+B2C (AT-Steu
 - Multi-Adapter-Registry, Profile, AutoDetect-Kandidaten, Connection-Test
 - Hardware-Inventur read-only + Hersteller-Anfrageentwurf
 - J2534-Abstraktion ohne DLL-Bindung
-- OBD-DIAG 2055+ und Delphi als **blocked** / Freigabe nötig – ELM nicht angenommen
-- Unit-Tests Phase 21 (37 Connector-Tests gesamt)
+- OBD-DIAG 2055+: **BlockedUndocumented** – ELM nicht angenommen
+- Delphi/Autocom CDP+: **PartiallySupported** – eigenes Safe-Read-Modul (`*200`/`*201`/`*203`/`*20A`), Fake-Transport, FTDI-Abstraktion (ehrlicher Fail), Probe-Tool, CAN/Relais/Flash gesperrt
+- Unit-Tests Phase 21 (Connector inkl. DelphiCdp)
 
 ### Dokumentation
 
@@ -36,25 +39,30 @@ Verbindliche Ergänzung: vollständiges kaufmännisches Backend B2B+B2C (AT-Steu
 - `DIAGNOVA_ADAPTER_RESEARCH.md`
 - `DIAGNOVA_OBD_DIAG_2055_STATUS.md`
 - `DIAGNOVA_DELPHI_AUTOCOM_STATUS.md`
+- `DIAGNOVA_DELPHI_GITHUB_RESEARCH.md`
+- `DIAGNOVA_DELPHI_PROTOCOL_SPEC.md`
+- `DIAGNOVA_DELPHI_DRIVER_STATUS.md`
+- `DIAGNOVA_DELPHI_HARDWARE_TEST.md`
+- `DIAGNOVA_DELPHI_LICENSE_REVIEW.md`
 - `DIAGNOVA_CONNECTOR_DRIVER_MATRIX.md`
 
 ## Tests
 
 | Suite | Ergebnis |
 |-------|----------|
-| pytest | **154 passed** |
-| `dotnet test` | **37 passed** |
+| pytest | unverändert (Commerce) – bei Push erneut |
+| `dotnet test` | **44 passed** (inkl. DelphiCdp) |
 | Web build | nach Commit prüfen |
 
 ## Bewusst nicht / offen
 
 - Kein echter PSP (BLK-PAY)
 - Keine produktive Steuerfreigabe
-- Keine OBD-DIAG-/Delphi-Treiber ohne dokumentierte API
-- Kein Hardware-/Fahrzeugtest
+- Kein Live-Labor am Delphi-Adapter (VID/PID/`*200`/`*201` offen)
+- Keine Fahrzeug-/Relais-/CAN-Befehle, kein Auto-Firmwareupdate
+- Kein GPL-Code aus smooker/obd in der Binary
 - Kein Prod-Redeploy
-- Kein eigenständiger Herstellerkontakt (nur Anfrageentwurf)
 
 ## Verdict
 
-Kaufmännische Simulation B2B/B2C **einsatzbereit für Demo**. Adapter-Hardware **nicht** freigegeben. Kommerzielle Echtzahlung und Live-Adapter weiter **NO-GO** bis Freigaben.
+Kaufmännische Simulation B2B/B2C **einsatzbereit für Demo**. CDP+-Geräte-Lese-Pfad **simuliert/codec-fertig**, Hardware **nicht** freigegeben. Kommerzielle Echtzahlung und Live-Adapter weiter **NO-GO** bis Freigaben.

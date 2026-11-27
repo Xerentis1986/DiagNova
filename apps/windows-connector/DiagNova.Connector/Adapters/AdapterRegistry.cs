@@ -63,6 +63,25 @@ public sealed class AdapterRegistry
             };
         }
 
+        // Delphi/CDP+: Auswahl für Geräte-Lese-Pfad erlaubt, aber hardware_tested=false
+        if (profile.AdapterId == "delphi-autocom")
+        {
+            _selectedAdapterId = profile.AdapterId;
+            _log.Info("adapter", "CDP+ gewählt (nur Safe-Reads / Sim)", _selectedAdapterId);
+            return new
+            {
+                ok = true,
+                selected = true,
+                adapter_id = _selectedAdapterId,
+                status = profile.Status.ToString(),
+                vehicle_commands = false,
+                hardware_tested = false,
+                message_de =
+                    "Delphi/CDP+ gewählt: Identitätssimulation und Protokollcodec verfügbar. " +
+                    "CAN/Relais gesperrt. Live-FTDI erst nach Labor."
+            };
+        }
+
         _selectedAdapterId = profile.AdapterId;
         _log.Info("adapter", "Adapter manuell gewählt", _selectedAdapterId);
         return new
