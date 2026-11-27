@@ -1,0 +1,9 @@
+{
+  "component": "web",
+  "version": "0.15.1",
+  "release_notes_de": "Patch: Security-Page Feinschliff, Designsystem 10B unverändert.",
+  "migration_plan": [],
+  "channel": "stable-fixture",
+  "kind": "software",
+  "note_de": "Simuliertes Software-Paket – kein Diagnosedaten-Update."
+}

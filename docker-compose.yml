@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diagnova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_local_only}
+      POSTGRES_DB: ${POSTGRES_DB:-diagnova}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diagnova}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-diagnova}:${POSTGRES_PASSWORD:-changeme_local_only}@postgres:5432/${POSTGRES_DB:-diagnova}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-secret}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://localhost}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-AdminDemo123!}
+      SEED_TECH_EMAIL: ${SEED_TECH_EMAIL:-tech@example.com}
+      SEED_TECH_PASSWORD: ${SEED_TECH_PASSWORD:-TechDemo123!}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ""
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

@@ -1,0 +1,18 @@
+{
+  "component": "web",
+  "version": "0.15.0",
+  "release_notes_de": "Demo-Major: benötigt API 0.15 – absichtlich inkompatibel zu 0.14.",
+  "migration_plan": [
+    {
+      "revision": "012_phase15_placeholder",
+      "from_revision": "011_phase14",
+      "backup_required": true,
+      "backup_steps_de": ["Vor dem Upgrade vollständiges DB-Backup."],
+      "restore_steps_de": ["Restore aus Backup vor 0.15."],
+      "notes_de": "Nur Demo für Inkompatibilitätserkennung."
+    }
+  ],
+  "channel": "stable-fixture",
+  "kind": "software",
+  "note_de": "Abnahmetest: inkompatible Version muss abgelehnt werden."
+}

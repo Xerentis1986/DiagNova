@@ -1,0 +1,20 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "import-bad-06",
+  "source_key": "bosch-esi-tronic",
+  "manufacturers": [],
+  "models": [],
+  "variants": [],
+  "ecus": [],
+  "dtcs": [
+    {
+      "code": "INVALID",
+      "description_status": "known",
+      "description_de": "kopiert aus Gutmann",
+      "data_scope": "oem"
+    }
+  ],
+  "pids": [],
+  "units": [],
+  "service_procedures": []
+}
