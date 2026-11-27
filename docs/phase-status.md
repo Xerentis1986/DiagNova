@@ -1,8 +1,8 @@
 # DiagNova – Phasenstatus
 
 **Aktualisiert:** 2026-11-27 (Europe/Vienna)  
-**Aktuelle Arbeitsphase:** 17 abgeschlossen (Abnahme Docs; **NO-GO** Voll-Launch). **STOP** vor Prod-Rollout. Phase 18/19 nicht starten.  
-**Basis:** Phase-16-Branch `cursor/diagnova-phase-16-deploy-8876` (PR #25); Arbeit auf `cursor/diagnova-phase-17-acceptance-8ffe`.
+**Aktuelle Arbeitsphase:** 18 Architektur abgeschlossen (Chiptuning Geplant/deaktiviert). Phase 19 **nicht** starten. **STOP** vor Prod-Rollout.  
+**Basis:** Phase-17-Branch `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26); Arbeit auf `cursor/diagnova-phase-18-chiptuning-c46a`.
 
 ## Phasenübersicht
 
@@ -27,8 +27,21 @@
 | **15** | Sicherheit / Datenschutz / QA | **Simuliert getestet** | Threat Model, Rate-Limits, Audit-Redaction, DSGVO-Docs, Backup; UI `/security` |
 | **16** | World4You Ubuntu/Plesk Deploy | **Implementiert (Docs/Ops)** | Install/Compose/Proxy/Backup/Rollback; Live Smoke; kein destruktives Redeploy |
 | **17** | Gesamtabnahme | **Erledigt (Docs/Abnahme)** | Checkliste + Go/No-Go; **NO-GO** Voll-Launch; STOP Prod-Rollout |
-| 18 | Chiptuning (optional) | Später | **nicht gestartet**; standardmäßig gesperrt |
+| **18** | Chiptuning (optional) | **Simuliert getestet** (Architektur) | Baselines/Gates/UI; Map/Flash/Aktivierung **gesperrt**; keine Algorithmen |
 | 19 | LKW (optional) | Später | **nicht gestartet**; J1939/RP1210 |
+
+## Phase 18 – Kurzfazit
+
+| Bereich | Ergebnis |
+|---------|----------|
+| Modulstatus | `planned_disabled` – UI Badge Geplant/Deaktiviert |
+| API | `/api/tuning/*` – Verwaltung + Simulation; activate/map-change/flash → 403 |
+| Persistenz | Alembic `013_phase18` |
+| Abnahme | Rollen, Dokumente, Versionen, Simulation getestet |
+| Blocker | BLK-LEGAL, BLK-OEM, BLK-HW, BLK-RELEASE |
+| Nächste Phase | **19 nicht gestartet** |
+
+Details: [phase-18-abschluss.md](./phase-18-abschluss.md).
 
 ## Phase 17 – Kurzfazit
 

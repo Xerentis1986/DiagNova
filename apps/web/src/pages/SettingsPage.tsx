@@ -79,6 +79,11 @@ export function SettingsPage() {
               </Link>
             </li>
             <li>
+              <Link className="dn-btn dn-btn--secondary" to="/tuning">
+                Chiptuning (Geplant/deaktiviert)
+              </Link>
+            </li>
+            <li>
               <Link className="dn-btn dn-btn--secondary" to="/subscriptions">
                 Abos & Lizenzen
               </Link>

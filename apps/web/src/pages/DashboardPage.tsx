@@ -123,11 +123,17 @@ export function DashboardPage() {
               subscriptions: '/subscriptions',
               admin: '/admin',
             }
+            const plannedRoutes: Record<string, string> = {
+              chiptuning: '/tuning',
+            }
             const isSim = m.status === 'simulated' && simRoutes[m.id]
+            const href = isSim
+              ? simRoutes[m.id]
+              : plannedRoutes[m.id] || `/planned/${m.id}`
             return (
               <Link
                 key={m.id}
-                to={isSim ? simRoutes[m.id] : `/planned/${m.id}`}
+                to={href}
                 className="rounded-md border border-dashed border-[var(--dn-border)] px-3 py-2 text-sm text-[var(--dn-muted)] hover:border-[var(--dn-accent)] hover:text-[var(--dn-text)]"
               >
                 {m.label}{' '}

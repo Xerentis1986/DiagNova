@@ -14,6 +14,7 @@ import { EcuPage } from './pages/EcuPage'
 import { CodingPage } from './pages/CodingPage'
 import { GuidedPage } from './pages/GuidedPage'
 import { PlannedPage } from './pages/PlannedPage'
+import { TuningPage } from './pages/TuningPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { ServicePage } from './pages/ServicePage'
 import { VehicleSelectPage } from './pages/VehicleSelectPage'
@@ -74,6 +75,7 @@ export default function App() {
                 <Route path="service" element={<ServicePage />} />
                 <Route path="guided" element={<GuidedPage />} />
                 <Route path="coding" element={<CodingPage />} />
+                <Route path="tuning" element={<TuningPage />} />
                 <Route path="subscriptions" element={<SubscriptionsPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />

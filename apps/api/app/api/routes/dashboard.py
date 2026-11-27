@@ -19,6 +19,8 @@ PLANNED = [
     {"id": "admin", "label": "Administration", "status": "simulated"},
     {"id": "actuator", "label": "Stellglieddiagnose (Gerüst)", "status": "planned"},
     {"id": "flash", "label": "Flash Live", "status": "planned"},
+    {"id": "chiptuning", "label": "Chiptuning (Architektur, deaktiviert)", "status": "planned"},
+    {"id": "lkw", "label": "LKW / Nutzfahrzeuge", "status": "planned"},
 ]
 
 

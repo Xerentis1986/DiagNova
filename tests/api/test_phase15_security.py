@@ -25,7 +25,7 @@ def test_health_security_headers_and_version(client: TestClient):
     assert res.headers.get("x-content-type-options") == "nosniff"
     assert res.headers.get("x-frame-options") == "DENY"
     body = res.json()
-    assert body["version"] == "0.15.0"
+    assert body["version"] == "0.18.0"
     assert "security" in body
     assert body["security"]["login_rate_limit"] is True
     # Test-Secret ist als insecure markiert
@@ -83,7 +83,7 @@ def test_security_dashboard_admin_only(client: TestClient, auth_headers: dict[st
     assert body["security_headers"] is True
     assert len(body["threat_model"]) >= 8
     assert any(n["id"] == "T-RBAC-IDOR" for n in body["threat_model"])
-    assert body["version"] == "0.15.0"
+    assert body["version"] == "0.18.0"
 
     tech = _login(client, "tech@example.com", "TechDemo123!")
     denied = client.get("/api/security/dashboard", headers=tech)

@@ -15,6 +15,7 @@ ENT_WORKSHOP = "workshop.customers"
 ENT_REPORTS = "reports.pdf"
 ENT_SERVICE_SIM = "service.simulated"
 ENT_CODING_SIM = "coding.simulated"
+ENT_TUNING_SIM = "tuning.simulated"  # Phase 18 – Architektur/Simulation; Aktivierung gesperrt
 ENT_DATA_UPDATES = "data.updates"
 ENT_MULTI_DEVICE = "devices.multi"
 ENT_LKW = "vehicle.lkw"  # Phase 19 – bewusst nicht freigegeben

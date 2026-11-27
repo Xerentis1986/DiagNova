@@ -7,6 +7,8 @@ const LABELS: Record<string, string> = {
   coding: 'Codierung',
   actuator: 'Stellglieddiagnose',
   flash: 'Programmierung',
+  chiptuning: 'Chiptuning',
+  lkw: 'LKW / Nutzfahrzeuge',
 }
 
 export function PlannedPage() {

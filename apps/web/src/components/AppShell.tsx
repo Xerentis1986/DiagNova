@@ -49,6 +49,7 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/guided', label: 'Geführte Diagnose', icon: <IconDiagnose /> },
   { to: '/service', label: 'Service', icon: <IconWorkshop /> },
   { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
+  { to: '/tuning', label: 'Chiptuning', icon: <IconSettings />, planned: true },
   { to: '/subscriptions', label: 'Abos & Lizenzen', icon: <IconUpdates /> },
   { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
   { to: '/admin', label: 'Administration', icon: <IconSettings /> },

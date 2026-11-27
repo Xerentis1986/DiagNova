@@ -1040,6 +1040,152 @@ export interface CodingInterfaces {
   docs: string[]
 }
 
+export interface TuningModuleStatus {
+  module: string
+  phase: number
+  status: string
+  productive_activation_locked: boolean
+  map_change_available: boolean
+  flash_available: boolean
+  emission_defeat_excluded: boolean
+  disclaimer_de: string
+}
+
+export interface TuningOperation {
+  code: string
+  name_de: string
+  category: string
+  operation_type: string
+  safety_class: string
+  release_status: string
+  enabled: boolean
+  write_allowed: boolean
+  map_change_allowed: boolean
+  flash_allowed: boolean
+  tuning_activation_allowed: boolean
+  prerequisites: { id: string; label_de: string }[]
+  confirmation_phrase: string | null
+  timeout_seconds: number
+  abort_strategy_de: string
+  result_checks_de: string[]
+  notes_de: string
+  blockers: string[]
+  requires_legal_approval: boolean
+  requires_technical_review: boolean
+  auto_retry_forbidden: boolean
+  productive_activation_locked: boolean
+  data_source: string
+  oem_maps_invented: boolean
+}
+
+export interface TuningCatalog {
+  data_source: string
+  module_status: string
+  disclaimer_de: string
+  operations: TuningOperation[]
+  excluded: { code: string; name_de: string; reason_de?: string; safety_class?: string }[]
+  live_execution_available: boolean
+  map_change_available: boolean
+  flash_available: boolean
+  tuning_activation_available: boolean
+  hardware_live: boolean
+  auto_retry_forbidden: boolean
+  productive_activation_locked: boolean
+  legal_gates_required: boolean
+}
+
+export interface TuningGateState {
+  operator_confirm?: boolean
+  legal_gate_ack?: boolean
+  no_emission_defeat_ack?: boolean
+  no_map_change_ack?: boolean
+  legal_approval_present?: boolean
+  technical_review_present?: boolean
+  recovery_plan?: boolean
+  oem_baseline_documented?: boolean
+  hardware_suitable?: boolean
+  expected_vin?: string | null
+  actual_vin?: string | null
+  expected_ecu_sw?: string | null
+  actual_ecu_sw?: string | null
+}
+
+export interface TuningBaseline {
+  id: string
+  code: string
+  ecu_role: string
+  software_version: string
+  part_number: string | null
+  checksum_ref: string | null
+  source_de: string
+  authorization_status: string
+  compatible_notes_de: string | null
+  data_source: string
+  created_at: string
+}
+
+export interface TuningApproval {
+  id: string
+  baseline_id: string | null
+  vehicle_id: string | null
+  doc_type: string
+  title_de: string
+  reference_code: string | null
+  issuer_de: string | null
+  status: string
+  notes_de: string | null
+  data_source: string
+  created_at: string
+}
+
+export interface TuningHistoryEntry {
+  id: string
+  vehicle_id: string | null
+  baseline_id: string | null
+  ecu_role: string
+  software_version: string
+  event_type: string
+  message_de: string | null
+  data_source: string
+  created_at: string
+}
+
+export interface TuningRun {
+  id: string
+  operation_code: string
+  status: string
+  scenario: string | null
+  data_source: string
+  prerequisites: { id: string; label_de: string; met: boolean; detail_de?: string | null }[]
+  gates: Record<string, unknown>
+  result: Record<string, unknown>
+  message_de: string | null
+  abort_reason_de: string | null
+  map_commands_sent: boolean
+  flash_commands_sent: boolean
+  tuning_activated: boolean
+  auto_retry_attempted: boolean
+  started_at: string
+  ended_at: string | null
+}
+
+export interface LegalGateCheck {
+  data_source: string
+  legal_approval_ok: boolean
+  technical_review_ok: boolean
+  recovery_plan_ok: boolean
+  emission_policy_ok: boolean
+  map_change_blocked: boolean
+  flash_blocked: boolean
+  tuning_activation_blocked: boolean
+  vin_match: boolean | null
+  software_compatible: boolean | null
+  overall_ok: boolean
+  blockers: string[]
+  message_de: string
+  productive_activation_locked: boolean
+}
+
 class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -1585,6 +1731,88 @@ export const api = {
     return request<unknown>(`/api/coding/operations/${encodeURIComponent(code)}/flash`, {
       method: 'POST',
     })
+  },
+  tuningStatus() {
+    return request<TuningModuleStatus>('/api/tuning/status')
+  },
+  tuningCatalog() {
+    return request<TuningCatalog>('/api/tuning/catalog')
+  },
+  tuningBaselines() {
+    return request<TuningBaseline[]>('/api/tuning/baselines')
+  },
+  createTuningBaseline(body: {
+    code: string
+    ecu_role?: string
+    software_version: string
+    part_number?: string | null
+    checksum_ref?: string | null
+    source_de: string
+    compatible_notes_de?: string | null
+    acknowledge_no_map_binary: boolean
+    acknowledge_demo_only: boolean
+  }) {
+    return request<TuningBaseline>('/api/tuning/baselines', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  tuningApprovals() {
+    return request<TuningApproval[]>('/api/tuning/approvals')
+  },
+  createTuningApproval(body: {
+    baseline_id?: string | null
+    vehicle_id?: string | null
+    doc_type?: 'type_approval' | 'workshop_ack' | 'technical_review' | 'other'
+    title_de: string
+    reference_code?: string | null
+    issuer_de?: string | null
+    notes_de?: string | null
+    acknowledge_not_legal_advice: boolean
+    acknowledge_no_activation: boolean
+  }) {
+    return request<TuningApproval>('/api/tuning/approvals', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  tuningHistory(vehicleId?: string) {
+    const qs = vehicleId ? `?vehicle_id=${encodeURIComponent(vehicleId)}` : ''
+    return request<TuningHistoryEntry[]>(`/api/tuning/history${qs}`)
+  },
+  tuningLegalGates(body: TuningGateState) {
+    return request<LegalGateCheck>('/api/tuning/legal-gates', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  startTuningRun(
+    code: string,
+    body: {
+      vehicle_id?: string | null
+      baseline_id?: string | null
+      confirmation_phrase?: string | null
+      gate_state?: TuningGateState
+      scenario?: 'normal' | 'missing_prereq' | 'missing_legal' | 'abort' | 'comm_loss' | 'wrong_vehicle'
+      acknowledge_disabled?: boolean
+      acknowledge_no_map_change?: boolean
+      acknowledge_no_emission_defeat?: boolean
+      acknowledge_activation_locked?: boolean
+    },
+  ) {
+    return request<TuningRun>(`/api/tuning/operations/${encodeURIComponent(code)}/start`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  abortTuningRun(runId: string, reason_de?: string) {
+    return request<TuningRun>(`/api/tuning/runs/${runId}/abort`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_de: reason_de || 'Bedienerabbruch' }),
+    })
+  },
+  tuningRuns() {
+    return request<TuningRun[]>('/api/tuning/runs')
   },
   subscriptionPlans() {
     return request<SubscriptionPlan[]>('/api/subscriptions/plans')

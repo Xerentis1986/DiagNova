@@ -2,14 +2,15 @@
 
 Software-Updates sind strikt getrennt von Diagnosedaten-Updates (Phase 07).
 Phase 15: Versionen 0.15.x (Security/Datenschutz/QA).
+Phase 18: 0.18.x – optionales Chiptuning-Architektur-Skelett (deaktiviert).
 """
 
 from __future__ import annotations
 
 # SemVer der aktuellen Build-Linie (simuliert / Demo).
 COMPONENT_VERSIONS: dict[str, str] = {
-    "api": "0.15.0",
-    "web": "0.15.0",
+    "api": "0.18.0",
+    "web": "0.18.0",
     "connector": "0.15.0",
 }
 
@@ -91,6 +92,34 @@ COMPATIBILITY_MATRIX: list[dict] = [
         "requires": {"api": "0.16.0"},
         "notes_de": "Demo-Inkompatibilität für Abnahmetests.",
     },
+    {
+        "id": "web-0.18-requires-api",
+        "component": "web",
+        "version": "0.18.0",
+        "requires": {"api": "0.18.0"},
+        "notes_de": "Web 0.18 erwartet API 0.18 (Tuning-Architektur UI).",
+    },
+    {
+        "id": "web-0.18.1-requires-api",
+        "component": "web",
+        "version": "0.18.1",
+        "requires": {"api": "0.18.0"},
+        "notes_de": "Patch Web 0.18.1 kompatibel zu API 0.18.",
+    },
+    {
+        "id": "api-0.18-requires-web-min",
+        "component": "api",
+        "version": "0.18.0",
+        "requires": {"web": "0.15.0"},
+        "notes_de": "API 0.18 lesekompatibel mit Web ab 0.15; Tuning-UI braucht 0.18.",
+    },
+    {
+        "id": "web-0.19-requires-api-0.19",
+        "component": "web",
+        "version": "0.19.0",
+        "requires": {"api": "0.19.0"},
+        "notes_de": "Demo-Inkompatibilität für Abnahmetests (Phase 18).",
+    },
 ]
 
 # Alembic-/DB-Migrationsplan inkl. Backup/Restore (Dokumentation, keine Auto-Migration).
@@ -126,6 +155,24 @@ DB_MIGRATION_PLAN: list[dict] = [
             "GET /health und /api/security/dashboard prüfen.",
         ],
         "notes_de": "Phase 15: Audit-Metadaten optional; App-Logik primär. Backup vor Deploy.",
+    },
+    {
+        "revision": "013_phase18",
+        "from_revision": "012_phase15",
+        "backup_required": True,
+        "backup_steps_de": [
+            "pg_dump vor alembic upgrade.",
+            "Dump mit Zeitstempel und Revision 013_phase18 kennzeichnen.",
+        ],
+        "restore_steps_de": [
+            "API/Web stoppen bzw. Wartungsmodus.",
+            "pg_restore aus dem Backup vor der fehlgeschlagenen Migration.",
+            "Healthcheck /health und /api/tuning/status prüfen.",
+        ],
+        "notes_de": (
+            "Phase 18: Tuning-Baselines/Genehmigungen/Historie/Workflow-Runs. "
+            "Kein Prod-Deploy ohne Backup. Modul bleibt deaktiviert."
+        ),
     },
 ]
 

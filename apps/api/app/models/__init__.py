@@ -36,6 +36,12 @@ from app.models.vehicle_history import (
 )
 from app.models.service import ServiceRun
 from app.models.coding import CodingRun
+from app.models.tuning import (
+    TuningApprovalDocument,
+    TuningSoftwareBaseline,
+    TuningVersionHistoryEntry,
+    TuningWorkflowRun,
+)
 from app.models.workshop import Customer, CustomerVehicleLink, WorkOrder, Workshop
 from app.models.subscriptions import (
     CriticalOperationLock,
@@ -89,6 +95,10 @@ __all__ = [
     "SoftwareUpdateRun",
     "Subscription",
     "TenantRegistration",
+    "TuningApprovalDocument",
+    "TuningSoftwareBaseline",
+    "TuningVersionHistoryEntry",
+    "TuningWorkflowRun",
     "UpdateChangelog",
     "UpdateChannel",
     "UpdateJobLock",

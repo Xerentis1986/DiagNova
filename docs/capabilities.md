@@ -1,10 +1,11 @@
 # DiagNova – Fähigkeitenkatalog (Phase 00)
 
-**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–17 Abnahme  
+**Stand:** 2026-11-27 (Europe/Vienna) – inkl. Phase 02–18 (18 = Architektur)  
 **Datenmodus API-UI:** Standard **simuliert** (`data_source: "simulated"`).  
 **Connector OBD + Mehr-ECU:** Allowlist + Parser **simuliert getestet**; Hardwarepfad **nicht** hardwaregetestet/freigegeben.  
 **Markenkatalog:** Navigationshilfe – **keine** Diagnoseabdeckung.  
-**Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt; Phase 18/19 nicht gestartet.
+**Phase 17:** Gesamtabnahme **NO-GO** für Voll-Launch; Flash/Service-Live weiterhin gesperrt.  
+**Phase 18:** Chiptuning-Architektur `/tuning` – **Geplant/deaktiviert**; keine Maps/Flash; Phase 19 nicht gestartet.
 
 ## Architekturüberblick
 
@@ -41,9 +42,10 @@
 | Servicekatalog + Gates | ServicePage `/service` | `/api/service/*` | `service_runs` | Live deaktiviert; DPF-Off excluded |
 | Geführte Diagnose | GuidedPage `/guided` | `/api/guided/*` | — | simuliert; keine Auto-Reparatur |
 | Codierung / Programmierung Gates | CodingPage `/coding` | `/api/coding/*` | `coding_runs` | Flash/Schreiben DEAKTIVIERT; Identifikation lesend |
+| Chiptuning Architektur (optional) | TuningPage `/tuning` | `/api/tuning/*` | Baselines/Approvals/Historie/Runs | **Geplant/deaktiviert**; Map/Flash/Aktivierung 403 |
 | Abos / Lizenzen (Stub) | SubscriptionsPage `/subscriptions` | `/api/subscriptions/*`, `/api/billing/*` | `subscriptions`, Geräte, Webhooks | SIMULATION – keine echte Zahlung |
 | Plattform-Admin | AdminPage `/admin` | `/api/admin/*` | Audit/Abos/Nutzer | nur `is_platform_admin` |
-| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Badge „Geplant“ (Flash Live); Abos/Admin → UI |
+| Geplante Module Platzhalter | PlannedPage | Dashboard `planned_modules` | — | Flash Live, LKW; Chiptuning → `/tuning` |
 | Audit Login/Session/Report | — | `audit_logs` | ja | keine Passwörter |
 | Health | — | `GET /health` | — | `demo_mode`, `data_source_default` |
 
@@ -103,7 +105,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | Gesamtabnahme / Freigabe | Phase 17: Checkliste + Go/No-Go; **kein** `freigegeben`; STOP vor Prod-Rollout |
 | Markenlogos (Bilddateien) | fehlt (BLK-LOGO → Text-Fallback) |
 | Herstellerdatenbanken / ODX | fehlen; **keine Lizenzen im Repo** |
-| LKW / Tuning | optional Phase 18/19; **nicht gestartet**; gesperrt |
+| LKW / Tuning | Phase 18 Architektur `/tuning` (deaktiviert); Phase 19 LKW **nicht gestartet** |
 | Produktives Deployment | Phase 16: Docs/Compose/Proxy/Backup; Live Ist unter diagnova.codekreativ.at; Redeploy nur mit Freigabe |
 
 ## Datenbank-Inventar
@@ -139,6 +141,7 @@ Volkswagen, Audi, BMW, Mercedes-Benz, Škoda, Seat, Opel, Ford, Toyota — jewei
 | `update_job_locks` | Sperre gegen parallele Jobs |
 | `service_runs` | Phase-11 Gate-/Audit-Läufe (kein Live-Schreiben) |
 | `coding_runs` | Phase-12 Gate-/Identifikationsläufe (kein Flash/Schreiben) |
+| `tuning_software_baselines` / `tuning_approval_documents` / `tuning_version_history` / `tuning_workflow_runs` | Phase-18 Architektur (kein Map/Flash) |
 | `software_components` | Installierte API/Web/Connector-Versionen (Phase 14) |
 | `software_update_channels` | Software-Updatekanäle (stable/production) |
 | `software_update_packages` | Staging-Pakete inkl. Checksum/Signatur |
@@ -213,12 +216,13 @@ Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` +
 | `/service` | ServicePage | Servicekatalog + Gates |
 | `/guided` | GuidedPage | Geführte Diagnose |
 | `/coding` | CodingPage | Identifikation, Kompatibilitäts-/Spannungs-Gates; Flash aus |
+| `/tuning` | TuningPage | Phase-18 Architektur; Geplant/deaktiviert; keine Maps/Flash |
 | `/subscriptions` | SubscriptionsPage | Tarife, Stub-Zahlung, Geräte, Einladungen |
 | `/admin` | AdminPage | Plattform-Admin: Nutzer, Abos, Audit, Support |
 | `/diagnostic-data` | DiagnosticDataPage | Quellen, DTC-Lookup, Import-Demo |
 | `/data-updates` | DataUpdatesPage | Admin: Diagnosedaten-Kanäle, Läufe, Freigabe, Rollback |
 | `/software-updates` | SoftwareUpdatesPage | Admin: Software/Connector-Versionen, Signatur, Freigabe, Rollback |
-| `/planned/:moduleId` | PlannedPage | Flash Live u. a. |
+| `/planned/:moduleId` | PlannedPage | Flash Live, LKW u. a. |
 | `/security` | SecurityPage | Threat-/Backup-Hinweise (Phase 15) |
 | `/workshop`, `/customers`, `/work-orders` | Workshop/Kunden | Phase 08 |
 
@@ -235,6 +239,7 @@ Migrationen: `001_initial` … `011_phase14`. Runtime zusätzlich `create_all` +
 | API Phase 13 | `tests/api/test_phase13_subscriptions.py` | Abos, Webhook-Stub, Kündigung, Mandanten, Admin |
 | API Phase 14 | `tests/api/test_phase14_software_updates.py` | Signatur, Inkompatibilität, Busy, Install/Rollback, Zertifikat-Sperre |
 | API Phase 15 | `tests/api/test_phase15_security.py` | Rate-Limit, Audit-Redaction, IDOR/RBAC, Threat-Dashboard, Origin, Headers |
+| API Phase 18 | `tests/api/test_phase18_tuning.py` | Katalog, Baselines, Genehmigungen, Legal-Gates, Workflow; Map/Flash/Aktivierung 403 |
 | Protocols | `tests/protocols/test_dtc_pid.py` | DTC-Decode, PID-Scale |
 | E2E | `apps/web/e2e/phase02.spec.ts` | Navigation, Suche, Theme, Wizard, Favoriten |
 | Connector | `DiagNova.Connector.Tests` | Fake-Port, Auth, Inventar, Status – Phase 05 unverändert |

@@ -20,6 +20,7 @@ from app.api.routes import (
     service,
     software_updates,
     subscriptions,
+    tuning,
     vehicle_history,
     vehicles,
     work_orders,
@@ -50,3 +51,4 @@ api_router.include_router(billing.router)
 api_router.include_router(admin.router)
 api_router.include_router(software_updates.router)
 api_router.include_router(security.router)
+api_router.include_router(tuning.router)

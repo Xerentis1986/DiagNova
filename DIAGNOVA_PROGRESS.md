@@ -28,6 +28,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-15-Branch | `cursor/diagnova-phase-15-security-4381` |
 | Phase-16-Branch | `cursor/diagnova-phase-16-deploy-8876` |
 | Phase-17-Branch | `cursor/diagnova-phase-17-acceptance-8ffe` |
+| Phase-18-Branch | `cursor/diagnova-phase-18-chiptuning-c46a` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -53,9 +54,28 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 15 Sicherheit/QA | 🟢 Simuliert getestet | Threat Model, Rate-Limits, Audit, DSGVO-Docs |
 | 16 World4You/Plesk Deploy | 🟢 Docs/Ops | Install/Compose/Proxy/Backup; Live Smoke |
 | 17 Abnahme | 🟢 Docs/Abnahme | Checkliste + **NO-GO** Voll-Launch; **STOP** Prod-Rollout |
-| 18–19 Optional | ⚪ Später | **nicht gestartet**; J1939 in 19 |
+| 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
+| 19 LKW (optional) | ⚪ Später | **nicht gestartet**; J1939/RP1210 |
 
 ## Chronik
+
+### 2026-11-27 – Phase 18 Optionales Chiptuning (Architektur)
+
+**Erledigt**
+
+- Basis: `cursor/diagnova-phase-17-acceptance-8ffe` (PR #26)
+- Modul-Skelett: Katalog, Baselines, Genehmigungen, Historie, Legal-Gates, Workflow-Simulation
+- API `/api/tuning/*` + UI `/tuning` (Geplant/deaktiviert); Map/Flash/Aktivierung 403
+- Alembic `013_phase18`; Tests `test_phase18_tuning.py`
+- **Keine** Tuning-Algorithmen, keine Abgasmanipulation
+
+**Nicht gemacht (bewusst)**
+
+- Keine produktive Aktivierung / kein Flash / keine Kennfeldänderungen
+- **Phase 19 nicht gestartet**
+- Kein Prod-Redeploy
+
+Details: [docs/phase-18-abschluss.md](docs/phase-18-abschluss.md)
 
 ### 2026-11-27 – Phase 17 Gesamtabnahme und Freigabeprüfung
 
