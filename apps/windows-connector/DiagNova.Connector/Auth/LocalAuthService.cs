@@ -1,39 +1,46 @@
 namespace DiagNova.Connector.Auth;
 
 /// <summary>
-/// Minimaler Localhost-Auth-Hinweis: erwartet Bearer-Token aus Umgebungsvariable.
-/// Produktion: Pairing + DPAPI, siehe docs/windows-connector-auth.md.
+/// Localhost-Auth: Bearer Session-Token (nach Pairing) oder Bootstrap-CONNECTOR_TOKEN.
+/// Öffentliche Pfade: /pair/info (ohne Secrets), /pair (mit Pairing-Code).
 /// </summary>
 public sealed class LocalAuthService
 {
-    private readonly string _token;
+    private readonly PairingService _pairing;
+    private readonly OriginGuard _origin;
 
-    public LocalAuthService(IConfiguration config)
+    private static readonly HashSet<string> PublicPaths = new(StringComparer.OrdinalIgnoreCase)
     {
-        _token = config["CONNECTOR_TOKEN"]
-            ?? Environment.GetEnvironmentVariable("CONNECTOR_TOKEN")
-            ?? "dev-only-change-me";
+        "/pair",
+        "/pair/info"
+    };
+
+    public LocalAuthService(PairingService pairing, OriginGuard origin)
+    {
+        _pairing = pairing;
+        _origin = origin;
     }
+
+    public bool IsPublicPath(PathString path) => PublicPaths.Contains(path.Value ?? "");
 
     public bool IsAuthorized(HttpRequest request)
     {
+        if (!_origin.IsOriginAllowed(request))
+        {
+            return false;
+        }
+
+        if (IsPublicPath(request.Path))
+        {
+            return true;
+        }
+
         var header = request.Headers.Authorization.ToString();
         if (string.IsNullOrWhiteSpace(header) || !header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
         var provided = header["Bearer ".Length..].Trim();
-        return CryptographicEquals(provided, _token);
-    }
-
-    private static bool CryptographicEquals(string a, string b)
-    {
-        if (a.Length != b.Length) return false;
-        var result = 0;
-        for (var i = 0; i < a.Length; i++)
-        {
-            result |= a[i] ^ b[i];
-        }
-        return result == 0;
+        return _pairing.IsSessionValid(provided);
     }
 }
