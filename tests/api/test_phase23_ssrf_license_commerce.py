@@ -93,6 +93,8 @@ def test_smtp_send_path_with_local_stub(monkeypatch):
 
 
 def test_offline_license_token_endpoint(client: TestClient, auth_headers: dict[str, str]):
+    from app.services import license_crypto
+
     r = client.post(
         "/api/billing/licenses/offline-token",
         headers=auth_headers,
@@ -103,9 +105,13 @@ def test_offline_license_token_endpoint(client: TestClient, auth_headers: dict[s
     assert "payload" in body and "signature" in body
     payload = body["payload"]
     sig = body["signature"]
-    secret = get_settings().license_hmac_secret.encode()
-    expected = hmac.new(secret, payload.encode(), hashlib.sha256).hexdigest()
-    assert hmac.compare_digest(expected, sig)
+    # Phase 24: bevorzugt RSA; HMAC nur Fallback
+    if body.get("algorithm", "").startswith("RSA"):
+        assert license_crypto.verify_payload(payload, sig) is True
+    else:
+        secret = get_settings().license_hmac_secret.encode()
+        expected = hmac.new(secret, payload.encode(), hashlib.sha256).hexdigest()
+        assert hmac.compare_digest(expected, sig)
 
 
 def test_invoice_pdf_and_mfa_still_ok(client: TestClient, auth_headers: dict[str, str]):

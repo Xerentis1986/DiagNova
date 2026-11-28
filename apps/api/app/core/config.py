@@ -49,8 +49,12 @@ class Settings(BaseSettings):
     diag_default_mode: str = "demo"  # demo | live
     # MFA TOTP (Issuer-Label)
     mfa_issuer: str = "DiagNova"
-    # Phase 23 – Lizenz-HMAC (Demo; Prod-Secret via Env)
+    # Phase 23 – Lizenz-HMAC (Demo; Prod-Secret via Env) – Legacy
     license_hmac_secret: str = "diagnova-phase23-license-hmac-not-for-prod"
+    # Phase 24 – Asymmetrische Offline-Lizenz (RSA); Private nie committen außer Demo-Fixture
+    license_rsa_private_pem: str = ""
+    license_rsa_public_pem: str = ""
+    license_prefer_asymmetric: bool = True
 
     # Phase 14 – Software-Updates (HMAC-Demo; produktives Code-Signing separat)
     software_update_hmac_demo_secret: str = "diagnova-phase14-software-hmac-not-for-prod"

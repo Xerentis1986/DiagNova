@@ -210,7 +210,9 @@ def issue_signed_offline_token(
     device_fingerprint: str,
     valid_hours: int | None = None,
 ) -> dict[str, Any]:
-    """Erzeugt HMAC-signiertes Offline-Token für Connector ApplySignedToken."""
+    """Erzeugt Offline-Token: bevorzugt RSA-SHA256, HMAC als Legacy-Fallback."""
+    from app.services import license_crypto
+
     verify = verify_connector_license(
         db, workshop_id=workshop_id, device_fingerprint=device_fingerprint
     )
@@ -224,13 +226,38 @@ def issue_signed_offline_token(
         "jti": uuid.uuid4().hex,
         "allowed": bool(verify.get("allowed")),
         "entitlements": ["obd_live", "dtc_read"] if verify.get("allowed") else [],
+        "alg": "RSA-SHA256",
     }
+    payload = json.dumps(payload_obj, separators=(",", ":"), sort_keys=True)
+
+    prefer_asym = bool(get_settings().license_prefer_asymmetric)
+    asym = license_crypto.sign_payload(payload) if prefer_asym else {"ok": False}
+    if asym.get("ok"):
+        return {
+            **verify,
+            "payload": payload,
+            "signature": asym["signature_b64"],
+            "signature_encoding": "base64",
+            "algorithm": asym["algorithm"],
+            "public_key_pem": asym.get("public_key_pem"),
+            "offline_hours": hours,
+            "apply_hint": (
+                "POST connector /license/gate/apply mit "
+                "{payload, signature, algorithm:'RSA-SHA256-PKCS1v15'}"
+            ),
+        }
+
+    # Legacy HMAC
+    payload_obj["alg"] = "HMAC-SHA256"
     payload = json.dumps(payload_obj, separators=(",", ":"), sort_keys=True)
     sig = _hmac_hex(payload)
     return {
         **verify,
         "payload": payload,
         "signature": sig,
+        "signature_encoding": "hex",
+        "algorithm": "HMAC-SHA256",
         "offline_hours": hours,
-        "apply_hint": "POST connector /license/gate/apply mit {payload, signature}",
+        "apply_hint": "POST connector /license/gate/apply mit {payload, signature} (HMAC legacy)",
+        "message_de_extra": "RSA-Private-Key fehlt – HMAC-Fallback.",
     }

@@ -1,5 +1,5 @@
 #define MyAppName "DiagNova Connector"
-#define MyAppVersion "0.23.0"
+#define MyAppVersion "0.24.0"
 #define MyAppPublisher "DiagNova"
 #define MyAppExeName "DiagNova.Connector.exe"
 ; UNSIGNED test installer – no fake signatures. Code-signing: BLK-CERT / operator.

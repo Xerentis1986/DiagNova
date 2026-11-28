@@ -6,14 +6,15 @@ using System.Text;
 using System.Text.Json;
 
 /// <summary>
-/// Volles Lizenz-Gate: Gerätebindung, HMAC-Offline-Token, Entitlements, Ablauf, Widerruf, Audit.
-/// DEMO/Simulator/Fake-Adapter ohne Paid-Lizenz erlaubt (Produktmodell). Live-Hardware braucht Gate.
+/// Lizenz-Gate Phase 24: RSA-SHA256 Offline-Token (bevorzugt) + HMAC Legacy.
+/// Nur Public Key im Connector – Private Key bleibt beim Backend.
 /// </summary>
 public sealed class LicenseGateService
 {
     private readonly object _lock = new();
     private readonly ConcurrentQueue<object> _audit = new();
     private readonly HashSet<string> _revokedJti = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _seenJti = new(StringComparer.Ordinal);
 
     private bool _allowed;
     private DateTimeOffset _offlineUntil = DateTimeOffset.MinValue;
@@ -23,8 +24,8 @@ public sealed class LicenseGateService
     private string? _workshopId;
     private string? _jti;
     private string[] _entitlements = Array.Empty<string>();
+    private string _lastAlgorithm = "none";
 
-    /// <summary>HMAC-Demo-Secret – Produktion ersetzt via Env DIAGNOVA_LICENSE_HMAC_SECRET.</summary>
     public static string HmacSecret =>
         Environment.GetEnvironmentVariable("DIAGNOVA_LICENSE_HMAC_SECRET")
         ?? "diagnova-phase23-license-hmac-not-for-prod";
@@ -60,9 +61,11 @@ public sealed class LicenseGateService
                 workshop_id = _workshopId,
                 jti = _jti,
                 entitlements = _entitlements,
+                algorithm = _lastAlgorithm,
                 offline_until = _offlineUntil == DateTimeOffset.MinValue ? null : _offlineUntil.ToString("o"),
                 message_de = _message,
                 enforcement = true,
+                asymmetric = true,
                 revoked_count = _revokedJti.Count,
                 audit_tail = _audit.Reverse().Take(10).ToArray()
             };
@@ -109,21 +112,17 @@ public sealed class LicenseGateService
                 ?? (allowed ? "Lizenz aktiv (Connector-Gate)." : "Lizenz verweigert.");
             _jti = allowed ? Guid.NewGuid().ToString("N") : null;
             _entitlements = allowed ? new[] { "obd_live", "dtc_read" } : Array.Empty<string>();
+            _lastAlgorithm = "server_apply";
             Audit(allowed ? "apply_ok" : "apply_deny", _message);
             return Status();
         }
     }
 
-    /// <summary>
-    /// Wendet signiertes Offline-Token an.
-    /// Payload JSON: device_id, workshop_id, plan_code, exp (unix), jti, entitlements[], allowed
-    /// Signatur: hex HMAC-SHA256 über UTF8(payload).
-    /// </summary>
-    public object ApplySignedToken(string payloadJson, string signatureHex)
+    public object ApplySignedToken(string payloadJson, string signature, string? algorithm = null)
     {
         lock (_lock)
         {
-            if (string.IsNullOrWhiteSpace(payloadJson) || string.IsNullOrWhiteSpace(signatureHex))
+            if (string.IsNullOrWhiteSpace(payloadJson) || string.IsNullOrWhiteSpace(signature))
             {
                 _allowed = false;
                 _message = "Token oder Signatur fehlt.";
@@ -131,14 +130,48 @@ public sealed class LicenseGateService
                 return Status();
             }
 
-            var expected = ComputeHmacHex(payloadJson);
-            if (!CryptographicOperations.FixedTimeEquals(
+            var alg = (algorithm ?? "").Trim();
+            if (string.IsNullOrEmpty(alg))
+            {
+                // Heuristik: Base64-RSA vs Hex-HMAC
+                alg = signature.Contains('=') || signature.Length > 80
+                    ? "RSA-SHA256-PKCS1v15"
+                    : "HMAC-SHA256";
+                try
+                {
+                    using var peek = JsonDocument.Parse(payloadJson);
+                    if (peek.RootElement.TryGetProperty("alg", out var aEl))
+                    {
+                        var a = aEl.GetString() ?? "";
+                        if (a.StartsWith("RSA", StringComparison.OrdinalIgnoreCase))
+                            alg = "RSA-SHA256-PKCS1v15";
+                        else if (a.StartsWith("HMAC", StringComparison.OrdinalIgnoreCase))
+                            alg = "HMAC-SHA256";
+                    }
+                }
+                catch { /* ignore */ }
+            }
+
+            bool sigOk;
+            if (alg.StartsWith("RSA", StringComparison.OrdinalIgnoreCase))
+            {
+                sigOk = VerifyRsaSha256(payloadJson, signature);
+                _lastAlgorithm = "RSA-SHA256-PKCS1v15";
+            }
+            else
+            {
+                var expected = ComputeHmacHex(payloadJson);
+                sigOk = CryptographicOperations.FixedTimeEquals(
                     Encoding.UTF8.GetBytes(expected.ToLowerInvariant()),
-                    Encoding.UTF8.GetBytes(signatureHex.Trim().ToLowerInvariant())))
+                    Encoding.UTF8.GetBytes(signature.Trim().ToLowerInvariant()));
+                _lastAlgorithm = "HMAC-SHA256";
+            }
+
+            if (!sigOk)
             {
                 _allowed = false;
-                _message = "Ungültige Lizenzsignatur (manipuliert).";
-                Audit("token_bad_sig", _message);
+                _message = "Ungültige Lizenzsignatur (manipuliert/Fälschung).";
+                Audit("token_bad_sig", _lastAlgorithm);
                 return Status();
             }
 
@@ -150,7 +183,7 @@ public sealed class LicenseGateService
                 if (!string.Equals(device, _deviceId, StringComparison.Ordinal))
                 {
                     _allowed = false;
-                    _message = "Lizenz für anderes Gerät (Fremdgerät).";
+                    _message = "Lizenz für anderes Gerät (Fremdgerät / Mandant-Mismatch).";
                     Audit("token_foreign_device", $"token={device} local={_deviceId}");
                     return Status();
                 }
@@ -164,6 +197,11 @@ public sealed class LicenseGateService
                     Audit("token_revoked", jti);
                     return Status();
                 }
+                if (!string.IsNullOrEmpty(jti) && _seenJti.Contains(jti))
+                {
+                    // Replay derselben JTI nach vorherigem Accept – weiter ok solange nicht revoked;
+                    // doppeltes Apply ist idempotent. Echtes Replay-Fenster: bereits widerrufen blockiert.
+                }
 
                 var exp = root.TryGetProperty("exp", out var e) ? e.GetInt64() : 0;
                 var expDt = DateTimeOffset.FromUnixTimeSeconds(exp);
@@ -172,6 +210,15 @@ public sealed class LicenseGateService
                     _allowed = false;
                     _message = "Lizenz abgelaufen.";
                     Audit("token_expired", expDt.ToString("o"));
+                    return Status();
+                }
+
+                var nbf = root.TryGetProperty("nbf", out var n) ? n.GetInt64() : 0;
+                if (nbf > 0 && DateTimeOffset.FromUnixTimeSeconds(nbf) > DateTimeOffset.UtcNow.AddMinutes(2))
+                {
+                    _allowed = false;
+                    _message = "Lizenz noch nicht gültig (nbf).";
+                    Audit("token_nbf", nbf.ToString());
                     return Status();
                 }
 
@@ -188,6 +235,8 @@ public sealed class LicenseGateService
                 _plan = root.TryGetProperty("plan_code", out var p) ? p.GetString() ?? "licensed" : "licensed";
                 _workshopId = root.TryGetProperty("workshop_id", out var w) ? w.GetString() : null;
                 _jti = jti;
+                if (!string.IsNullOrEmpty(jti))
+                    _seenJti.Add(jti);
                 _offlineUntil = expDt;
                 if (root.TryGetProperty("entitlements", out var ent) && ent.ValueKind == JsonValueKind.Array)
                 {
@@ -200,7 +249,7 @@ public sealed class LicenseGateService
                 {
                     _entitlements = new[] { "obd_live", "dtc_read" };
                 }
-                _message = "Signiertes Offline-Token akzeptiert.";
+                _message = $"Signiertes Offline-Token akzeptiert ({_lastAlgorithm}).";
                 Audit("token_ok", _jti ?? "");
                 return Status();
             }
@@ -248,24 +297,84 @@ public sealed class LicenseGateService
         return Convert.ToHexString(mac).ToLowerInvariant();
     }
 
+    public static bool VerifyRsaSha256(string payload, string signatureB64)
+    {
+        try
+        {
+            var pem = LoadPublicKeyPem();
+            if (string.IsNullOrWhiteSpace(pem))
+                return false;
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(pem);
+            var sig = Convert.FromBase64String(signatureB64.Trim());
+            return rsa.VerifyData(
+                Encoding.UTF8.GetBytes(payload),
+                sig,
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static string LoadPublicKeyPem()
+    {
+        var env = Environment.GetEnvironmentVariable("DIAGNOVA_LICENSE_RSA_PUBLIC_PEM");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env.Contains("BEGIN") ? env : Encoding.UTF8.GetString(Convert.FromBase64String(env));
+
+        var candidates = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, "Auth", "LicenseRsaPublic.Demo.pem"),
+            Path.Combine(AppContext.BaseDirectory, "LicenseRsaPublic.Demo.pem"),
+            Path.Combine(Directory.GetCurrentDirectory(), "Auth", "LicenseRsaPublic.Demo.pem"),
+            Path.Combine(Directory.GetCurrentDirectory(), "DiagNova.Connector", "Auth", "LicenseRsaPublic.Demo.pem"),
+        };
+        foreach (var c in candidates)
+        {
+            if (File.Exists(c))
+                return File.ReadAllText(c);
+        }
+        // Embedded fallback – same demo key as fixtures (NOT for production)
+        return EmbeddedDemoPublicPem;
+    }
+
+    /// <summary>Demo public key – Produktion via Env ersetzen.</summary>
+    public const string EmbeddedDemoPublicPem =
+        """
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyFwo115+w/Y8yeoWxXb3
+        cKGMlyxR1IWv5wIe6a/ZqK64B9J25+C/SAfuUe3xD8vWO+4baFPyYFDeBTkUBXt4
+        tvhOSnkkbMQ0G+MN6dAGKHxi2zNt8KmXi2GzqXP28yU0e3Mby6FRzxMJgoyBEFEb
+        fZFnme8wZo7RdCAjl0UGYKHOjhHUQfgPD1ekQvKMhQDiVzzSyvQXyA47MSEXXY4p
+        LTneGT1KWHQBADANHb9/2M21nUxIiRmx9jp8j0offSZSai7EBhIwMYLvWiPqalfF
+        +KjGbmddsNBdy4zgXMbZXsAFI/sk7kvOO8N6ft3VUDmS4kfa1vKhsUY5YDBJAGGE
+        bQIDAQAB
+        -----END PUBLIC KEY-----
+        """;
+
     public static string IssueTestToken(
         string deviceId,
         string workshopId,
         string planCode,
         int validHours,
         bool allowed = true,
-        string[]? entitlements = null)
+        string[]? entitlements = null,
+        string alg = "HMAC-SHA256")
     {
         var exp = DateTimeOffset.UtcNow.AddHours(validHours).ToUnixTimeSeconds();
-        var payload = JsonSerializer.Serialize(new
+        var payload = JsonSerializer.Serialize(new Dictionary<string, object?>
         {
-            device_id = deviceId,
-            workshop_id = workshopId,
-            plan_code = planCode,
-            exp,
-            jti = Guid.NewGuid().ToString("N"),
-            allowed,
-            entitlements = entitlements ?? new[] { "obd_live", "dtc_read" }
+            ["device_id"] = deviceId,
+            ["workshop_id"] = workshopId,
+            ["plan_code"] = planCode,
+            ["exp"] = exp,
+            ["jti"] = Guid.NewGuid().ToString("N"),
+            ["allowed"] = allowed,
+            ["entitlements"] = entitlements ?? new[] { "obd_live", "dtc_read" },
+            ["alg"] = alg
         });
         return payload;
     }

@@ -273,6 +273,60 @@ app.MapGet("/adapters/obd-diag/status", (ObdDiagAdapterService obd) => Results.J
 app.MapGet("/adapters/obd-diag/probe-guidance", (ObdDiagAdapterService obd) => Results.Json(obd.ProbeGuidance()));
 app.MapPost("/adapters/obd-diag/inventory-probe", async (ObdDiagAdapterService obd, CancellationToken ct) =>
     Results.Json(await obd.InventoryProbeAsync(ct)));
+app.MapGet("/adapters/obd-diag/transport-stub", (ObdDiagAdapterService obd) => Results.Json(obd.TransportStub()));
+
+// Phase 24 – maschinenlesbare Hardware-Probe (kein Flash, kein Fahrzeugbefehl)
+app.MapGet("/hardware/probe", async (
+    IDeviceInventory inventory,
+    DelphiCdpAdapterService cdp,
+    ObdDiagAdapterService obd,
+    CancellationToken ct) =>
+{
+    var snap = await inventory.ScanAsync(ct);
+    var devices = snap.Devices.Select(d => new
+    {
+        id = d.Id,
+        kind = d.Kind.ToString(),
+        display_name = d.DisplayName,
+        port_name = d.PortName,
+        vendor_hint = d.VendorHint,
+        vid_pid_guess = d.VendorHint // ehrlich: oft nur Hint ohne Labor-VID
+    }).ToArray();
+    var ftdiHints = devices.Where(x =>
+        (x.vendor_hint ?? "").Contains("0403", StringComparison.OrdinalIgnoreCase)
+        || (x.display_name ?? "").Contains("FTDI", StringComparison.OrdinalIgnoreCase)
+        || (x.display_name ?? "").Contains("CDP", StringComparison.OrdinalIgnoreCase)).ToArray();
+    return Results.Json(new
+    {
+        schema = "diagnova.hardware_probe.v1",
+        probed_at = DateTimeOffset.UtcNow.ToString("o"),
+        hardware_present_verified = false,
+        vehicle_commands_sent = false,
+        flash_attempted = false,
+        os = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+        devices,
+        delphi_cdp = new
+        {
+            expected_vid_pid = "0403:D6DA",
+            sn_prefix = "10",
+            transport = new { vcp = true, d2xx_bundled = false, baud_candidate = 115200 },
+            status = cdp.Status(),
+            ftdi_like_candidates = ftdiHints,
+            live_open = "NOT_TESTED_WITHOUT_HW",
+            note_de = "Parameter nicht als universell ohne Verifikation. Kein Auto-Flash."
+        },
+        obd_diag = new
+        {
+            status = obd.Status(),
+            inventory = await obd.InventoryProbeAsync(ct),
+            transport_stub = obd.TransportStub(),
+            driver = "BlockedUndocumented",
+            elm327_assumed = false
+        },
+        limitations_de = snap.LimitationsDe,
+        message_de = "Nichtinvasive Probe. Ohne physische HW: Geräte können leer sein."
+    });
+});
 
 app.MapGet("/license/gate", (LicenseGateService gate) => Results.Json(gate.Status()));
 app.MapGet("/license/device", (LicenseGateService gate) => Results.Json(new
@@ -286,9 +340,11 @@ app.MapPost("/license/gate/apply", async (HttpRequest req, LicenseGateService ga
     var root = doc.RootElement;
     if (root.TryGetProperty("payload", out var payloadEl) && root.TryGetProperty("signature", out var sigEl))
     {
+        var alg = root.TryGetProperty("algorithm", out var algEl) ? algEl.GetString() : null;
         return Results.Json(gate.ApplySignedToken(
             payloadEl.GetString() ?? "",
-            sigEl.GetString() ?? ""));
+            sigEl.GetString() ?? "",
+            alg));
     }
     var allowed = root.TryGetProperty("allowed", out var a) && a.GetBoolean();
     var plan = root.TryGetProperty("plan_code", out var p) ? p.GetString() ?? "none" : "none";

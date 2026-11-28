@@ -91,6 +91,16 @@ jobs:
         shell: pwsh
         working-directory: apps/windows-connector
         run: ./scripts/build-installer.ps1
+      - name: Hash UNSIGNED installer
+        shell: pwsh
+        working-directory: apps/windows-connector
+        run: |
+          $dir = "publish/installer"
+          Get-ChildItem $dir -Filter *.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File -FilePath "$dir/$($_.Name).sha256" -Encoding ascii
+            Write-Host "SHA256 $($_.Name) = $hash size=$($_.Length)"
+          }
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:

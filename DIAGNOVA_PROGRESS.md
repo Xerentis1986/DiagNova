@@ -34,6 +34,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-21-Branch | `cursor/diagnova-phase-21-billing-adapters-e3f2` |
 | Phase-22-Branch | `cursor/diagnova-phase-22-completion-fb46` |
 | Phase-23-Branch | `cursor/diagnova-phase-23-completion-806e` |
+| Phase-24-Branch | `cursor/diagnova-phase-24-completion-fd1f` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -65,6 +66,12 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 21 Produktfertigstellung | 🟡 Code weitgehend / NO-GO Release | Stripe-Test, CDP+, Admin; HW/Legal/Pay-Live offen |
 
 ## Chronik
+
+### 2026-11-28 – Phase 24 Integration/Release-Builds
+
+- UNSIGNED Inno EXE + SHA-256, RSA Offline-Lizenzen, Portable Install-E2E, Hardware-Probe, Steuer-Tests
+- pytest 156, dotnet 55 – **NO-GO**
+
 
 ### 2026-11-28 – Phase 23 Lücken schließen
 
