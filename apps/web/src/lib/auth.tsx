@@ -5,7 +5,7 @@ interface AuthState {
   user: User | null
   token: string | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, mfaCode?: string) => Promise<void>
   logout: () => void
 }
 
@@ -47,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       token,
       loading,
-      async login(email, password) {
-        const res = await api.login(email, password)
+      async login(email, password, mfaCode) {
+        const res = await api.login(email, password, mfaCode)
         localStorage.setItem('dn_token', res.access_token)
         setToken(res.access_token)
         setUser(res.user)

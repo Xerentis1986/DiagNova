@@ -104,3 +104,63 @@ def test_commerce_overview_mollie(client: TestClient, auth_headers: dict):
     assert body["payment_provider"] == "mollie"
     assert body["stripe"]["removed"] is True
     assert "at_legal_note_de" in body
+
+
+def test_mollie_config_save_and_masked(client: TestClient, auth_headers: dict, tmp_path, monkeypatch):
+    monkeypatch.setenv("DIAGNOVA_SECRETS_DIR", str(tmp_path))
+    from app.services.payments import mollie_secrets
+
+    # reload path via env
+    r = client.put(
+        "/api/billing/mollie/config",
+        headers=auth_headers,
+        json={"api_key": "test_phase25_secret_key_xyz", "webhook_url": "https://example.test/hook"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["configured"] is True
+    assert body["api_key_masked"]
+    assert "test_phase25_secret_key_xyz" not in str(body)
+    assert body["api_key_source"] in {"secret_store", "env"}
+
+    cfg = client.get("/api/billing/mollie/config", headers=auth_headers)
+    assert cfg.status_code == 200
+    assert "test_phase25_secret_key_xyz" not in cfg.text
+
+    # tech user forbidden
+    tech = client.post(
+        "/api/auth/login",
+        json={"email": "tech@example.com", "password": "TechDemo123!"},
+    )
+    assert tech.status_code == 200
+    th = {"Authorization": f"Bearer {tech.json()['access_token']}"}
+    denied = client.put(
+        "/api/billing/mollie/config",
+        headers=th,
+        json={"api_key": "test_should_fail"},
+    )
+    assert denied.status_code == 403
+
+
+def test_operator_console_and_nav(client: TestClient, auth_headers: dict):
+    r = client.get("/api/admin/console", headers=auth_headers)
+    assert r.status_code == 200
+    body = r.json()
+    assert body.get("console") == "operator"
+    assert body.get("base_path") == "/operator"
+    assert "customers" in body
+    assert "adapter_test_paths_de" in body
+
+    nav = client.get("/api/admin/operator-nav", headers=auth_headers)
+    assert nav.status_code == 200
+    assert nav.json()["base_path"] == "/operator"
+    assert any(s["id"] == "mollie" for s in nav.json()["sections"])
+
+
+def test_hardware_probe_without_connector(client: TestClient, auth_headers: dict):
+    r = client.get("/api/admin/hardware-probe", headers=auth_headers)
+    assert r.status_code == 200
+    body = r.json()
+    # Connector meist nicht erreichbar in CI – ehrlicher Fail ok
+    assert "message_de" in body
+    assert body.get("ok") in {True, False}

@@ -12,7 +12,9 @@ from app.models.subscriptions import Subscription
 from app.schemas.subscriptions import MockWebhookOut, MockWebhookRequest, SubscriptionOut
 from app.services import email_service, license_management, payment_stub
 from app.services import subscriptions as subsvc
+from app.services.admin_platform import require_platform_admin
 from app.services.payments import mollie_provider
+from app.services.payments import mollie_secrets
 from app.services.payments import stripe_provider  # deprecated shim
 from app.services.tenant import require_admin_role
 
@@ -115,8 +117,62 @@ def mollie_status_endpoint(_user: CurrentUser) -> dict:
 @router.post("/mollie/connection-test")
 async def mollie_connection_test(user: CurrentUser) -> dict:
     """Verbindungstest ohne Charge – Plattform-Admin."""
-    require_admin_role(user)
+    require_platform_admin(user)
     return await mollie_provider.connection_test()
+
+
+class MollieConfigIn(BaseModel):
+    api_key: str | None = Field(default=None, max_length=256)
+    webhook_secret: str | None = Field(default=None, max_length=256)
+    webhook_url: str | None = Field(default=None, max_length=500)
+    live_charges_allowed: bool | None = None
+    clear_api_key: bool = False
+    clear_webhook_secret: bool = False
+
+
+@router.get("/mollie/config")
+def mollie_config_get(user: CurrentUser) -> dict:
+    """Maskierte Mollie-Config für Betreiber-UI (keine Klartext-Keys)."""
+    require_platform_admin(user)
+    return mollie_secrets.public_config()
+
+
+@router.put("/mollie/config")
+def mollie_config_put(body: MollieConfigIn, user: CurrentUser, db: DbSession) -> dict:
+    """API-Key & Co. im Secret-Store speichern (verschlüsselt). Env überschreibt Store."""
+    require_platform_admin(user)
+    if body.api_key and not (
+        body.api_key.strip().startswith("test_") or body.api_key.strip().startswith("live_")
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="API-Key muss mit test_ oder live_ beginnen (Mollie-Format).",
+        )
+    if body.live_charges_allowed is True:
+        # Bewusst speicherbar, aber Checkout bleibt gated; Audit
+        pass
+    cfg = mollie_secrets.save_config(
+        api_key=body.api_key,
+        webhook_secret=body.webhook_secret,
+        webhook_url=body.webhook_url,
+        live_charges_allowed=body.live_charges_allowed,
+        clear_api_key=body.clear_api_key,
+        clear_webhook_secret=body.clear_webhook_secret,
+    )
+    from app.services.audit import write_audit
+
+    write_audit(
+        db,
+        user_id=user.id,
+        action="mollie_config_updated",
+        resource="mollie",
+        detail=(
+            f"configured={cfg.get('configured')} source_will_be_store "
+            f"live_flag={cfg.get('live_charges_flag')} key={cfg.get('api_key_masked')}"
+        ),
+        workshop_id=user.workshop_id,
+    )
+    return {**cfg, "ok": True, "message_de": "Mollie-Konfiguration gespeichert (Secret-Store)."}
 
 
 class MollieCheckoutRequest(BaseModel):

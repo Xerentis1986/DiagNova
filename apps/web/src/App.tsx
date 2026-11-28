@@ -26,7 +26,7 @@ import { WorkshopPage } from './pages/WorkshopPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SubscriptionsPage } from './pages/SubscriptionsPage'
 import { CommercePage } from './pages/CommercePage'
-import { AdminPage } from './pages/AdminPage'
+import { OperatorPage } from './pages/OperatorPage'
 import { SoftwareUpdatesPage } from './pages/SoftwareUpdatesPage'
 import { SecurityPage } from './pages/SecurityPage'
 import type { ReactNode } from 'react'
@@ -80,7 +80,8 @@ export default function App() {
                 <Route path="tuning" element={<TuningPage />} />
                 <Route path="subscriptions" element={<SubscriptionsPage />} />
                 <Route path="commerce" element={<CommercePage />} />
-                <Route path="admin" element={<AdminPage />} />
+                <Route path="operator" element={<OperatorPage />} />
+                <Route path="admin" element={<Navigate to="/operator" replace />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="software-updates" element={<SoftwareUpdatesPage />} />

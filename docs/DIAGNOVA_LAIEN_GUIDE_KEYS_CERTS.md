@@ -1,11 +1,11 @@
 # Laienleitfaden: Keys, Zertifikate, Zahlung (Phase 25)
 
 ## Zahlung = Mollie (nicht Stripe)
-1. Bei Mollie anmelden.  
-2. API-Key kopieren (`test_…` zum Üben).  
-3. Auf dem Server als Geheimnis speichern: `MOLLIE_API_KEY=…` (nicht in Dateien ins Git legen).  
-4. In der Admin-Oberfläche „Verbindungstest“ drücken – das prüft nur die Verbindung, **bucht nichts ab**.  
-5. Echte Kundenabbuchungen erst, wenn du das bewusst freigibst (`MOLLIE_LIVE_CHARGES_ALLOWED`).
+1. Bei Mollie anmelden und API-Key (`test_…`) kopieren.  
+2. Als Betreiber unter **`/operator` → Tab Mollie** den Key eintragen und speichern (wird verschlüsselt abgelegt – nicht ins Git).  
+   Alternativ Server-Env: `MOLLIE_API_KEY=…`.  
+3. „Verbindungstest“ drücken – prüft nur die Verbindung, **bucht nichts ab**.  
+4. Echte Abbuchungen erst nach bewusster Freigabe (Live-Key + Live-Charges-Häkchen).
 
 ## Lizenz-Schlüssel (RSA)
 1. Auf dem Rechner: `python scripts/generate_license_rsa_keys.py`  

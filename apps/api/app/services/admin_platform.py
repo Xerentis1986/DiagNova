@@ -226,3 +226,96 @@ def list_admin_users(db: Session) -> list[dict]:
             }
         )
     return out
+
+
+def list_billing_accounts(db: Session) -> list[dict]:
+    rows = db.query(BillingAccount).order_by(BillingAccount.created_at.desc()).limit(100).all()
+    return [
+        {
+            "id": a.id,
+            "workshop_id": a.workshop_id,
+            "customer_type": a.customer_type,
+            "status": a.status,
+            "company_name": a.company_name,
+            "contact_name": a.contact_name,
+            "display_name": a.company_name or a.contact_name or a.billing_email,
+            "email": a.billing_email,
+            "country": a.country,
+            "vat_id": a.vat_id,
+            "preferred_plan_code": a.preferred_plan_code,
+            "is_example_data": bool(a.is_example_data),
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+        }
+        for a in rows
+    ]
+
+
+def list_invoices_admin(db: Session, *, limit: int = 50) -> list[dict]:
+    limit = max(1, min(limit, 200))
+    rows = db.query(Invoice).order_by(Invoice.created_at.desc()).limit(limit).all()
+    return [
+        {
+            "id": i.id,
+            "workshop_id": i.workshop_id,
+            "billing_account_id": getattr(i, "billing_account_id", None),
+            "number": getattr(i, "number", None) or getattr(i, "invoice_number", None),
+            "status": i.status,
+            "gross_cents": getattr(i, "gross_cents", None),
+            "net_cents": getattr(i, "net_cents", None),
+            "currency": getattr(i, "currency", None) or "EUR",
+            "is_example_data": bool(getattr(i, "is_example_data", False)),
+            "created_at": i.created_at.isoformat() if i.created_at else None,
+            "due_at": i.due_at.isoformat() if getattr(i, "due_at", None) else None,
+        }
+        for i in rows
+    ]
+
+
+def list_devices_admin(db: Session) -> list[dict]:
+    rows = db.query(DeviceBinding).order_by(DeviceBinding.created_at.desc()).limit(100).all()
+    return [
+        {
+            "id": d.id,
+            "workshop_id": d.workshop_id,
+            "device_name": d.device_name,
+            "device_fingerprint": d.device_fingerprint[:16] + "…"
+            if d.device_fingerprint and len(d.device_fingerprint) > 16
+            else d.device_fingerprint,
+            "platform": d.platform,
+            "last_seen_at": d.last_seen_at.isoformat() if d.last_seen_at else None,
+            "revoked_at": d.revoked_at.isoformat() if d.revoked_at else None,
+            "active": d.revoked_at is None,
+        }
+        for d in rows
+    ]
+
+
+def build_operator_console(db: Session) -> dict:
+    dash = build_admin_dashboard(db)
+    return {
+        **dash,
+        "console": "operator",
+        "base_path": "/operator",
+        "customers": list_billing_accounts(db)[:50],
+        "invoices": list_invoices_admin(db, limit=30),
+        "devices": list_devices_admin(db),
+        "users": list_admin_users(db),
+        "site_settings": {
+            "supplier_country": "AT",
+            "currency": "EUR",
+            "tax_review_status": "draft_needs_review",
+            "at_legal_aligned_technical": True,
+            "legal_note_de": (
+                "Technisch AT-aligned. Rechtsfreigabe durch Betreiber/Steuerberater offen."
+            ),
+        },
+        "adapter_test_paths_de": [
+            "Connector GET /hardware/probe – CDP+/OBD-DIAG/Vgate Inventur",
+            "POST /adapters/delphi-cdp/identify-sim – CDP+ Simulator Safe-Read",
+            "POST /adapters/delphi-cdp/inventory-probe – FTDI/CDP Kandidaten",
+            "POST /adapters/obd-diag/inventory-probe – USB/COM Inventur (kein ELM-Fake)",
+            "POST /adapters/vgate-icar-pro-2s/connection-test – ELM327 AT (COM/BT)",
+            "API-Proxy: GET /api/admin/hardware-probe (Betreiber)",
+        ],
+        "rbac_de": "Nur Plattform-Admin. Kunden-UI ohne Betreiber-Menü.",
+    }

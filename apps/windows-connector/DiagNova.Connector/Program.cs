@@ -239,6 +239,8 @@ app.MapGet("/adapters/delphi-cdp/compatibility", (DelphiCdpAdapterService cdp) =
 app.MapGet("/adapters/delphi-cdp/encode-demo", (DelphiCdpAdapterService cdp) => Results.Json(cdp.EncodeDemo()));
 app.MapPost("/adapters/delphi-cdp/identify-sim", async (DelphiCdpAdapterService cdp, CancellationToken ct) =>
     Results.Json(await cdp.IdentifySimulatedAsync(ct)));
+app.MapPost("/adapters/delphi-cdp/inventory-probe", async (DelphiCdpAdapterService cdp, CancellationToken ct) =>
+    Results.Json(await cdp.InventoryProbeAsync(ct)));
 app.MapPost("/adapters/delphi-cdp/open-live", (DelphiCdpAdapterService cdp) => Results.Json(cdp.TryOpenLive()));
 app.MapPost("/adapters/delphi-cdp/vehicle-command", () => Results.Json(new
 {
@@ -331,8 +333,15 @@ app.MapGet("/hardware/probe", async (
             sn_prefix = "10",
             transport = new { vcp = true, d2xx_bundled = false, baud_candidate = 115200 },
             status = cdp.Status(),
+            inventory = await cdp.InventoryProbeAsync(ct),
             ftdi_like_candidates = ftdiHints,
             live_open = "NOT_TESTED_WITHOUT_HW",
+            test_paths = new[]
+            {
+                "POST /adapters/delphi-cdp/inventory-probe",
+                "POST /adapters/delphi-cdp/identify-sim",
+                "POST /adapters/delphi-cdp/open-live"
+            },
             note_de = "Parameter nicht als universell ohne Verifikation. Kein Auto-Flash."
         },
         obd_diag = new

@@ -17,9 +17,9 @@ import httpx
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.config import get_settings
 from app.models.subscriptions import PaymentWebhookEvent, Subscription
 from app.services.audit import write_audit
+from app.services.payments import mollie_secrets
 from app.services.subscriptions import refresh_subscription_status
 
 MOLLIE_API = "https://api.mollie.com/v2"
@@ -30,33 +30,40 @@ def _now() -> datetime:
 
 
 def _api_key() -> str:
-    return (get_settings().mollie_api_key or "").strip()
+    key, _src = mollie_secrets.resolve_api_key()
+    return key
 
 
 def mollie_status() -> dict[str, Any]:
-    s = get_settings()
-    key = _api_key()
+    key, key_src = mollie_secrets.resolve_api_key()
     configured = bool(key)
     test_mode = key.startswith("test_") if key else True
     live_keys = key.startswith("live_") if key else False
+    live_flag = mollie_secrets.resolve_live_charges_allowed()
+    pub = mollie_secrets.public_config()
     return {
         "provider": "mollie",
         "configured": configured,
         "test_mode": test_mode and not live_keys,
         "live_keys_present": live_keys,
-        "live_charges_allowed": bool(s.mollie_live_charges_allowed) and live_keys,
+        "live_charges_allowed": bool(live_flag) and live_keys,
+        "api_key_source": key_src,
+        "api_key_masked": pub.get("api_key_masked"),
+        "editable_via_admin": True,
         "webhook_path": "/api/billing/webhooks/mollie",
         "connection_test_path": "/api/billing/mollie/connection-test",
-        "message_de": (
-            "Mollie bereit, sobald MOLLIE_API_KEY (test_… oder live_…) gesetzt ist. "
-            "Live-Charges standardmäßig gesperrt. Stripe wird nicht verwendet."
+        "config_path": "/api/billing/mollie/config",
+        "message_de": pub.get("message_de")
+        or (
+            "Mollie: Key im Betreiber-UI oder Env setzen. Live-Charges standardmäßig gesperrt."
             if not configured
             else (
                 "Mollie konfiguriert – Testmodus (test_-Key)."
                 if test_mode and not live_keys
-                else "Mollie Live-Key erkannt – Charges nur mit mollie_live_charges_allowed=true."
+                else "Mollie Live-Key erkannt – Charges nur mit live_charges_allowed."
             )
         ),
+        "security_de": pub.get("security_de"),
         "no_fake_success": True,
         "stripe_removed": True,
     }
@@ -70,7 +77,10 @@ async def connection_test() -> dict[str, Any]:
             "ok": False,
             "status": "not_configured",
             "http_status": None,
-            "message_de": "MOLLIE_API_KEY fehlt. Verbindungstest nicht möglich – keine simulierte OK-Antwort.",
+            "message_de": (
+                "API-Key fehlt. Im Betreiber-UI unter Mollie eintragen oder MOLLIE_API_KEY setzen. "
+                "Keine simulierte OK-Antwort."
+            ),
         }
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
@@ -123,20 +133,19 @@ async def create_checkout_payment(
     redirect_url: str,
     description: str | None = None,
 ) -> dict[str, Any]:
-    s = get_settings()
     key = _api_key()
     if not key:
         return {
             "ok": False,
             "status": "not_configured",
-            "message_de": "MOLLIE_API_KEY fehlt. Checkout nicht gestartet – keine simulierte Zahlung.",
+            "message_de": "API-Key fehlt. Checkout nicht gestartet – keine simulierte Zahlung.",
             "live_payments": False,
         }
-    if key.startswith("live_") and not s.mollie_live_charges_allowed:
+    if key.startswith("live_") and not mollie_secrets.resolve_live_charges_allowed():
         return {
             "ok": False,
             "status": "live_blocked",
-            "message_de": "Live-Key vorhanden, aber mollie_live_charges_allowed=false. Keine Prod-Charge.",
+            "message_de": "Live-Key vorhanden, aber live_charges_allowed=false. Keine Prod-Charge.",
             "live_payments": False,
         }
 
@@ -152,7 +161,7 @@ async def create_checkout_payment(
             "customer_email": customer_email,
         },
     }
-    wh = (s.mollie_webhook_url or "").strip()
+    wh, _ = mollie_secrets.resolve_webhook_url()
     if wh:
         payload["webhookUrl"] = wh
 
@@ -186,14 +195,14 @@ async def create_checkout_payment(
         "payment_id": data.get("id"),
         "checkout_url": checkout.get("href"),
         "mode": data.get("mode"),
-        "live_payments": key.startswith("live_") and s.mollie_live_charges_allowed,
+        "live_payments": key.startswith("live_") and mollie_secrets.resolve_live_charges_allowed(),
         "message_de": "Mollie-Payment angelegt (Checkout-URL).",
     }
 
 
 def verify_mollie_webhook_optional(raw: bytes, signature: str | None) -> bool:
-    """Optional HMAC wenn MOLLIE_WEBHOOK_SECRET gesetzt – sonst true nur mit Secret-less Test."""
-    secret = (get_settings().mollie_webhook_secret or "").strip()
+    """Optional HMAC wenn Webhook-Secret gesetzt – sonst true nur mit Secret-less Test."""
+    secret, _ = mollie_secrets.resolve_webhook_secret()
     if not secret:
         return True  # Mollie sendet oft nur payment id; Signatur optional konfigurierbar
     if not signature:

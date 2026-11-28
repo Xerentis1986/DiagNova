@@ -331,8 +331,8 @@ export function SubscriptionsPage() {
           )}
           {user?.is_platform_admin && (
             <p className="mt-3 text-sm">
-              <Link className="text-[var(--dn-accent)] underline" to="/admin">
-                Zur Plattform-Administration
+              <Link className="text-[var(--dn-accent)] underline" to="/operator">
+                Zur Betreiberkonsole
               </Link>
             </p>
           )}

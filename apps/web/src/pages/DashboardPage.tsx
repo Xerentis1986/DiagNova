@@ -121,7 +121,7 @@ export function DashboardPage() {
               guided: '/guided',
               coding: '/coding',
               subscriptions: '/subscriptions',
-              admin: '/admin',
+              admin: '/operator',
             }
             // Architektur-UI für geplante Module (ohne Diagnose-Freigabe)
             const plannedRoutes: Record<string, string> = {

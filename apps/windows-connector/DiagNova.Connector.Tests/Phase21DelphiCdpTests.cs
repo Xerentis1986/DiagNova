@@ -1,4 +1,5 @@
 using DiagNova.Connector.Adapters.DelphiCdp;
+using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Logging;
 using Xunit;
 
@@ -66,7 +67,8 @@ public class Phase21DelphiCdpTests
     [Fact]
     public void Ftdi_Live_Open_Fails_Honestly_Without_Hardware()
     {
-        var svc = new DelphiCdpAdapterService(new DiagnosticProtocolLog());
+        var inventory = new CompositeDeviceInventory(new ComPortScanner(), new BluetoothScanner(), new UsbScanner());
+        var svc = new DelphiCdpAdapterService(new DiagnosticProtocolLog(), inventory);
         var result = svc.TryOpenLive();
         var ok = (bool)result.GetType().GetProperty("ok")!.GetValue(result)!;
         Assert.False(ok);

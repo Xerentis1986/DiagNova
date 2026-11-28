@@ -54,7 +54,6 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/commerce', label: 'Konto & Abrechnung', icon: <IconUpdates /> },
   { to: '/lkw', label: 'LKW / Nutzfahrzeug', icon: <IconFleet />, planned: true },
   { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
-  { to: '/admin', label: 'Administration', icon: <IconSettings /> },
 ]
 
 const QUICK: { to: string; label: string; end?: boolean }[] = [
@@ -119,6 +118,10 @@ export function AppShell() {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenu, setUserMenu] = useState(false)
+  const moreItems = SIDEBAR_MORE
+  const operatorItem: NavItem | null = user?.is_platform_admin
+    ? { to: '/operator', label: 'Betreiberkonsole', icon: <IconSettings /> }
+    : null
 
   return (
     <div className="dn-shell">
@@ -150,13 +153,25 @@ export function AppShell() {
           ))}
 
           <p className="dn-sidebar__group">Weitere</p>
-          {SIDEBAR_MORE.map((item) => (
+          {moreItems.map((item) => (
             <NavLink key={item.to} to={item.to} className={({ isActive }) => navClass(isActive)}>
               {item.icon}
               <span>{item.label}</span>
               {item.planned && <span className="dn-badge ml-auto">Geplant</span>}
             </NavLink>
           ))}
+          {operatorItem && (
+            <>
+              <p className="dn-sidebar__group">Betreiber</p>
+              <NavLink
+                to={operatorItem.to}
+                className={({ isActive }) => navClass(isActive)}
+              >
+                {operatorItem.icon}
+                <span>{operatorItem.label}</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <StatusFooter />

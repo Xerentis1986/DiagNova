@@ -1,7 +1,8 @@
 # Phase 25 – Betreiberhandlungen (Asmir)
 
-1. **Mollie:** Konto anlegen → API-Key `test_…` in Server-Env `MOLLIE_API_KEY` setzen (nie Git/Chat).  
-   Admin-UI → Verbindungstest. Live erst mit `live_…` + `MOLLIE_LIVE_CHARGES_ALLOWED=true`.
+1. **Mollie:** Konto anlegen → als Plattform-Admin **`/operator?tab=mollie`** Key speichern + Verbindungstest.  
+   Oder Env `MOLLIE_API_KEY`. Live erst mit `live_…` + Live-Charges-Flag. Nie Keys in Git/Chat.  
+   Betreiberkonsole: `/operator` (Kundenportal ohne Admin-Menü).
 2. **RSA-Lizenzen:** `python scripts/generate_license_rsa_keys.py` → Private nur Backend-Env, Public Connector.  
    `DIAGNOVA_LICENSE_ALLOW_DEMO_PRIVATE=0` in Produktion.
 3. **Installer:** UNSIGNED nutzen; Code-Signing optional (Privatperson – nicht Pflicht).

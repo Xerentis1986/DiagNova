@@ -1299,10 +1299,14 @@ export const api = {
       components?: Record<string, string>
     }>('/health')
   },
-  login(email: string, password: string) {
+  login(email: string, password: string, mfa_code?: string) {
     return request<{ access_token: string; user: User }>('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email,
+        password,
+        ...(mfa_code ? { mfa_code } : {}),
+      }),
     })
   },
   me() {
@@ -2025,8 +2029,39 @@ export const api = {
   adminDashboard() {
     return request<AdminDashboard>('/api/admin/dashboard')
   },
+  operatorConsole() {
+    return request<
+      AdminDashboard & {
+        console?: string
+        base_path?: string
+        customers?: Record<string, unknown>[]
+        invoices?: Record<string, unknown>[]
+        devices?: Record<string, unknown>[]
+        users?: Record<string, unknown>[]
+        site_settings?: Record<string, unknown>
+        adapter_test_paths_de?: string[]
+        rbac_de?: string
+      }
+    >('/api/admin/console')
+  },
   mollieStatus() {
     return request<Record<string, unknown>>('/api/billing/mollie/status')
+  },
+  mollieConfig() {
+    return request<Record<string, unknown>>('/api/billing/mollie/config')
+  },
+  mollieConfigSave(body: {
+    api_key?: string
+    webhook_secret?: string
+    webhook_url?: string
+    live_charges_allowed?: boolean
+    clear_api_key?: boolean
+    clear_webhook_secret?: boolean
+  }) {
+    return request<Record<string, unknown>>('/api/billing/mollie/config', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    })
   },
   mollieConnectionTest() {
     return request<Record<string, unknown>>('/api/billing/mollie/connection-test', {
@@ -2056,6 +2091,27 @@ export const api = {
       payment_note_de: string
       legal_open_items_de: string[]
     }>('/api/admin/support')
+  },
+  adminMfaStatus() {
+    return request<Record<string, unknown>>('/api/admin/mfa/status')
+  },
+  adminMfaSetup() {
+    return request<Record<string, unknown>>('/api/admin/mfa/setup', {
+      method: 'POST',
+      body: '{}',
+    })
+  },
+  adminMfaConfirm(code: string) {
+    return request<Record<string, unknown>>('/api/admin/mfa/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    })
+  },
+  adminHardwareProbe() {
+    return request<Record<string, unknown>>('/api/admin/hardware-probe')
+  },
+  operatorNav() {
+    return request<Record<string, unknown>>('/api/admin/operator-nav')
   },
   softwareUpdatesDashboard() {
     return request<SoftwareUpdatesDashboard>('/api/software-updates/dashboard')

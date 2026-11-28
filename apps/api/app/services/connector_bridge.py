@@ -178,6 +178,34 @@ async def probe_connector() -> dict[str, Any]:
         }
 
 
+async def hardware_probe() -> dict[str, Any]:
+    """Proxy zu Connector /hardware/probe – keine Fahrzeugbefehle, kein Flash."""
+    probe = await probe_connector()
+    if not probe.get("reachable"):
+        return {
+            "ok": False,
+            "connector": probe,
+            "message_de": (
+                "Windows-Connector nicht erreichbar – Hardware-Probe nicht möglich. "
+                "Kein Fake-Erfolg."
+            ),
+        }
+    try:
+        data = await _get_json("/hardware/probe", timeout=8.0)
+        return {
+            "ok": True,
+            "connector": {"reachable": True, "base_url": probe.get("base_url")},
+            "probe": data,
+            "message_de": "Hardware-Probe vom Connector (nichtinvasiv).",
+        }
+    except ConnectorBridgeError as exc:
+        return {
+            "ok": False,
+            "connector": probe,
+            "message_de": str(exc)[:400],
+        }
+
+
 async def connection_status(mode: DiagMode) -> ConnectionStatusOut:
     if mode == "demo":
         return simulator.connection_status()

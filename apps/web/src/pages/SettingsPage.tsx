@@ -88,11 +88,6 @@ export function SettingsPage() {
                 Abos & Lizenzen
               </Link>
             </li>
-            <li>
-              <Link className="dn-btn dn-btn--secondary" to="/admin">
-                Administration
-              </Link>
-            </li>
           </ul>
         </Panel>
       </div>

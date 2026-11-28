@@ -10,17 +10,21 @@ export function LoginPage() {
   const { user, login, loading } = useAuth()
   const [email, setEmail] = useState('admin@example.com')
   const [password, setPassword] = useState('AdminDemo123!')
+  const [mfaCode, setMfaCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
-  if (!loading && user) return <Navigate to="/" replace />
+  if (!loading && user) {
+    if (user.is_platform_admin) return <Navigate to="/operator" replace />
+    return <Navigate to="/" replace />
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
     setError(null)
     try {
-      await login(email, password)
+      await login(email, password, mfaCode.trim() || undefined)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Login fehlgeschlagen')
     } finally {
@@ -64,6 +68,17 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
+              />
+            </Field>
+            <Field label="MFA-Code (falls aktiv)">
+              <Input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value)}
+                maxLength={8}
+                placeholder="nur wenn MFA aktiv"
               />
             </Field>
             {error && <p className="text-sm text-[var(--dn-danger)]">{error}</p>}

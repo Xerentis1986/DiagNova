@@ -22,6 +22,12 @@
 | Phase-25 Mollie-Subset | covered in `tests/api/test_phase25_mollie.py` |
 | Phase-25 Vgate C# | `Phase25VgateAdapterTests.cs` |
 
+## Follow-up (Betreiberkonsole + Mollie-UI)
+- `/operator` Betreiberkonsole (RBAC platform_admin); `/admin` → Redirect
+- Mollie-Key im UI → Secret-Store (Fernet); Verbindungstest
+- CDP+ `inventory-probe`; Hardware-Probe Proxy `GET /api/admin/hardware-probe`
+- Kunden-Nav ohne Admin-Link
+
 ## GO/NO-GO
 **NO-GO** für Produktion: kein Live-Mollie-Key, kein physischer Vgate/CDP+/OBD-HW-Test in dieser Umgebung, keine juristische Freigabe AT, UNSIGNED Installer, Demo-Private bewusst aus.
 

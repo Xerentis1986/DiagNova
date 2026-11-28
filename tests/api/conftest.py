@@ -22,6 +22,8 @@ os.environ["SEED_TECH_PASSWORD"] = "TechDemo123!"
 os.environ["PAYMENT_WEBHOOK_DEMO_SECRET"] = "diagnova-phase13-payment-stub-hmac-not-for-prod"
 # Phase 25: Demo-RSA-Private nur in Tests erlauben (Prod default = 0)
 os.environ["DIAGNOVA_LICENSE_ALLOW_DEMO_PRIVATE"] = "1"
+# Mollie Secret-Store in tmp (kein Repo-.secrets)
+os.environ["DIAGNOVA_SECRETS_DIR"] = str(ROOT / ".pytest_secrets")
 
 # Clear settings cache / re-import engine with sqlite
 from app.core.config import get_settings

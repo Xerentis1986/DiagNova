@@ -29,7 +29,7 @@ foreach (var l in snap.LimitationsDe) Console.WriteLine($"  · {l}");
 Console.WriteLine();
 
 Console.WriteLine("=== Simulator-Identität (dokumentierte Beispielantworten) ===");
-var svc = new DelphiCdpAdapterService(log);
+var svc = new DelphiCdpAdapterService(log, inventory);
 var sim = await svc.IdentifySimulatedAsync();
 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(sim, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 Console.WriteLine();

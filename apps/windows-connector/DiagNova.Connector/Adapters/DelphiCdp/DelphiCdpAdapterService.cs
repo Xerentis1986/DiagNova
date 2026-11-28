@@ -1,3 +1,4 @@
+using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Logging;
 
 namespace DiagNova.Connector.Adapters.DelphiCdp;
@@ -7,11 +8,15 @@ namespace DiagNova.Connector.Adapters.DelphiCdp;
 /// </summary>
 public sealed class DelphiCdpAdapterService
 {
-    private readonly DiagnosticProtocolLog _log;
+    public const string ExpectedVidPid = "0403:D6DA";
 
-    public DelphiCdpAdapterService(DiagnosticProtocolLog log)
+    private readonly DiagnosticProtocolLog _log;
+    private readonly IDeviceInventory _inventory;
+
+    public DelphiCdpAdapterService(DiagnosticProtocolLog log, IDeviceInventory inventory)
     {
         _log = log;
+        _inventory = inventory;
     }
 
     public object Status() => new
@@ -97,4 +102,54 @@ public sealed class DelphiCdpAdapterService
             reason_de = "CAN-Config kann Relais/Pins schalten – nicht freigegeben."
         }
     };
+
+    /// <summary>
+    /// Nichtinvasive Inventur: FTDI/CDP-Kandidaten (VID 0403 / PID D6DA).
+    /// Keine Fahrzeugbefehle, kein Flash.
+    /// </summary>
+    public async Task<object> InventoryProbeAsync(CancellationToken ct = default)
+    {
+        var snap = await _inventory.ScanAsync(ct).ConfigureAwait(false);
+        var candidates = snap.Devices
+            .Where(d =>
+            {
+                var blob = $"{d.DisplayName}|{d.VendorHint}|{d.PortName}|{d.Kind}".ToLowerInvariant();
+                return blob.Contains("0403")
+                       || blob.Contains("d6da")
+                       || blob.Contains("ftdi")
+                       || blob.Contains("cdp")
+                       || blob.Contains("autocom")
+                       || blob.Contains("delphi");
+            })
+            .Select(d => new
+            {
+                d.Id,
+                kind = d.Kind.ToString(),
+                d.DisplayName,
+                d.PortName,
+                d.VendorHint
+            })
+            .ToArray();
+
+        return new
+        {
+            ok = true,
+            adapter_id = "delphi-autocom",
+            expected_vid_pid = ExpectedVidPid,
+            hardware_tested = false,
+            vehicle_commands_sent = false,
+            flash_attempted = false,
+            candidates,
+            limitations_de = snap.LimitationsDe,
+            test_paths_de = new[]
+            {
+                "POST /adapters/delphi-cdp/inventory-probe",
+                "POST /adapters/delphi-cdp/identify-sim (FakeCdp Safe-Reads)",
+                "POST /adapters/delphi-cdp/open-live (nur mit physischem FTDI)",
+                "GET /hardware/probe"
+            },
+            message_de =
+                "Inventur nur. Live-Open und Fahrzeugbefehle getrennt; ohne HW: Kandidaten können leer sein."
+        };
+    }
 }
