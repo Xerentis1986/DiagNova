@@ -26,6 +26,9 @@ export function DashboardPage() {
             <Link to="/">
               <Button variant="secondary">Marke wählen</Button>
             </Link>
+            <Link to="/connector">
+              <Button variant="secondary">Connector & LIVE</Button>
+            </Link>
             <Link to="/diagnostics">
               <Button variant="primary">Diagnose starten</Button>
             </Link>
@@ -121,7 +124,7 @@ export function DashboardPage() {
               guided: '/guided',
               coding: '/coding',
               subscriptions: '/subscriptions',
-              admin: '/admin',
+              admin: '/operator',
             }
             // Architektur-UI für geplante Module (ohne Diagnose-Freigabe)
             const plannedRoutes: Record<string, string> = {

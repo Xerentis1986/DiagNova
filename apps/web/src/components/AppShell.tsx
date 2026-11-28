@@ -32,9 +32,11 @@ const SIDEBAR_PRIMARY: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: <IconDashboard /> },
   { to: '/', label: 'Fahrzeugauswahl', end: true, icon: <IconCar /> },
   { to: '/diagnostics', label: 'Fahrzeugdiagnose', icon: <IconDiagnose /> },
+  { to: '/connector', label: 'Connector & LIVE', icon: <IconDiagnose /> },
   { to: '/vehicles', label: 'Fahrzeugverwaltung', icon: <IconFleet /> },
   { to: '/work-orders', label: 'Werkstatt & Aufträge', icon: <IconWorkshop /> },
   { to: '/diagnostic-data', label: 'Diagnosedatenbank', icon: <IconDatabase /> },
+  { to: '/automotive-catalog', label: 'Quellenkatalog', icon: <IconDatabase /> },
   { to: '/data-updates', label: 'Updates & Datenquellen', icon: <IconUpdates /> },
   { to: '/software-updates', label: 'Software-Updates', icon: <IconUpdates /> },
   { to: '/settings', label: 'Einstellungen', icon: <IconSettings /> },
@@ -51,15 +53,16 @@ const SIDEBAR_MORE: NavItem[] = [
   { to: '/coding', label: 'Codierung', icon: <IconSettings /> },
   { to: '/tuning', label: 'Chiptuning', icon: <IconSettings />, planned: true },
   { to: '/subscriptions', label: 'Abos & Lizenzen', icon: <IconUpdates /> },
+  { to: '/commerce', label: 'Konto & Abrechnung', icon: <IconUpdates /> },
   { to: '/lkw', label: 'LKW / Nutzfahrzeug', icon: <IconFleet />, planned: true },
   { to: '/security', label: 'Sicherheit', icon: <IconSettings /> },
-  { to: '/admin', label: 'Administration', icon: <IconSettings /> },
 ]
 
 const QUICK: { to: string; label: string; end?: boolean }[] = [
   { to: '/', label: 'Start', end: true },
   { to: '/vehicles', label: 'Fahrzeuge' },
   { to: '/diagnostics', label: 'Diagnose' },
+  { to: '/connector', label: 'Connector' },
   { to: '/workshop', label: 'Werkstatt' },
   { to: '/diagnostic-data', label: 'Datenbank' },
   { to: '/data-updates', label: 'Daten-Updates' },
@@ -118,6 +121,10 @@ export function AppShell() {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenu, setUserMenu] = useState(false)
+  const moreItems = SIDEBAR_MORE
+  const operatorItem: NavItem | null = user?.is_platform_admin
+    ? { to: '/operator', label: 'Betreiberkonsole', icon: <IconSettings /> }
+    : null
 
   return (
     <div className="dn-shell">
@@ -149,13 +156,25 @@ export function AppShell() {
           ))}
 
           <p className="dn-sidebar__group">Weitere</p>
-          {SIDEBAR_MORE.map((item) => (
+          {moreItems.map((item) => (
             <NavLink key={item.to} to={item.to} className={({ isActive }) => navClass(isActive)}>
               {item.icon}
               <span>{item.label}</span>
               {item.planned && <span className="dn-badge ml-auto">Geplant</span>}
             </NavLink>
           ))}
+          {operatorItem && (
+            <>
+              <p className="dn-sidebar__group">Betreiber</p>
+              <NavLink
+                to={operatorItem.to}
+                className={({ isActive }) => navClass(isActive)}
+              >
+                {operatorItem.icon}
+                <span>{operatorItem.label}</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <StatusFooter />

@@ -59,10 +59,19 @@ from app.models.software_updates import (
     SoftwareUpdatePackage,
     SoftwareUpdateRun,
 )
+from app.models.commerce import (
+    BillingAccount,
+    ConsentRecord,
+    Invoice,
+    TaxRuleSnapshot,
+    VatCheckLog,
+)
 
 __all__ = [
     "AuditLog",
+    "BillingAccount",
     "CodingRun",
+    "ConsentRecord",
     "CriticalOperationLock",
     "Customer",
     "CustomerVehicleLink",
@@ -82,7 +91,10 @@ __all__ = [
     "ImportAppliedRecord",
     "ImportBatch",
     "ImportQuarantineItem",
+    "Invoice",
     "PaymentWebhookEvent",
+    "TaxRuleSnapshot",
+    "VatCheckLog",
     "ServiceRun",
     "SessionDtcResult",
     "SessionEcuResult",

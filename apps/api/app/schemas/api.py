@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr, Field
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    mfa_code: str | None = Field(default=None, min_length=6, max_length=8)
 
 
 class TokenUser(BaseModel):
@@ -85,6 +86,10 @@ class BrandOut(BaseModel):
     logo_mode: Literal["text_fallback", "image"]
     logo_initials: str
     logo_rights_cleared: bool
+    logo_asset_id: str | None = None
+    logo_url: str | None = None
+    logo_tile_light: str | None = None
+    logo_tile_dark: str | None = None
     coverage_disclaimer_de: str
     model_count: int
 

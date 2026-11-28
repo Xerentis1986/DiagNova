@@ -6,6 +6,10 @@
 
 ## Vor jedem Deploy
 
+- [ ] Deploy-Branch = aktueller Live-Tip (Standard: `cursor/diagnova-live-tip-8876`) – **nicht** älteren Phasen-Branch ohne Branding-Fixes
+- [ ] **Branding-Gate:** `apps/web/public/oem-logos/logos/` vorhanden (≥30 Dateien)
+- [ ] **Branding-Gate:** `BrandMark` Lockup = nur Wordmark (kein `symbol.svg` / `symbol-128` neben Wordmark in Header)
+- [ ] **Branding-Gate:** Login ohne `BrandMark variant="symbol"`
 - [ ] `pg_dump` / `infrastructure/docker/backup-postgres.sh` mit Zeitstempel + Alembic-Revision
 - [ ] Optional Plesk-Domain-Backup
 - [ ] `JWT_SECRET` lang & zufällig (nicht Default); `chmod 600` auf `.env`
@@ -26,6 +30,9 @@
 ## Nach Deploy
 
 - [ ] `GET /health` → 200; `security.jwt_secret_insecure_default == false`
+- [ ] `GET /oem-logos/logos/bmw.svg` (oder VW) → **200** (Assets im Web-Image)
+- [ ] Fahrzeugauswahl: OEM-Embleme sichtbar (nicht nur Initialen)
+- [ ] Header/Login: **nur** Wordmark, kein Symbol-Icon daneben
 - [ ] Login Admin + Technician
 - [ ] Mandantenisolation: fremde Kunden-ID → 404
 - [ ] `/security` Dashboard erreichbar (Admin)

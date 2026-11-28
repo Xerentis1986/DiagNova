@@ -22,15 +22,22 @@ from app.schemas.vehicle_history import (
     SessionDetailOut,
     SessionStartRequest,
 )
+from app.data.connector_setup import setup_guide_payload
+from app.services import connector_bridge
 from app.services import simulator
 from app.services import vehicle_history as vh
 from app.services.audit import write_audit
+from app.services.connector_bridge import ConnectorBridgeError
 from app.services.reports import create_report
 from app.services.tenant import require_workshop_id
 
 router = APIRouter(tags=["diagnostics"])
 
 Technician = Annotated[User, Depends(require_roles("admin", "technician"))]
+
+
+def _mode_from_query(mode: str | None) -> connector_bridge.DiagMode:
+    return connector_bridge.resolve_mode(mode)
 
 
 def _tenant_vehicle(db: DbSession, user: User, vehicle_id: str) -> Vehicle:
@@ -80,8 +87,138 @@ class SessionStartBody(BaseModel):
 
 
 @router.get("/connection", response_model=ConnectionStatusOut)
-def get_connection(_user: CurrentUser) -> ConnectionStatusOut:
-    return simulator.connection_status()
+async def get_connection(
+    _user: CurrentUser,
+    mode: str | None = Query(default=None, description="demo|live"),
+) -> ConnectionStatusOut:
+    return await connector_bridge.connection_status(_mode_from_query(mode))
+
+
+@router.get("/connector/bridge-status")
+async def bridge_status(_user: CurrentUser) -> dict:
+    probe = await connector_bridge.probe_connector()
+    return {
+        "default_mode": connector_bridge.resolve_mode(None),
+        "connector": probe,
+        "message_de": (
+            "LIVE nur mit erreichbarem Windows-Connector; DEMO nutzt Simulator. "
+            "Kein Simulator-Fallback im LIVE-Modus."
+        ),
+    }
+
+
+@router.get("/connector/setup-guide")
+def connector_setup_guide(_user: CurrentUser) -> dict:
+    """Kunden-UI: Download-Meta, Install-/Pairing-Schritte, Legal-Hinweis (keine Raubkopien)."""
+    return setup_guide_payload()
+
+
+@router.get("/connector/live-assistant")
+async def connector_live_assistant(
+    _user: CurrentUser,
+    mode: str | None = Query(default="live", description="demo|live"),
+) -> dict:
+    """Geführte LIVE-Checkliste mit Live-Status vom Bridge-Probe (kein DEMO-Fallback)."""
+    guide = setup_guide_payload()
+    resolved = _mode_from_query(mode)
+    probe = await connector_bridge.probe_connector()
+    conn = await connector_bridge.connection_status(resolved)
+    hw = await connector_bridge.hardware_probe() if probe.get("reachable") else {
+        "ok": False,
+        "message_de": "Connector offline – keine Hardware-Probe.",
+        "probe": {},
+    }
+
+    reachable = bool(probe.get("reachable"))
+    adapter_hint = False
+    probe_body = hw.get("probe") if isinstance(hw, dict) else None
+    if isinstance(probe_body, dict):
+        devices = probe_body.get("devices") or probe_body.get("adapters") or probe_body.get("inventory")
+        if isinstance(devices, list) and len(devices) > 0:
+            adapter_hint = True
+        elif probe_body.get("adapter_detected") or probe_body.get("selected_adapter"):
+            adapter_hint = True
+    if conn.connected and conn.adapter_name and conn.adapter_name not in {"—", "Simulator"}:
+        adapter_hint = True
+
+    steps = []
+    for item in guide["live_checklist"]:
+        sid = item["id"]
+        auto: bool | None = None
+        detail = item["hint_de"]
+        if sid == "connector_running":
+            auto = reachable
+            detail = (
+                f"Connector erreichbar ({probe.get('base_url')})."
+                if reachable
+                else (probe.get("error_de") or "Connector nicht erreichbar – kein DEMO-Fallback.")
+            )
+        elif sid == "adapter_detected":
+            auto = adapter_hint if reachable else False
+            detail = (
+                f"Adapter/Inventur: {conn.adapter_name}"
+                if adapter_hint
+                else (hw.get("message_de") if isinstance(hw, dict) else detail)
+            )
+        elif sid == "live_mode":
+            auto = resolved == "live"
+            detail = (
+                "LIVE gewählt – Simulator-Fallback deaktiviert."
+                if resolved == "live"
+                else "Aktuell DEMO – für echte Diagnose auf LIVE umschalten."
+            )
+        elif sid == "adapter_path":
+            auto = None  # manuell bestätigen
+        elif sid == "obd_basics":
+            auto = None
+        steps.append(
+            {
+                **item,
+                "auto_ok": auto,
+                "status_de": detail,
+            }
+        )
+
+    return {
+        "mode": resolved,
+        "connector": probe,
+        "connection": conn.model_dump() if hasattr(conn, "model_dump") else conn,
+        "hardware_probe_ok": bool(isinstance(hw, dict) and hw.get("ok")),
+        "steps": steps,
+        "legal_notice_de": guide["legal_notice_de"],
+        "message_de": (
+            "LIVE-Assistent: Checkliste abarbeiten. Bei LIVE-Fehlern kein automatischer Wechsel auf DEMO."
+            if resolved == "live"
+            else "DEMO aktiv – Assistent zeigt LIVE-Anforderungen; Umschalten auf LIVE für echte Daten."
+        ),
+        "installer": guide["installer"],
+    }
+
+
+@router.post("/connector/obd-init")
+async def bridge_obd_init(
+    _user: Technician,
+    mode: str | None = Query(default=None),
+) -> dict:
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.ensure_obd_init(m)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post("/connector/connect-fake")
+async def bridge_connect_fake(_user: Technician) -> dict:
+    """E2E: Fake-Adapter am Loopback-Connector (kein HW). SSRF-geschützt."""
+    try:
+        status = await connector_bridge.connect_fake_adapter()
+        return {
+            "ok": True,
+            "connector_status": status,
+            "message_de": "Fake-Adapter am Connector angewählt (adapter_fake).",
+        }
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/pids")
@@ -90,15 +227,33 @@ def list_pids(_user: CurrentUser) -> dict:
 
 
 @router.get("/diagnostics/{vehicle_id}/dtcs", response_model=list[DtcOut])
-def get_dtcs(vehicle_id: str, user: CurrentUser, db: DbSession) -> list[DtcOut]:
+async def get_dtcs(
+    vehicle_id: str,
+    user: CurrentUser,
+    db: DbSession,
+    mode: str | None = Query(default=None),
+) -> list[DtcOut]:
     vehicle = _tenant_vehicle(db, user, vehicle_id)
-    return simulator.list_dtcs(vehicle.id)
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.list_dtcs(m, vehicle.id)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/{vehicle_id}/live", response_model=LiveDataOut)
-def get_live(vehicle_id: str, user: CurrentUser, db: DbSession) -> LiveDataOut:
+async def get_live(
+    vehicle_id: str,
+    user: CurrentUser,
+    db: DbSession,
+    mode: str | None = Query(default=None),
+) -> LiveDataOut:
     vehicle = _tenant_vehicle(db, user, vehicle_id)
-    return simulator.live_data(vehicle.id, vehicle.vin)
+    m = _mode_from_query(mode)
+    try:
+        return await connector_bridge.live_data(m, vehicle.id, vehicle.vin)
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get("/diagnostics/clear/warnings")

@@ -3,9 +3,11 @@ from fastapi import APIRouter
 from app.api.routes import (
     admin,
     auth,
+    automotive_catalog,
     billing,
     catalog,
     coding,
+    commerce,
     customers,
     dashboard,
     data_updates,
@@ -42,6 +44,7 @@ api_router.include_router(catalog.router)
 api_router.include_router(preferences.router)
 api_router.include_router(protocols.router)
 api_router.include_router(diagnostic_data.router)
+api_router.include_router(automotive_catalog.router)
 api_router.include_router(data_updates.router)
 api_router.include_router(service.router)
 api_router.include_router(guided.router)
@@ -54,3 +57,4 @@ api_router.include_router(software_updates.router)
 api_router.include_router(security.router)
 api_router.include_router(tuning.router)
 api_router.include_router(lkw.router)
+api_router.include_router(commerce.router)

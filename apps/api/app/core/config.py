@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     seed_tech_password: str = "TechDemo123!"
     app_name: str = "DiagNova API"
     demo_mode: bool = True
+    # Pilot-GO: Demo/Trial nutzbar. Kommerzielles Voll-GO nur explizit + Voraussetzungen.
+    pilot_mode: bool = True
+    commercial_go: bool = False
 
     # Phase 07 – Diagnosedaten-Updates (Standard: Scheduler aus, Intervall täglich)
     update_scheduler_enabled: bool = False
@@ -30,6 +33,42 @@ class Settings(BaseSettings):
     update_hmac_demo_secret: str = "diagnova-phase07-demo-hmac-not-for-prod"
     # Phase 13 – Payment-Stub Webhook-HMAC (kein echter PSP)
     payment_webhook_demo_secret: str = "diagnova-phase13-payment-stub-hmac-not-for-prod"
+    # Phase 21 Stripe – entfernt Phase 25 (Felder leer lassen / ignoriert)
+    stripe_secret_key: str = ""
+    stripe_publishable_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_live_charges_allowed: bool = False
+    # Phase 25 – Mollie (Keys nur Env; nie committen)
+    mollie_api_key: str = ""
+    mollie_webhook_secret: str = ""
+    mollie_webhook_url: str = ""
+    mollie_live_charges_allowed: bool = False
+    # AT technische Defaults (keine Rechtsfreigabe)
+    supplier_country: str = "AT"
+    default_currency: str = "EUR"
+    tax_review_status: str = "draft_needs_review"
+    at_legal_aligned_technical: bool = True
+    # Phase 21 – SMTP (leer = dry_run)
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = ""
+    smtp_use_tls: bool = True
+    # Phase 22/23 – Connector Live-Bridge (SSRF-Allowlist)
+    connector_base_url: str = "http://127.0.0.1:8765"
+    connector_bearer_token: str = ""
+    connector_url_allowlist: str = "127.0.0.1,localhost,::1"
+    diag_default_mode: str = "demo"  # demo | live
+    # MFA TOTP (Issuer-Label)
+    mfa_issuer: str = "DiagNova"
+    # Phase 23 – Lizenz-HMAC (Demo; Prod-Secret via Env) – Legacy
+    license_hmac_secret: str = "diagnova-phase23-license-hmac-not-for-prod"
+    # Phase 24 – Asymmetrische Offline-Lizenz (RSA); Private nie committen außer Demo-Fixture
+    license_rsa_private_pem: str = ""
+    license_rsa_public_pem: str = ""
+    license_prefer_asymmetric: bool = True
+
     # Phase 14 – Software-Updates (HMAC-Demo; produktives Code-Signing separat)
     software_update_hmac_demo_secret: str = "diagnova-phase14-software-hmac-not-for-prod"
     # Ohne echtes Signaturzertifikat: produktive Auto-Updates gesperrt

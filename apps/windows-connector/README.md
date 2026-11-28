@@ -8,7 +8,7 @@
 - Mode 04 Clear nur mit Freigabe (`ClearDtcGate`); permanente DTCs nicht löschbar.
 - `data_source`: `simulated` (Fake/Simulator) vs. `live` (System-COM) – strikt getrennt.
 - **Keine Hardwarefreigabe** in dieser Umgebung – Parser/Simulator-Tests.
-- Delphi/Autocom: **nicht** angebunden – siehe `docs/delphi-autocom-interface.md`.
+- Delphi/Autocom CDP+: Safe-Read-Modul (Sim) – Live-FTDI/CAN **nicht** laborgeprüft; siehe `docs/DIAGNOVA_DELPHI_DRIVER_STATUS.md`.
 - Vgate: SPP ungeprüft – siehe `docs/vgate-elm327-prep.md`.
 - Auth: Pairing + Bearer, nur Loopback – `docs/windows-connector-auth.md`.
 

@@ -1,6 +1,9 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using DiagNova.Connector.Adapters;
+using DiagNova.Connector.Adapters.DelphiCdp;
+using DiagNova.Connector.Adapters.ObdDiag;
+using DiagNova.Connector.Adapters.Vgate;
 using DiagNova.Connector.Auth;
 using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Ecu;
@@ -12,8 +15,9 @@ using DiagNova.Connector.Updates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Nur Loopback – keine offenen Netzwerk-Endpunkte.
-const string loopbackUrl = "http://127.0.0.1:8765";
+// Nur Loopback – keine offenen Netzwerk-Endpunkte (Override für E2E-Tests).
+var loopbackUrl = Environment.GetEnvironmentVariable("DIAGNOVA_CONNECTOR_URL")
+    ?? "http://127.0.0.1:8765";
 builder.WebHost.UseUrls(loopbackUrl);
 
 builder.Services.AddSingleton<DiagnosticProtocolLog>();
@@ -25,6 +29,14 @@ builder.Services.AddSingleton<ISerialTransportFactory, SerialTransportFactory>()
 builder.Services.AddSingleton<Elm327DriverPrep>();
 builder.Services.AddSingleton<AdapterConnectionManager>();
 builder.Services.AddSingleton<IDiagnosticAdapter>(sp => sp.GetRequiredService<AdapterConnectionManager>());
+builder.Services.AddSingleton<AdapterRegistry>();
+builder.Services.AddSingleton<HardwareInventoryProbe>();
+builder.Services.AddSingleton<J2534PassThruAbstraction>();
+builder.Services.AddSingleton<DelphiCdpAdapterService>();
+builder.Services.AddSingleton<CdpFirmwareManager>();
+builder.Services.AddSingleton<ObdDiagAdapterService>();
+builder.Services.AddSingleton<VgateIcarPro2sAdapterService>();
+builder.Services.AddSingleton<LicenseGateService>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
 builder.Services.AddSingleton<LocalAuthService>();
@@ -120,16 +132,17 @@ app.MapPost("/pair", async (HttpRequest req, PairingService pairingSvc, Diagnost
     });
 });
 
-app.MapGet("/health", (IDiagnosticAdapter adapter) => Results.Json(new
+app.MapGet("/health", (IDiagnosticAdapter adapter, AdapterRegistry registry) => Results.Json(new
 {
     status = "ok",
-    phase = 14,
+    phase = 21,
     version = ConnectorVersion.Version,
     adapter = adapter.Name,
+    selected_adapter_id = registry.SelectedAdapterId,
     data_source = adapter.DataSource,
     is_simulator = adapter.IsSimulator,
     platform = RuntimeInformation.OSDescription,
-    message_de = "Connector Phase 14 – Software-Updates/Busy-Gate (Simulator). Hardwarefreigabe ausstehend."
+    message_de = "Connector Phase 21 – Multi-Adapter + Inventur. Keine erfundenen HW-Erfolge. Hardwarefreigabe ausstehend."
 }));
 
 app.MapGet("/version", () => Results.Json(new
@@ -180,6 +193,213 @@ app.MapPost("/updates/rollback", (UpdateService updates) => Results.Json(updates
 app.MapGet("/protocols", () => Results.Json(ProtocolCatalog.Summary()));
 app.MapGet("/capability-matrix", () => Results.Json(AdapterCapabilityMatrix.Matrix()));
 app.MapGet("/ecu/categories", () => Results.Json(MultiEcuService.CategoriesOverview()));
+
+app.MapGet("/adapters", (AdapterRegistry registry) => Results.Json(registry.ListProfiles()));
+app.MapGet("/adapters/{adapterId}", (string adapterId, AdapterRegistry registry) =>
+{
+    var profile = registry.GetProfile(adapterId);
+    return profile is null ? Results.NotFound(new { error = "adapter_not_found" }) : Results.Json(profile);
+});
+app.MapPost("/adapters/select", async (HttpRequest req, AdapterRegistry registry) =>
+{
+    var body = await req.ReadFromJsonAsync<SelectAdapterRequest>();
+    if (body is null || string.IsNullOrWhiteSpace(body.AdapterId))
+    {
+        return Results.BadRequest(new { error = "adapter_id_required" });
+    }
+    try
+    {
+        return Results.Json(registry.Select(body.AdapterId));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
+});
+app.MapPost("/adapters/auto-detect", async (AdapterRegistry registry, CancellationToken ct) =>
+    Results.Json(await registry.AutoDetectAsync(ct)));
+app.MapPost("/adapters/connection-test", (AdapterRegistry registry) => Results.Json(registry.ConnectionTest()));
+app.MapGet("/adapters/selected/capabilities", (AdapterRegistry registry) => Results.Json(registry.Capabilities()));
+app.MapGet("/hardware/inventory", async (HardwareInventoryProbe probe, CancellationToken ct) =>
+    Results.Json(await probe.ProbeAsync(ct)));
+app.MapGet("/hardware/manufacturer-inquiry-draft", () => Results.Json(new
+{
+    draft_de = HardwareInventoryProbe.ManufacturerInquiryDraft(),
+    note_de = "Nur Textvorlage – kein automatischer Versand an Hersteller."
+}));
+app.MapGet("/j2534/status", (J2534PassThruAbstraction j2534) => Results.Json(j2534.Describe()));
+app.MapPost("/j2534/open", async (HttpRequest req, J2534PassThruAbstraction j2534) =>
+{
+    var body = await req.ReadFromJsonAsync<J2534OpenRequest>();
+    return Results.Json(j2534.TryOpen(body?.DllPath));
+});
+
+app.MapGet("/adapters/delphi-cdp/status", (DelphiCdpAdapterService cdp) => Results.Json(cdp.Status()));
+app.MapGet("/adapters/delphi-cdp/compatibility", (DelphiCdpAdapterService cdp) => Results.Json(cdp.Compatibility()));
+app.MapGet("/adapters/delphi-cdp/encode-demo", (DelphiCdpAdapterService cdp) => Results.Json(cdp.EncodeDemo()));
+app.MapPost("/adapters/delphi-cdp/identify-sim", async (DelphiCdpAdapterService cdp, CancellationToken ct) =>
+    Results.Json(await cdp.IdentifySimulatedAsync(ct)));
+app.MapPost("/adapters/delphi-cdp/inventory-probe", async (DelphiCdpAdapterService cdp, CancellationToken ct) =>
+    Results.Json(await cdp.InventoryProbeAsync(ct)));
+app.MapPost("/adapters/delphi-cdp/open-live", (DelphiCdpAdapterService cdp) => Results.Json(cdp.TryOpenLive()));
+app.MapPost("/adapters/delphi-cdp/vehicle-command", () => Results.Json(new
+{
+    ok = false,
+    status = 403,
+    message_de =
+        "Fahrzeug-/CAN-/Relais-Befehle sind deaktiviert. " +
+        "Keine ungeprüfte OBD-Pin-Umschaltung, kein ECU-Schreiben, kein Auto-Firmwareupdate."
+}, statusCode: StatusCodes.Status403Forbidden));
+app.MapGet("/adapters/delphi-cdp/firmware", (CdpFirmwareManager fw) => Results.Json(fw.Status()));
+app.MapPost("/adapters/delphi-cdp/firmware/import", async (HttpRequest req, CdpFirmwareManager fw) =>
+{
+    // Multipart optional – JSON { label, content_base64, user_confirmed_rights }
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var root = doc.RootElement;
+    var label = root.TryGetProperty("label", out var l) ? l.GetString() ?? "package" : "package";
+    var confirmed = root.TryGetProperty("user_confirmed_rights", out var c) && c.GetBoolean();
+    var b64 = root.TryGetProperty("content_base64", out var b) ? b.GetString() : null;
+    byte[] bytes;
+    try { bytes = string.IsNullOrWhiteSpace(b64) ? Array.Empty<byte>() : Convert.FromBase64String(b64); }
+    catch { return Results.Json(new { ok = false, message_de = "Ungültiges Base64" }, statusCode: 400); }
+    return Results.Json(fw.ImportPackage(label, bytes, confirmed, root.TryGetProperty("notes", out var n) ? n.GetString() : null));
+});
+app.MapPost("/adapters/delphi-cdp/firmware/flash", async (HttpRequest req, CdpFirmwareManager fw) =>
+{
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var id = doc.RootElement.TryGetProperty("package_id", out var p) ? p.GetString() ?? "" : "";
+    var confirm = doc.RootElement.TryGetProperty("user_confirm_flash", out var c) && c.GetBoolean();
+    var result = fw.RequestFlash(id, confirm);
+    return Results.Json(result, statusCode: StatusCodes.Status403Forbidden);
+});
+
+app.MapGet("/adapters/obd-diag/status", (ObdDiagAdapterService obd) => Results.Json(obd.Status()));
+app.MapGet("/adapters/obd-diag/probe-guidance", (ObdDiagAdapterService obd) => Results.Json(obd.ProbeGuidance()));
+app.MapPost("/adapters/obd-diag/inventory-probe", async (ObdDiagAdapterService obd, CancellationToken ct) =>
+    Results.Json(await obd.InventoryProbeAsync(ct)));
+app.MapGet("/adapters/obd-diag/transport-stub", (ObdDiagAdapterService obd) => Results.Json(obd.TransportStub()));
+
+app.MapGet("/adapters/vgate-icar-pro-2s/status", (VgateIcarPro2sAdapterService vg) => Results.Json(vg.Status()));
+app.MapGet("/adapters/vgate-icar-pro-2s/research", (VgateIcarPro2sAdapterService vg) => Results.Json(vg.Research()));
+app.MapPost("/adapters/vgate-icar-pro-2s/inventory-probe", async (VgateIcarPro2sAdapterService vg, CancellationToken ct) =>
+    Results.Json(await vg.InventoryProbeAsync(ct)));
+app.MapPost("/adapters/vgate-icar-pro-2s/connection-test", async (HttpRequest req, VgateIcarPro2sAdapterService vg, CancellationToken ct) =>
+{
+    string? port = null;
+    try
+    {
+        using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+        if (doc.RootElement.TryGetProperty("port_name", out var p))
+            port = p.GetString();
+    }
+    catch { /* empty body */ }
+    return Results.Json(await vg.ConnectionTestAsync(port, ct));
+});
+
+// Phase 24 – maschinenlesbare Hardware-Probe (kein Flash, kein Fahrzeugbefehl)
+app.MapGet("/hardware/probe", async (
+    IDeviceInventory inventory,
+    DelphiCdpAdapterService cdp,
+    ObdDiagAdapterService obd,
+    VgateIcarPro2sAdapterService vgate,
+    CancellationToken ct) =>
+{
+    var snap = await inventory.ScanAsync(ct);
+    var devices = snap.Devices.Select(d => new
+    {
+        id = d.Id,
+        kind = d.Kind.ToString(),
+        display_name = d.DisplayName,
+        port_name = d.PortName,
+        vendor_hint = d.VendorHint,
+        vid_pid_guess = d.VendorHint // ehrlich: oft nur Hint ohne Labor-VID
+    }).ToArray();
+    var ftdiHints = devices.Where(x =>
+        (x.vendor_hint ?? "").Contains("0403", StringComparison.OrdinalIgnoreCase)
+        || (x.display_name ?? "").Contains("FTDI", StringComparison.OrdinalIgnoreCase)
+        || (x.display_name ?? "").Contains("CDP", StringComparison.OrdinalIgnoreCase)).ToArray();
+    return Results.Json(new
+    {
+        schema = "diagnova.hardware_probe.v1",
+        probed_at = DateTimeOffset.UtcNow.ToString("o"),
+        hardware_present_verified = false,
+        vehicle_commands_sent = false,
+        flash_attempted = false,
+        os = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+        devices,
+        delphi_cdp = new
+        {
+            expected_vid_pid = "0403:D6DA",
+            sn_prefix = "10",
+            transport = new { vcp = true, d2xx_bundled = false, baud_candidate = 115200 },
+            status = cdp.Status(),
+            inventory = await cdp.InventoryProbeAsync(ct),
+            ftdi_like_candidates = ftdiHints,
+            live_open = "NOT_TESTED_WITHOUT_HW",
+            test_paths = new[]
+            {
+                "POST /adapters/delphi-cdp/inventory-probe",
+                "POST /adapters/delphi-cdp/identify-sim",
+                "POST /adapters/delphi-cdp/open-live"
+            },
+            note_de = "Parameter nicht als universell ohne Verifikation. Kein Auto-Flash."
+        },
+        obd_diag = new
+        {
+            status = obd.Status(),
+            inventory = await obd.InventoryProbeAsync(ct),
+            transport_stub = obd.TransportStub(),
+            driver = "BlockedUndocumented",
+            elm327_assumed = false
+        },
+        vgate_icar_pro_2s = new
+        {
+            status = vgate.Status(),
+            research = vgate.Research(),
+            inventory = await vgate.InventoryProbeAsync(ct),
+            hardware_tested = false
+        },
+        limitations_de = snap.LimitationsDe,
+        message_de = "Nichtinvasive Probe. Ohne physische HW: Geräte können leer sein."
+    });
+});
+
+app.MapGet("/license/gate", (LicenseGateService gate) => Results.Json(gate.Status()));
+app.MapGet("/license/device", (LicenseGateService gate) => Results.Json(new
+{
+    device_id = gate.DeviceId,
+    note_de = "Geräteidentität für Backend-Lizenzbindung."
+}));
+app.MapPost("/license/gate/apply", async (HttpRequest req, LicenseGateService gate) =>
+{
+    using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+    var root = doc.RootElement;
+    if (root.TryGetProperty("payload", out var payloadEl) && root.TryGetProperty("signature", out var sigEl))
+    {
+        var alg = root.TryGetProperty("algorithm", out var algEl) ? algEl.GetString() : null;
+        return Results.Json(gate.ApplySignedToken(
+            payloadEl.GetString() ?? "",
+            sigEl.GetString() ?? "",
+            alg));
+    }
+    var allowed = root.TryGetProperty("allowed", out var a) && a.GetBoolean();
+    var plan = root.TryGetProperty("plan_code", out var p) ? p.GetString() ?? "none" : "none";
+    var hours = root.TryGetProperty("offline_hours", out var h) ? h.GetInt32() : 72;
+    var msg = root.TryGetProperty("message_de", out var m) ? m.GetString() : null;
+    return Results.Json(gate.ApplyServerVerification(allowed, plan, hours, msg));
+});
+app.MapPost("/license/gate/revoke", async (HttpRequest req, LicenseGateService gate) =>
+{
+    string? jti = null;
+    try
+    {
+        using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+        if (doc.RootElement.TryGetProperty("jti", out var j))
+            jti = j.GetString();
+    }
+    catch { /* empty body ok */ }
+    return Results.Json(gate.Revoke(jti));
+});
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
 
@@ -234,9 +454,27 @@ app.MapPost("/adapter/connect/com", async (ConnectComRequest body, AdapterConnec
 app.MapPost("/adapter/disconnect", async (AdapterConnectionManager manager, CancellationToken ct) =>
     Results.Json(await manager.DisconnectAsync(ct)));
 
-// —— Phase 04 OBD ——
-app.MapPost("/obd/init", async (AdapterConnectionManager manager, CancellationToken ct) =>
+// —— Phase 04/23 OBD – Lizenz-Gate auf allen Diagnose-Endpunkten ——
+static bool IsDemoOrFakePath(AdapterConnectionManager manager)
 {
+    var statusJson = System.Text.Json.JsonSerializer.Serialize(manager.GetExtendedStatus());
+    return statusJson.Contains("simulated", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("simulator", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("adapter_fake", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("fake:", StringComparison.OrdinalIgnoreCase);
+}
+
+static IResult? LicenseBlock(AdapterConnectionManager manager, LicenseGateService gate)
+{
+    if (gate.IsAllowed() || gate.AllowsDemoPath(IsDemoOrFakePath(manager)))
+        return null;
+    return Results.Json(new { error = "license_required", license = gate.Status() },
+        statusCode: StatusCodes.Status402PaymentRequired);
+}
+
+app.MapPost("/obd/init", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
+{
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.InitObdAsync(ct));
@@ -247,8 +485,9 @@ app.MapPost("/obd/init", async (AdapterConnectionManager manager, CancellationTo
     }
 });
 
-app.MapGet("/obd/live", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/live", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadLiveAsync(ct));
@@ -259,8 +498,9 @@ app.MapGet("/obd/live", async (AdapterConnectionManager manager, CancellationTok
     }
 });
 
-app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadDtcsAsync(ct));
@@ -271,8 +511,9 @@ app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, CancellationTok
     }
 });
 
-app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadFreezeFrameAsync(ct));
@@ -283,8 +524,9 @@ app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, Cancell
     }
 });
 
-app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadReadinessAsync(ct));
@@ -295,8 +537,9 @@ app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, Cancellati
     }
 });
 
-app.MapGet("/obd/vin", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/vin", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadVinAsync(ct));
@@ -424,7 +667,9 @@ app.MapGet("/capabilities", () => Results.Json(new
         new { id = "j2534-passthru", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "doip-ethernet", status = "documented_prep", note_de = "Nur Dokumentation/Vorbereitung" },
         new { id = "vgate-vlinker-mc-plus", status = "blocked", note_de = "Windows-SPP-Variante nicht verifiziert (BLK-ADAPTER)" },
-        new { id = "delphi-autocom", status = "blocked", note_de = "Keine dokumentierte öffentliche Schnittstelle" }
+        new { id = "obd-diag-2055", status = "blocked", note_de = "Keine freie Entwickler-API nachgewiesen; ELM nicht angenommen" },
+        new { id = "delphi-autocom", status = "partial_cdp_ascii_sim", note_de = "Eigenes CDP+-Safe-Read-Modul (*200/*201/*203/*20A); Live-FTDI/CAN gesperrt; hardware_tested=false" },
+        new { id = "j2534-passthru", status = "planned", note_de = "Abstraktion ohne DLL-Bindung" }
     },
     limitations_de = new[]
     {
@@ -434,7 +679,7 @@ app.MapGet("/capabilities", () => Results.Json(new
         "ABS/Airbag/Komfort ohne verifizierte OEM-Definitionen.",
         "DoIP/CAN-FD/J2534 nur vorbereitet, nicht implementiert.",
         "J1939/RP1210 → Phase 19.",
-        "Delphi/Autocom nicht angebunden.",
+        "Delphi/Autocom CDP+: nur Geräte-Lese-Sim; kein Live-Labor, kein CAN/Relais/Flash.",
         "Mode 04 nur mit Freigabe; permanente DTCs nicht löschbar.",
         "HTTPS-Browser: Mixed-Content zu http://127.0.0.1 je nach Browser eingeschränkt."
     }
@@ -455,3 +700,5 @@ public sealed record ClearApproveRequest(
     string? OperatorNote = null);
 public sealed record ClearDtcRequest(string ApprovalToken);
 public sealed record StageUpdateRequest(string TargetVersion, bool AdminApproved = false);
+public sealed record SelectAdapterRequest(string AdapterId);
+public sealed record J2534OpenRequest(string? DllPath = null);

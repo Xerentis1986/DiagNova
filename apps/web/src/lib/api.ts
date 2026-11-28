@@ -192,6 +192,19 @@ export interface AdminDashboard {
   recent_webhooks: Record<string, unknown>[]
   subscriptions: SubscriptionInfo[]
   legal_open_items_de: string[]
+  stripe?: Record<string, unknown> | null
+  mollie?: Record<string, unknown> | null
+  customers_count?: number
+  customers_b2b?: number
+  customers_b2c?: number
+  trial_subscriptions?: number
+  mrr_cents?: number
+  arr_cents?: number
+  invoices_open?: number
+  invoices_paid?: number
+  invoices_overdue?: number
+  active_licenses?: number
+  metrics_note_de?: string | null
 }
 
 export interface SecurityThreatNode {
@@ -470,6 +483,10 @@ export interface Brand {
   logo_mode: 'text_fallback' | 'image'
   logo_initials: string
   logo_rights_cleared: boolean
+  logo_asset_id?: string | null
+  logo_url?: string | null
+  logo_tile_light?: string | null
+  logo_tile_dark?: string | null
   coverage_disclaimer_de: string
   model_count: number
 }
@@ -1286,10 +1303,14 @@ export const api = {
       components?: Record<string, string>
     }>('/health')
   },
-  login(email: string, password: string) {
+  login(email: string, password: string, mfa_code?: string) {
     return request<{ access_token: string; user: User }>('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email,
+        password,
+        ...(mfa_code ? { mfa_code } : {}),
+      }),
     })
   },
   me() {
@@ -1364,14 +1385,72 @@ export const api = {
   vehicle(id: string) {
     return request<Vehicle>(`/api/vehicles/${id}`)
   },
-  connection() {
-    return request<ConnectionStatus>('/api/connection')
+  connection(mode: 'demo' | 'live' = 'demo') {
+    return request<ConnectionStatus>(`/api/connection?mode=${mode}`)
   },
-  dtcs(vehicleId: string) {
-    return request<DtcEntry[]>(`/api/diagnostics/${vehicleId}/dtcs`)
+  bridgeStatus() {
+    return request<{
+      default_mode: string
+      connector: { reachable: boolean; error_de?: string; base_url?: string }
+      message_de: string
+    }>('/api/connector/bridge-status')
   },
-  live(vehicleId: string) {
-    return request<LiveData>(`/api/diagnostics/${vehicleId}/live`)
+  connectorSetupGuide() {
+    return request<{
+      title_de: string
+      legal_notice_de: string
+      signing: string
+      installer: {
+        filename: string
+        version: string
+        sha256: string
+        size_bytes_expected: number
+        download_path: string
+        signing: string
+        available: boolean
+        size_bytes_on_disk?: number | null
+        operator_de?: string
+      }
+      install_steps_de: string[]
+      pairing_steps_de: string[]
+      live_checklist: { id: string; title_de: string; hint_de: string }[]
+      adapters: { id: string; label_de: string; notes_de: string }[]
+      obd_basics_de: string[]
+      ui_separation_de: string
+      docs_ref: string
+    }>('/api/connector/setup-guide')
+  },
+  connectorLiveAssistant(mode: 'demo' | 'live' = 'live') {
+    return request<{
+      mode: string
+      connector: { reachable: boolean; error_de?: string; base_url?: string }
+      connection: ConnectionStatus
+      hardware_probe_ok: boolean
+      steps: {
+        id: string
+        title_de: string
+        hint_de: string
+        auto_ok: boolean | null
+        status_de: string
+      }[]
+      legal_notice_de: string
+      message_de: string
+      installer: {
+        filename: string
+        version: string
+        sha256: string
+        download_path: string
+        signing: string
+        available: boolean
+        operator_de?: string
+      }
+    }>(`/api/connector/live-assistant?mode=${mode}`)
+  },
+  dtcs(vehicleId: string, mode: 'demo' | 'live' = 'demo') {
+    return request<DtcEntry[]>(`/api/diagnostics/${vehicleId}/dtcs?mode=${mode}`)
+  },
+  live(vehicleId: string, mode: 'demo' | 'live' = 'demo') {
+    return request<LiveData>(`/api/diagnostics/${vehicleId}/live?mode=${mode}`)
   },
   clearDtcWarnings() {
     return request<{
@@ -2005,6 +2084,46 @@ export const api = {
   adminDashboard() {
     return request<AdminDashboard>('/api/admin/dashboard')
   },
+  operatorConsole() {
+    return request<
+      AdminDashboard & {
+        console?: string
+        base_path?: string
+        customers?: Record<string, unknown>[]
+        invoices?: Record<string, unknown>[]
+        devices?: Record<string, unknown>[]
+        users?: Record<string, unknown>[]
+        site_settings?: Record<string, unknown>
+        adapter_test_paths_de?: string[]
+        rbac_de?: string
+      }
+    >('/api/admin/console')
+  },
+  mollieStatus() {
+    return request<Record<string, unknown>>('/api/billing/mollie/status')
+  },
+  mollieConfig() {
+    return request<Record<string, unknown>>('/api/billing/mollie/config')
+  },
+  mollieConfigSave(body: {
+    api_key?: string
+    webhook_secret?: string
+    webhook_url?: string
+    live_charges_allowed?: boolean
+    clear_api_key?: boolean
+    clear_webhook_secret?: boolean
+  }) {
+    return request<Record<string, unknown>>('/api/billing/mollie/config', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    })
+  },
+  mollieConnectionTest() {
+    return request<Record<string, unknown>>('/api/billing/mollie/connection-test', {
+      method: 'POST',
+      body: '{}',
+    })
+  },
   adminUsers() {
     return request<
       {
@@ -2027,6 +2146,27 @@ export const api = {
       payment_note_de: string
       legal_open_items_de: string[]
     }>('/api/admin/support')
+  },
+  adminMfaStatus() {
+    return request<Record<string, unknown>>('/api/admin/mfa/status')
+  },
+  adminMfaSetup() {
+    return request<Record<string, unknown>>('/api/admin/mfa/setup', {
+      method: 'POST',
+      body: '{}',
+    })
+  },
+  adminMfaConfirm(code: string) {
+    return request<Record<string, unknown>>('/api/admin/mfa/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    })
+  },
+  adminHardwareProbe() {
+    return request<Record<string, unknown>>('/api/admin/hardware-probe')
+  },
+  operatorNav() {
+    return request<Record<string, unknown>>('/api/admin/operator-nav')
   },
   softwareUpdatesDashboard() {
     return request<SoftwareUpdatesDashboard>('/api/software-updates/dashboard')
@@ -2104,6 +2244,91 @@ export const api = {
   },
   lkwCapabilities() {
     return request<LkwCapabilities>('/api/lkw/capabilities')
+  },
+  commerceOverview() {
+    return request<{
+      phase: number
+      live_payments: boolean
+      payment_note_de: string
+      supports: string[]
+      tax_review_status: string
+      message_de: string
+      consumer_disclaimers_de: Record<string, string>
+    }>('/api/commerce/overview')
+  },
+  commerceAccounts() {
+    return request<{ count: number; accounts: Record<string, unknown>[] }>('/api/commerce/accounts')
+  },
+  commerceCreateAccount(body: {
+    customer_type: 'b2b' | 'b2c'
+    contact_name: string
+    billing_email: string
+    country?: string
+    company_name?: string
+    vat_id?: string
+    street?: string
+    postal_code?: string
+    city?: string
+    preferred_plan_code?: string
+    accept_terms: boolean
+    accept_privacy: boolean
+    ack_withdrawal: boolean
+  }) {
+    return request<Record<string, unknown>>('/api/commerce/accounts', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  goStatus() {
+    return request<{
+      go_status?: string
+      pilot_mode?: boolean
+      commercial_go?: boolean
+      customer_signup_de?: Record<string, string>
+      message_de?: string
+    }>('/health')
+  },
+  automotiveCatalogSummary() {
+    return request<Record<string, unknown>>('/api/automotive-catalog/summary')
+  },
+  automotiveCatalogSources(params?: { q?: string; category?: string; limit?: number; offset?: number }) {
+    const sp = new URLSearchParams()
+    if (params?.q) sp.set('q', params.q)
+    if (params?.category) sp.set('category', params.category)
+    if (params?.limit != null) sp.set('limit', String(params.limit))
+    if (params?.offset != null) sp.set('offset', String(params.offset))
+    const qs = sp.toString()
+    return request<{
+      total: number
+      offset: number
+      limit: number
+      items: Record<string, unknown>[]
+    }>(`/api/automotive-catalog/sources${qs ? `?${qs}` : ''}`)
+  },
+  automotiveCatalogProbe(live = true) {
+    return request<Record<string, unknown>>(
+      `/api/automotive-catalog/probe?live=${live ? 'true' : 'false'}`,
+      { method: 'POST', body: '{}' },
+    )
+  },
+  automotiveCatalogImportPreview() {
+    return request<Record<string, unknown>>('/api/automotive-catalog/fixtures/import-preview', {
+      method: 'POST',
+      body: '{}',
+    })
+  },
+  commerceInvoices(accountId?: string) {
+    const qs = accountId ? `?account_id=${encodeURIComponent(accountId)}` : ''
+    return request<{ count: number; invoices: Record<string, unknown>[] }>(`/api/commerce/invoices${qs}`)
+  },
+  commerceCancel(accountId: string, atPeriodEnd = true) {
+    return request<Record<string, unknown>>(`/api/commerce/accounts/${accountId}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ at_period_end: atPeriodEnd }),
+    })
+  },
+  commerceInvoiceDownloadUrl(invoiceId: string) {
+    return `/api/commerce/invoices/${invoiceId}/download`
   },
   logout() {
     return request<{ status: string; message_de: string }>('/api/auth/logout', { method: 'POST' })

@@ -31,6 +31,11 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-18-Branch | `cursor/diagnova-phase-18-chiptuning-c46a` |
 | Phase-19-Branch | `cursor/diagnova-phase-19-lkw-arch-9892` |
 | Phase-20-Branch | `cursor/diagnova-phase-20-readiness-e3f2` |
+| Phase-21-Branch | `cursor/diagnova-phase-21-billing-adapters-e3f2` |
+| Phase-22-Branch | `cursor/diagnova-phase-22-completion-fb46` |
+| Phase-23-Branch | `cursor/diagnova-phase-23-completion-806e` |
+| Phase-24-Branch | `cursor/diagnova-phase-24-completion-fd1f` |
+| Phase-25-Branch | `cursor/diagnova-phase-25-mollie-adapters-01c8` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -59,8 +64,78 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 18 Chiptuning (optional) | 🟢 Architektur / simuliert | Gates/Baselines/UI; Aktivierung **gesperrt**; keine Maps |
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 | 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
+| 21 Produktfertigstellung | 🟡 Code weitgehend / NO-GO Release | Stripe-Test, CDP+, Admin; HW/Legal/Pay-Live offen |
+| 25 Mollie + Adapter/Setup | 🟡 Code / NO-GO Release | Mollie, RSA-Skript, Vgate iCar Pro 2S, AT-Tech; HW/Legal/Pay-Live offen |
 
 ## Chronik
+
+### 2026-11-28 – Phase 25 Mollie + Adapter (Betreiberauftrag)
+
+- Stripe → Mollie (Connection-Test, Admin-UI), RSA-Skript, Demo-Private default aus
+- Vgate iCar Pro 2S (ELM327) Registry/Treiber; UNSIGNED belassen; AT-Legal-Tech (keine Freigabe)
+- Tests: pytest **162**, dotnet **59**, web build PASS – **NO-GO**
+
+
+### 2026-11-28 – Phase 24 Integration/Release-Builds
+
+- UNSIGNED Inno EXE + SHA-256, RSA Offline-Lizenzen, Portable Install-E2E, Hardware-Probe, Steuer-Tests
+- pytest 156, dotnet 55 – **NO-GO**
+
+
+### 2026-11-28 – Phase 23 Lücken schließen
+
+- Inno Setup UNSIGNED, GitHub Actions CI, Live-Bridge E2E (Connector+Fake), SSRF, volles License-Gate HMAC
+- Tests: pytest 151, dotnet 52, web build PASS – **NO-GO** Release
+
+
+### 2026-11-28 – Phase 22 Produktfertigstellung (autonom)
+
+- Live-Bridge DEMO/LIVE, PDF-Rechnung, MFA TOTP, E-Mail dry_run, FTDI/VCP, OBD-DIAG Inventur, License-Gate, publish.ps1
+- Tests: pytest api 144, dotnet 46 – **NO-GO** Release
+
+
+### 2026-11-27 – Phase 21 Gesamt: Produktfertigstellung
+
+**Erledigt**
+
+- Stripe-Testmodus, Lizenzen, E-Mail dry_run, Admin-Kennzahlen
+- CDP+ Firmware-Store (kein Flash), OBD-DIAG blocked-Modul
+- Pflicht-Docs inkl. RELEASE_READINESS (**NO-GO**)
+- Tests: pytest API **140**, dotnet **46**
+
+**Nicht gemacht (bewusst / extern)**
+
+- Kein HW-Laborerfolg, keine Live-Charges, kein Prod-Redeploy, keine Rechtsfreigabe
+
+### 2026-11-27 – Phase 21 Ergänzung: Delphi/Autocom CDP+ (GitHub-Forschung)
+
+**Erledigt**
+
+- Recherche smooker/obd (GPL-3.0) – Protokollfakten, **kein** Code-Copy
+- Eigenes Modul `Adapters/DelphiCdp` (Codec, Session-Allowlist, Fake/FTDI-Transport, Matrix)
+- Connector API `/adapters/delphi-cdp/*`, Probe `DiagNova.CdpProbe`
+- Docs: `DIAGNOVA_DELPHI_GITHUB_RESEARCH.md`, `PROTOCOL_SPEC`, `DRIVER_STATUS`, `HARDWARE_TEST`, `LICENSE_REVIEW`
+- Katalog `delphi-autocom` → `PartiallySupported` (nur Geräte-Lese-Sim; CAN/Relais/Flash gesperrt)
+
+**Nicht gemacht (bewusst)**
+
+- Kein Live-Labor, kein Auto-Firmwareupdate, keine Fahrzeugbefehle, kein GPL in Binary
+
+### 2026-11-27 – Phase 21 B2B/B2C-Abrechnung und Adapter
+
+**Erledigt**
+
+- Basis: Phase 20 `cursor/diagnova-phase-20-readiness-e3f2` (PR #30)
+- Commerce API `/api/commerce/*` + UI `/commerce`; VIES-Stub; Steuerengine AT/OSS draft
+- Multi-Adapter-Registry, Inventur, J2534-Abstraktion; OBD-DIAG blocked; Delphi CDP+ später ergänzt
+- Docs: `DIAGNOVA_B2B_B2C_BILLING.md`, `DIAGNOVA_TAX_CONFIGURATION.md`, Adapter-Statusdateien
+- Tests: pytest **154**, dotnet **37** (vor CDP+-Erweiterung)
+
+**Nicht gemacht (bewusst)**
+
+- Kein echter PSP; keine Steuer-Prod-Freigabe; keine erfundenen HW-Tests; kein Herstellerkontakt
+
+Details: [docs/phase-21-abschluss.md](docs/phase-21-abschluss.md)
 
 ### 2026-11-27 – Phase 20 Systemprüfung und Einsatzbereitschaft
 

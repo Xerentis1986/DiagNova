@@ -5,8 +5,11 @@ import { AuthProvider, useAuth } from './lib/auth'
 import { ThemeProvider } from './lib/theme'
 import { BrandsPage } from './pages/BrandsPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { ConnectorLivePage } from './pages/ConnectorLivePage'
 import { DiagnosticsPage } from './pages/DiagnosticsPage'
 import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
+import { InviteAcceptPage } from './pages/InviteAcceptPage'
 import { CustomersPage } from './pages/CustomersPage'
 import { DataUpdatesPage } from './pages/DataUpdatesPage'
 import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
@@ -25,7 +28,9 @@ import { WorkOrdersPage } from './pages/WorkOrdersPage'
 import { WorkshopPage } from './pages/WorkshopPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SubscriptionsPage } from './pages/SubscriptionsPage'
-import { AdminPage } from './pages/AdminPage'
+import { CommercePage } from './pages/CommercePage'
+import { OperatorPage } from './pages/OperatorPage'
+import { AutomotiveCatalogPage } from './pages/AutomotiveCatalogPage'
 import { SoftwareUpdatesPage } from './pages/SoftwareUpdatesPage'
 import { SecurityPage } from './pages/SecurityPage'
 import type { ReactNode } from 'react'
@@ -53,6 +58,8 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/invite" element={<InviteAcceptPage />} />
               <Route
                 path="/"
                 element={
@@ -71,6 +78,7 @@ export default function App() {
                 <Route path="vehicle-record" element={<VehicleRecordPage />} />
                 <Route path="vehicle-record/:vehicleId" element={<VehicleRecordPage />} />
                 <Route path="diagnostics" element={<DiagnosticsPage />} />
+                <Route path="connector" element={<ConnectorLivePage />} />
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="ecu" element={<EcuPage />} />
                 <Route path="service" element={<ServicePage />} />
@@ -78,7 +86,10 @@ export default function App() {
                 <Route path="coding" element={<CodingPage />} />
                 <Route path="tuning" element={<TuningPage />} />
                 <Route path="subscriptions" element={<SubscriptionsPage />} />
-                <Route path="admin" element={<AdminPage />} />
+                <Route path="commerce" element={<CommercePage />} />
+                <Route path="operator" element={<OperatorPage />} />
+                <Route path="admin" element={<Navigate to="/operator" replace />} />
+                <Route path="automotive-catalog" element={<AutomotiveCatalogPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="software-updates" element={<SoftwareUpdatesPage />} />

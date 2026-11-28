@@ -96,15 +96,17 @@ export function SecurityPage() {
           <Stat label="Rollen" value={d?.rbac_roles?.join(', ') ?? '—'} />
         </div>
         <p className="mt-3 flex flex-wrap gap-3 text-sm">
-          <Link to="/admin" className="text-[var(--dn-accent)] underline">
-            Administration
-          </Link>
           <Link to="/customers" className="text-[var(--dn-accent)] underline">
             Kunden / Export
           </Link>
           <Link to="/software-updates" className="text-[var(--dn-accent)] underline">
             Software-Updates
           </Link>
+          {user?.is_platform_admin ? (
+            <Link to="/operator" className="text-[var(--dn-accent)] underline">
+              Betreiberkonsole
+            </Link>
+          ) : null}
         </p>
       </Panel>
 

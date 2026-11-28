@@ -9,10 +9,25 @@ from fastapi import APIRouter
 
 from app.api.deps import CurrentUser
 
-# Protocol-Package aus dem Monorepo laden
-_PROTO_SRC = Path(__file__).resolve().parents[5] / "packages" / "diagnostic-protocols" / "src"
-if _PROTO_SRC.exists() and str(_PROTO_SRC) not in sys.path:
-    sys.path.insert(0, str(_PROTO_SRC))
+# Protocol-Package: im Docker-Image bereits per pip installiert; lokal aus Monorepo laden.
+def _ensure_proto_path() -> None:
+    try:
+        import diagnova_protocols  # noqa: F401
+
+        return
+    except ImportError:
+        pass
+    here = Path(__file__).resolve()
+    for depth in range(2, min(8, len(here.parents))):
+        candidate = here.parents[depth] / "packages" / "diagnostic-protocols" / "src"
+        if candidate.is_dir():
+            path = str(candidate)
+            if path not in sys.path:
+                sys.path.insert(0, path)
+            return
+
+
+_ensure_proto_path()
 
 from diagnova_protocols import (  # noqa: E402
     architecture_overview,

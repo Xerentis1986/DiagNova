@@ -138,3 +138,41 @@ BASELINE_DTC_CODES_UNKNOWN: list[str] = [
     "U0100",
     "C0035",
 ]
+
+# Nachgetragen Phase Automotive-Katalog (2026-11-28)
+DOCUMENTED_SOURCES.append(
+    {
+        "key": "obdex-cc0",
+        "name": "OBDex generic DTC JSON (CC0-1.0)",
+        "url": "https://foerbsnavi.github.io/OBDex/generic.min.json",
+        "version": "generic.min",
+        "license_name": "CC0-1.0",
+        "commercial_use": "allowed",
+        "attribution": "OBDex / foerbsnavi – Public Domain (CC0)",
+        "scope": "generic",
+        "notes_de": (
+            "Vollbestand ~9533 DTCs. Im Repo: Sample-200 Fixture. "
+            "Vollimport nur lokal via scripts/automotive_catalog_probe_and_import.py --full-obdex."
+        ),
+        "checked_at": "2026-11-28",
+        "redistributable": True,
+    }
+)
+DOCUMENTED_SOURCES.append(
+    {
+        "key": "obdb-cc-by-sa",
+        "name": "OBDb Signalsets (CC BY-SA 4.0)",
+        "url": "https://github.com/OBDb",
+        "version": "signalsets/v3",
+        "license_name": "CC BY-SA 4.0",
+        "commercial_use": "restricted",
+        "attribution": "OBDb – Attribution + ShareAlike; Contact notice vor Produktlaunch",
+        "scope": "oem",
+        "notes_de": (
+            "Prius/Focus Signalsets erreichbar. v1: nur Metadaten-Fixture; "
+            "kein Bulk-Redistrib ohne Attribution-Pipeline."
+        ),
+        "checked_at": "2026-11-28",
+        "redistributable": False,
+    }
+)

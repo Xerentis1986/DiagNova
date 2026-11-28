@@ -94,6 +94,10 @@ def login(body: LoginRequest, db: DbSession, request: Request) -> LoginResponse:
         )
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Benutzer deaktiviert")
 
+    from app.services.mfa_totp import require_mfa_if_enabled
+
+    require_mfa_if_enabled(user, getattr(body, "mfa_code", None))
+
     # Origin-Hinweis: bei gesetztem Origin gegen Allowlist prüfen (kein harter Block für curl/tests)
     origin = request.headers.get("origin")
     if origin and not settings.is_allowed_origin(origin):
@@ -146,3 +150,42 @@ def logout(user: CurrentUser, db: DbSession) -> dict[str, str]:
         outcome="success",
     )
     return {"status": "ok", "message_de": "Token clientseitig verwerfen. JWT ist stateless."}
+
+
+@router.post("/password-reset/request")
+def password_reset_request(body: dict, db: DbSession) -> dict:
+    """Startet Passwort-Reset – E-Mail dry_run ohne SMTP. Keine User-Enumeration."""
+    from app.services import email_service
+
+    email = str((body or {}).get("email") or "").strip().lower()
+    user = db.query(User).filter(User.email == email).first() if email else None
+    if user:
+        email_service.send_template_email(
+            template="password_reset",
+            to_email=user.email,
+            extra_body="Token-Flow lokal: Demo – Link in der App setzen.",
+            force_dry_run=True,
+        )
+        write_audit(
+            db,
+            user_id=user.id,
+            workshop_id=user.workshop_id,
+            action="password_reset_requested",
+            resource="auth",
+            outcome="success",
+        )
+    return {
+        "ok": True,
+        "message_de": "Falls Konto existiert: Reset-Mail vorbereitet (dry_run ohne SMTP).",
+    }
+
+
+@router.post("/email-confirm/request")
+def email_confirm_request(user: CurrentUser) -> dict:
+    from app.services import email_service
+
+    return email_service.send_template_email(
+        template="email_confirm",
+        to_email=user.email,
+        force_dry_run=True,
+    )

@@ -16,4 +16,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DiagNova.Connector\DiagNova.Connector.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="license_rsa_private.demo.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

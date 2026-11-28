@@ -1,13 +1,15 @@
-"""Phase 13 – Plattform-Admin-Dashboard."""
+"""Phase 13 – Plattform-Admin-Dashboard (+ Phase 22 MFA)."""
 
 from __future__ import annotations
 
 from fastapi import APIRouter
+from pydantic import BaseModel, Field
 
 from app.api.deps import CurrentUser, DbSession
 from app.schemas.subscriptions import AdminDashboardOut, AdminUserOut, SubscriptionOut
 from app.services import admin_platform, subscriptions as subsvc
 from app.services.admin_platform import require_platform_admin
+from app.services import mfa_totp
 from app.models.subscriptions import Subscription
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -83,3 +85,86 @@ def admin_support(user: CurrentUser, db: DbSession) -> dict:
         "payment_note_de": subsvc.PAYMENT_NOTE,
         "legal_open_items_de": admin_platform.LEGAL_OPEN,
     }
+
+
+@router.get("/mfa/status")
+def mfa_status(user: CurrentUser) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.mfa_status(user)
+
+
+@router.post("/mfa/setup")
+def mfa_setup(user: CurrentUser, db: DbSession) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.start_mfa_setup(db, user)
+
+
+class MfaConfirmIn(BaseModel):
+    code: str = Field(min_length=6, max_length=8)
+
+
+@router.post("/mfa/confirm")
+def mfa_confirm(body: MfaConfirmIn, user: CurrentUser, db: DbSession) -> dict:
+    require_platform_admin(user)
+    return mfa_totp.confirm_mfa(db, user, body.code)
+
+
+@router.get("/console")
+def admin_console(user: CurrentUser, db: DbSession) -> dict:
+    """Aggregierte Betreiberkonsole: Kunden, Abos, Rechnungen, Geräte, Updates, Adapter-Hinweise."""
+    require_platform_admin(user)
+    return admin_platform.build_operator_console(db)
+
+
+@router.get("/billing-accounts")
+def admin_billing_accounts(user: CurrentUser, db: DbSession) -> list[dict]:
+    require_platform_admin(user)
+    return admin_platform.list_billing_accounts(db)
+
+
+@router.get("/invoices")
+def admin_invoices(user: CurrentUser, db: DbSession, limit: int = 50) -> list[dict]:
+    require_platform_admin(user)
+    return admin_platform.list_invoices_admin(db, limit=limit)
+
+
+@router.get("/devices")
+def admin_devices(user: CurrentUser, db: DbSession) -> list[dict]:
+    require_platform_admin(user)
+    return admin_platform.list_devices_admin(db)
+
+
+@router.get("/hardware-probe")
+async def admin_hardware_probe(user: CurrentUser) -> dict:
+    """Nichtinvasive Adapter-Inventur über Connector-Bridge (Betreiber)."""
+    require_platform_admin(user)
+    from app.services import connector_bridge
+
+    return await connector_bridge.hardware_probe()
+
+
+@router.get("/operator-nav")
+def operator_nav(user: CurrentUser) -> dict:
+    """Welche Menüs/URLs der Betreiber nutzt (Frontend-Hilfsinfo)."""
+    require_platform_admin(user)
+    return {
+        "base_path": "/operator",
+        "alias": ["/admin"],
+        "sections": [
+            {"id": "overview", "path": "/operator", "label_de": "Übersicht"},
+            {"id": "customers", "path": "/operator?tab=customers", "label_de": "Kunden B2B/B2C"},
+            {"id": "subscriptions", "path": "/operator?tab=subscriptions", "label_de": "Abos"},
+            {"id": "mollie", "path": "/operator?tab=mollie", "label_de": "Zahlung Mollie"},
+            {"id": "invoices", "path": "/operator?tab=invoices", "label_de": "Rechnungen"},
+            {"id": "licenses", "path": "/operator?tab=licenses", "label_de": "Lizenzen/Geräte"},
+            {"id": "updates", "path": "/operator?tab=updates", "label_de": "Updates/Connector"},
+            {"id": "adapters", "path": "/operator?tab=adapters", "label_de": "Adapter-Status"},
+            {"id": "audit", "path": "/operator?tab=audit", "label_de": "Audit"},
+            {"id": "mfa", "path": "/operator?tab=mfa", "label_de": "MFA / Sicherheit"},
+            {"id": "settings", "path": "/operator?tab=settings", "label_de": "Seiteneinstellungen"},
+        ],
+        "rbac_de": "Nur is_platform_admin. Kundenportal zeigt keinen Betreiber-Link.",
+        "mfa_de": "MFA für Plattform-Admin empfohlen (Setup unter MFA-Tab).",
+        "no_live_charges": True,
+    }
+
