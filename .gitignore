@@ -49,3 +49,7 @@ apps/api/.venv/
 apps/web/test-results/
 apps/web/playwright-report/
 apps/web/blob-report/
+
+# Local secrets (license keys, etc.)
+.secrets/
+

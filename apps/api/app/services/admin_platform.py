@@ -16,14 +16,15 @@ from app.models.subscriptions import (
     Subscription,
     WorkshopInvitation,
 )
-from app.services.payments.stripe_provider import stripe_status
+from app.services.payments.mollie_provider import mollie_status
 from app.services.subscriptions import PAYMENT_NOTE, subscription_to_dict
 
 LEGAL_OPEN = [
-    "DACH Rechnungs-/Steueranforderungen: rechtliche Prüfung offen (BLK-LEGAL).",
+    "DACH/AT Rechnungs-/Steueranforderungen: rechtliche Prüfung offen (BLK-LEGAL) – Steuerberater/Anwalt.",
     "Auftragsverarbeitung (AVV) / DSGVO: keine Konformität behauptet.",
-    "Stripe Live-Charges erst nach Freigabe (stripe_live_charges_allowed) – BLK-PAY.",
+    "Mollie Live-Charges erst nach Freigabe (mollie_live_charges_allowed) – BLK-PAY.",
     "Steuerregeln draft_needs_review – keine produktive Steuerfreigabe.",
+    "Widerruf/AGB: Platzhalter – Betreiber muss Texte freigeben.",
 ]
 
 
@@ -163,17 +164,18 @@ def build_admin_dashboard(db: Session) -> dict:
         mrr_cents += plan_price.get(s.plan_code, 0)
     arr_cents = mrr_cents * 12
 
-    stripe = stripe_status()
+    mollie = mollie_status()
     payment_mode = (
-        "stripe_test"
-        if stripe.get("configured") and stripe.get("test_mode")
-        else ("stripe_live_gated" if stripe.get("live_keys_present") else "mock_stub_plus_stripe_ready")
+        "mollie_test"
+        if mollie.get("configured") and mollie.get("test_mode")
+        else ("mollie_live_gated" if mollie.get("live_keys_present") else "mock_stub_plus_mollie_ready")
     )
 
     return {
         "payment_mode": payment_mode,
         "payment_note_de": PAYMENT_NOTE,
-        "stripe": stripe,
+        "mollie": mollie,
+        "stripe": {"removed": True, "replacement": "mollie"},
         "workshops_count": workshops,
         "users_count": users,
         "customers_count": billing_accounts,

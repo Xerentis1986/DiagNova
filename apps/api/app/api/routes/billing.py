@@ -12,7 +12,8 @@ from app.models.subscriptions import Subscription
 from app.schemas.subscriptions import MockWebhookOut, MockWebhookRequest, SubscriptionOut
 from app.services import email_service, license_management, payment_stub
 from app.services import subscriptions as subsvc
-from app.services.payments import stripe_provider
+from app.services.payments import mollie_provider
+from app.services.payments import stripe_provider  # deprecated shim
 from app.services.tenant import require_admin_role
 
 router = APIRouter(prefix="/billing", tags=["billing"])
@@ -96,19 +97,78 @@ def demo_sign_payload(body: MockWebhookRequest, user: CurrentUser) -> dict:
     }
 
 
-# --- Phase 21 Stripe + Lizenz + Mail ---
+# --- Phase 25 Mollie (+ Stripe-Shim für Alt-Clients) ---
 
 
-@router.get("/stripe/status")
-def stripe_status_endpoint(_user: CurrentUser) -> dict:
+@router.get("/mollie/status")
+def mollie_status_endpoint(_user: CurrentUser) -> dict:
     stub = stub_info(_user)
-    stripe = stripe_provider.stripe_status()
+    mollie = mollie_provider.mollie_status()
     return {
-        **stripe,
+        **mollie,
         "mock_stub_still_available": True,
         "mock_stub_path": "/api/billing/webhooks/mock",
         "stub_info": stub,
     }
+
+
+@router.post("/mollie/connection-test")
+async def mollie_connection_test(user: CurrentUser) -> dict:
+    """Verbindungstest ohne Charge – Plattform-Admin."""
+    require_admin_role(user)
+    return await mollie_provider.connection_test()
+
+
+class MollieCheckoutRequest(BaseModel):
+    subscription_id: str
+    plan_code: str = "pkw_pro"
+    customer_email: EmailStr
+    amount_cents: int = Field(ge=100, le=500_000)
+    redirect_url: str = "http://localhost:5173/commerce?checkout=success"
+
+
+@router.post("/mollie/checkout")
+async def mollie_checkout(body: MollieCheckoutRequest, user: CurrentUser, db: DbSession) -> dict:
+    require_admin_role(user)
+    wid = user.workshop_id
+    if not wid:
+        raise HTTPException(status_code=400, detail="Kein Mandant")
+    sub = db.get(Subscription, body.subscription_id)
+    if sub is None or sub.workshop_id != wid:
+        raise HTTPException(status_code=404, detail="Subscription nicht gefunden")
+    return await mollie_provider.create_checkout_payment(
+        subscription_id=sub.id,
+        workshop_id=wid,
+        plan_code=body.plan_code,
+        customer_email=str(body.customer_email),
+        amount_cents=body.amount_cents,
+        redirect_url=body.redirect_url,
+    )
+
+
+@router.post("/webhooks/mollie")
+async def mollie_webhook(
+    request: Request,
+    db: DbSession,
+    x_mollie_signature: str | None = Header(default=None, alias="X-Mollie-Signature"),
+) -> dict:
+    raw = await request.body()
+    try:
+        payload = json.loads(raw.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        payload = {}
+    return mollie_provider.process_mollie_webhook(
+        db,
+        raw_body=raw,
+        signature_header=x_mollie_signature,
+        payment_id=payload.get("id"),
+    )
+
+
+@router.get("/stripe/status")
+def stripe_status_endpoint(_user: CurrentUser) -> dict:
+    """Alt-Pfad: Stripe entfernt → Hinweis auf Mollie."""
+    return {**stripe_provider.stripe_status(), "use": "/api/billing/mollie/status"}
 
 
 class StripeCheckoutRequest(BaseModel):
@@ -124,34 +184,12 @@ class StripeCheckoutRequest(BaseModel):
 @router.post("/stripe/checkout")
 async def stripe_checkout(body: StripeCheckoutRequest, user: CurrentUser, db: DbSession) -> dict:
     require_admin_role(user)
-    wid = user.workshop_id
-    if not wid:
-        raise HTTPException(status_code=400, detail="Kein Mandant")
-    sub = db.get(Subscription, body.subscription_id)
-    if sub is None or sub.workshop_id != wid:
-        raise HTTPException(status_code=404, detail="Subscription nicht gefunden")
-    return await stripe_provider.create_checkout_session(
-        subscription_id=sub.id,
-        workshop_id=wid,
-        plan_code=body.plan_code,
-        customer_email=str(body.customer_email),
-        success_url=body.success_url,
-        cancel_url=body.cancel_url,
-        amount_cents=body.amount_cents,
-        interval=body.interval,
-    )
+    return await stripe_provider.create_checkout_session(**body.model_dump())
 
 
 @router.post("/webhooks/stripe")
-async def stripe_webhook(
-    request: Request,
-    db: DbSession,
-    stripe_signature: str | None = Header(default=None, alias="Stripe-Signature"),
-) -> dict:
-    raw = await request.body()
-    return stripe_provider.process_stripe_webhook(
-        db, raw_body=raw, signature_header=stripe_signature
-    )
+async def stripe_webhook(request: Request, db: DbSession) -> dict:
+    return stripe_provider.process_stripe_webhook()
 
 
 @router.get("/licenses/overview")

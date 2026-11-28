@@ -21,9 +21,13 @@ def test_commerce_overview(client: TestClient, auth_headers: dict[str, str]):
     assert body["live_payments"] is False
     assert "b2b" in body["supports"]
     assert body["tax_review_status"] == "draft_needs_review"
+    assert body.get("payment_provider") == "mollie"
     assert "stripe" in body
-    assert body["stripe"]["live_charges_allowed"] is False
-    assert any("PDF" in x for x in body["missing_de"])
+    assert body["stripe"].get("removed") is True
+    assert body["stripe"].get("replacement") == "mollie"
+    assert "mollie" in body
+    assert body["mollie"]["live_charges_allowed"] is False
+    assert any("Mollie" in x or "PDF" in x or "Steuer" in x for x in body["missing_de"])
 
 
 def test_tax_preview_scenarios():

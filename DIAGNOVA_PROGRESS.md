@@ -35,6 +35,7 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | Phase-22-Branch | `cursor/diagnova-phase-22-completion-fb46` |
 | Phase-23-Branch | `cursor/diagnova-phase-23-completion-806e` |
 | Phase-24-Branch | `cursor/diagnova-phase-24-completion-fd1f` |
+| Phase-25-Branch | `cursor/diagnova-phase-25-mollie-adapters-01c8` |
 | Letzte Aktualisierung | 2026-11-27 (Europe/Vienna) |
 
 ## Ampel
@@ -64,8 +65,16 @@ Dauerhafte Fortschrittsdatei (Repo-Root). Nach jeder Phase aktualisieren.
 | 19 LKW (optional) | 🟢 Architektur | J1939/RP1210 Prep, Flags, UI „Geplant“; Diagnose 403 |
 | 20 Systemprüfung | 🟢 Docs/Audit | Integration 18+19; **NO-GO** kommerziell; Fixes + Tests |
 | 21 Produktfertigstellung | 🟡 Code weitgehend / NO-GO Release | Stripe-Test, CDP+, Admin; HW/Legal/Pay-Live offen |
+| 25 Mollie + Adapter/Setup | 🟡 Code / NO-GO Release | Mollie, RSA-Skript, Vgate iCar Pro 2S, AT-Tech; HW/Legal/Pay-Live offen |
 
 ## Chronik
+
+### 2026-11-28 – Phase 25 Mollie + Adapter (Betreiberauftrag)
+
+- Stripe → Mollie (Connection-Test, Admin-UI), RSA-Skript, Demo-Private default aus
+- Vgate iCar Pro 2S (ELM327) Registry/Treiber; UNSIGNED belassen; AT-Legal-Tech (keine Freigabe)
+- Tests: pytest **162**, dotnet **59**, web build PASS – **NO-GO**
+
 
 ### 2026-11-28 – Phase 24 Integration/Release-Builds
 

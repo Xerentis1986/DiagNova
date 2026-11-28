@@ -68,19 +68,22 @@ class CreditNoteIn(BaseModel):
 
 @router.get("/overview")
 def overview(_user: CurrentUser) -> dict[str, Any]:
-    from app.services.payments.stripe_provider import stripe_status
+    from app.services.payments.mollie_provider import mollie_status
 
-    stripe = stripe_status()
+    mollie = mollie_status()
     return {
-        "phase": 21,
+        "phase": 25,
         "live_payments": False,
-        "stripe": {
-            "configured": stripe.get("configured"),
-            "test_mode": stripe.get("test_mode"),
-            "live_charges_allowed": stripe.get("live_charges_allowed"),
-            "status_path": "/api/billing/stripe/status",
-            "note_de": stripe.get("message_de"),
+        "payment_provider": "mollie",
+        "mollie": {
+            "configured": mollie.get("configured"),
+            "test_mode": mollie.get("test_mode"),
+            "live_charges_allowed": mollie.get("live_charges_allowed"),
+            "status_path": "/api/billing/mollie/status",
+            "connection_test_path": "/api/billing/mollie/connection-test",
+            "note_de": mollie.get("message_de"),
         },
+        "stripe": {"removed": True, "replacement": "mollie"},
         "payment_note_de": billing_svc.PAYMENT_NOTE,
         "supports": ["b2b", "b2c"],
         "features": [
@@ -89,23 +92,26 @@ def overview(_user: CurrentUser) -> dict[str, Any]:
             "tax_preview",
             "subscribe_invoice",
             "invoice_download_json",
+            "invoice_pdf",
             "credit_notes",
             "cancel",
             "license_list",
-            "stripe_checkout_when_keys_set",
+            "mollie_checkout_when_keys_set",
         ],
         "missing_de": [
-            "Rechnung PDF (nur JSON-Download)",
             "E-Mail-Versand Rechnungen (nur dry_run ohne SMTP)",
-            "Produktive Steuerfreigabe (draft_needs_review)",
-            "Stripe Live-Charges (gesperrt ohne Freigabe)",
+            "Produktive Steuerfreigabe (draft_needs_review) – Steuerberater/Anwalt",
+            "Mollie Live-Charges (gesperrt ohne Freigabe)",
         ],
         "consumer_disclaimers_de": CONSUMER_DISCLAIMERS_DE,
         "tax_review_status": "draft_needs_review",
+        "at_legal_note_de": (
+            "Technisch AT-aligned (USt-Defaults, B2B/B2C, Rechnungsfelder). "
+            "Keine automatische juristische Freigabe – Betreiber/Steuerberater bestätigen."
+        ),
         "message_de": (
-            "Kaufmännisches Backend B2B/B2C. Commerce-Abo erzeugt Stub-Rechnung. "
-            "Stripe-Testmodus-Code vorhanden – ohne Keys kein Checkout-Erfolg. "
-            "Steuerkonfiguration vor Prod fachlich prüfen."
+            "Kaufmännisches Backend B2B/B2C. Payment-Provider: Mollie (Stripe entfernt). "
+            "Ohne MOLLIE_API_KEY kein Checkout-Erfolg. Steuer vor Prod fachlich prüfen."
         ),
     }
 

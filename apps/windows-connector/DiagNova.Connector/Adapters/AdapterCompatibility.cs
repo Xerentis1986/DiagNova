@@ -114,6 +114,24 @@ public static class AdapterCatalog
             NotesDe: "Modulare Transportebene vorbereitet. Bedeutet nicht, dass Delphi J2534 unterstützt.",
             DocsPath: "docs/DIAGNOVA_CONNECTOR_DRIVER_MATRIX.md"
         ),
+        new(
+            "vgate-icar-pro-2s",
+            "Vgate iCar Pro 2S (Bluetooth 5.2 / ELM327 V2.3)",
+            "Vgate Direct – iCar Pro 2S",
+            AdapterCompatibilityStatus.DriverPresent,
+            HardwareTested: false,
+            VehicleTested: false,
+            ManufacturerApiDocumented: true,
+            LawfulToIntegrate: true,
+            Protocols: ["sae_j1979_obd", "iso_15765_4", "elm327-at"],
+            Transports: ["bluetooth-rfcomm", "com", "fake-serial"],
+            Blockers: ["BLK-HW"],
+            NotesDe:
+                "Empfohlener offener BT-Adapter ≤100€ (ca. 38–42€ EU, Stand Recherche 2026-11). " +
+                "Hersteller: voll ELM327-kompatibel (V2.3). Treiber nutzt dokumentierte AT/OBD-II-Befehle. " +
+                "Kein physischer Labortest in dieser Umgebung – hardware_tested=false.",
+            DocsPath: "docs/DIAGNOVA_PHASE25_BT_ADAPTER_CHOICE.md"
+        ),
     ];
 
     public static AdapterProfile? Get(string adapterId) =>

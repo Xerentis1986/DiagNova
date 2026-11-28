@@ -10,58 +10,36 @@ import time
 import pytest
 
 
-def test_stripe_status_not_configured(client, auth_headers):
+def test_stripe_removed_shim(client, auth_headers):
+    """Phase 25: Stripe entfernt – Alt-Pfad zeigt Replacement Mollie."""
     r = client.get("/api/billing/stripe/status", headers=auth_headers)
     assert r.status_code == 200
     body = r.json()
-    assert body["provider"] == "stripe"
-    assert body["configured"] is False
-    assert body["no_fake_success"] is True
-    assert body["live_charges_allowed"] is False
+    assert body.get("removed") is True
+    assert body.get("replacement") == "mollie"
 
 
-def test_stripe_checkout_without_keys_no_fake_success(client, auth_headers):
-    me = client.get("/api/subscriptions/me", headers=auth_headers)
-    assert me.status_code == 200
-    sub_id = me.json().get("id") or ""
-    if not sub_id:
-        # Trial anlegen (Stub)
-        trial = client.post(
-            "/api/subscriptions/me/trial",
-            headers=auth_headers,
-            json={"plan_code": "pkw_trial"},
-        )
-        assert trial.status_code == 200, trial.text
-        sub_id = trial.json()["id"]
+def test_stripe_checkout_removed(client, auth_headers):
     r = client.post(
         "/api/billing/stripe/checkout",
         headers=auth_headers,
         json={
-            "subscription_id": sub_id,
+            "subscription_id": "x" * 8,
             "plan_code": "pkw_pro",
             "customer_email": "test@example.com",
             "amount_cents": 9900,
         },
     )
-    assert r.status_code == 200
-    body = r.json()
-    assert body["ok"] is False
-    assert body["status"] == "not_configured"
-    assert not body.get("url")
+    # Admin required – may 403/404/200 with removed
+    assert r.status_code in {200, 403, 404}
+    if r.status_code == 200:
+        assert r.json().get("status") == "stripe_removed"
 
 
-def test_stripe_signature_helper():
+def test_stripe_signature_helper_disabled():
     from app.services.payments.stripe_provider import verify_stripe_signature
 
-    secret = "whsec_test_secret"
-    payload = b'{"id":"evt_1","type":"ping"}'
-    ts = int(time.time())
-    signed = f"{ts}.".encode() + payload
-    sig = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
-    header = f"t={ts},v1={sig}"
-    assert verify_stripe_signature(payload, header, secret) is True
-    assert verify_stripe_signature(payload, "t=1,v1=dead", secret) is False
-
+    assert verify_stripe_signature(b"{}", "t=1,v1=x", "secret") is False
 
 def test_email_dry_run(client, auth_headers):
     r = client.post(

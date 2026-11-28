@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using DiagNova.Connector.Adapters;
 using DiagNova.Connector.Adapters.DelphiCdp;
 using DiagNova.Connector.Adapters.ObdDiag;
+using DiagNova.Connector.Adapters.Vgate;
 using DiagNova.Connector.Auth;
 using DiagNova.Connector.Discovery;
 using DiagNova.Connector.Ecu;
@@ -34,6 +35,7 @@ builder.Services.AddSingleton<J2534PassThruAbstraction>();
 builder.Services.AddSingleton<DelphiCdpAdapterService>();
 builder.Services.AddSingleton<CdpFirmwareManager>();
 builder.Services.AddSingleton<ObdDiagAdapterService>();
+builder.Services.AddSingleton<VgateIcarPro2sAdapterService>();
 builder.Services.AddSingleton<LicenseGateService>();
 builder.Services.AddSingleton<PairingService>();
 builder.Services.AddSingleton<OriginGuard>();
@@ -275,11 +277,29 @@ app.MapPost("/adapters/obd-diag/inventory-probe", async (ObdDiagAdapterService o
     Results.Json(await obd.InventoryProbeAsync(ct)));
 app.MapGet("/adapters/obd-diag/transport-stub", (ObdDiagAdapterService obd) => Results.Json(obd.TransportStub()));
 
+app.MapGet("/adapters/vgate-icar-pro-2s/status", (VgateIcarPro2sAdapterService vg) => Results.Json(vg.Status()));
+app.MapGet("/adapters/vgate-icar-pro-2s/research", (VgateIcarPro2sAdapterService vg) => Results.Json(vg.Research()));
+app.MapPost("/adapters/vgate-icar-pro-2s/inventory-probe", async (VgateIcarPro2sAdapterService vg, CancellationToken ct) =>
+    Results.Json(await vg.InventoryProbeAsync(ct)));
+app.MapPost("/adapters/vgate-icar-pro-2s/connection-test", async (HttpRequest req, VgateIcarPro2sAdapterService vg, CancellationToken ct) =>
+{
+    string? port = null;
+    try
+    {
+        using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+        if (doc.RootElement.TryGetProperty("port_name", out var p))
+            port = p.GetString();
+    }
+    catch { /* empty body */ }
+    return Results.Json(await vg.ConnectionTestAsync(port, ct));
+});
+
 // Phase 24 – maschinenlesbare Hardware-Probe (kein Flash, kein Fahrzeugbefehl)
 app.MapGet("/hardware/probe", async (
     IDeviceInventory inventory,
     DelphiCdpAdapterService cdp,
     ObdDiagAdapterService obd,
+    VgateIcarPro2sAdapterService vgate,
     CancellationToken ct) =>
 {
     var snap = await inventory.ScanAsync(ct);
@@ -322,6 +342,13 @@ app.MapGet("/hardware/probe", async (
             transport_stub = obd.TransportStub(),
             driver = "BlockedUndocumented",
             elm327_assumed = false
+        },
+        vgate_icar_pro_2s = new
+        {
+            status = vgate.Status(),
+            research = vgate.Research(),
+            inventory = await vgate.InventoryProbeAsync(ct),
+            hardware_tested = false
         },
         limitations_de = snap.LimitationsDe,
         message_de = "Nichtinvasive Probe. Ohne physische HW: Geräte können leer sein."

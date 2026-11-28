@@ -82,6 +82,25 @@ public sealed class AdapterRegistry
             };
         }
 
+        if (profile.AdapterId == "vgate-icar-pro-2s")
+        {
+            _selectedAdapterId = profile.AdapterId;
+            _log.Info("adapter", "Vgate iCar Pro 2S gewählt (ELM327 BT)", _selectedAdapterId);
+            return new
+            {
+                ok = true,
+                selected = true,
+                adapter_id = _selectedAdapterId,
+                status = profile.Status.ToString(),
+                vehicle_commands = false,
+                hardware_tested = false,
+                product = "Vgate iCar Pro 2S",
+                message_de =
+                    "Vgate iCar Pro 2S gewählt: ELM327-AT-Pfad. " +
+                    "Connection-Test mit port_name; Fahrzeuglabor ausstehend."
+            };
+        }
+
         _selectedAdapterId = profile.AdapterId;
         _log.Info("adapter", "Adapter manuell gewählt", _selectedAdapterId);
         return new

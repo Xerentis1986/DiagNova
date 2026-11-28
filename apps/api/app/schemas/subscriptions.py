@@ -194,7 +194,8 @@ class AdminDashboardOut(BaseModel):
     subscriptions: list[SubscriptionOut]
     legal_open_items_de: list[str]
     # Phase 21 – Betreiberkennzahlen (DB, keine Fake-Zahlungen)
-    stripe: dict[str, Any] | None = None
+    stripe: dict[str, Any] | None = None  # Phase 25: removed shim
+    mollie: dict[str, Any] | None = None
     customers_count: int = 0
     customers_b2b: int = 0
     customers_b2c: int = 0

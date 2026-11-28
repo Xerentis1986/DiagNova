@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Badge, PageHeader, Panel, SectionTitle } from '../components/ui'
 import { api } from '../lib/api'
@@ -6,6 +7,8 @@ import { useAuth } from '../lib/auth'
 
 export function AdminPage() {
   const { user } = useAuth()
+  const qc = useQueryClient()
+  const [mollieMsg, setMollieMsg] = useState<string>('')
   const dashQ = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: () => api.adminDashboard(),
@@ -21,19 +24,59 @@ export function AdminPage() {
     queryFn: () => api.adminSupport(),
     enabled: !!user?.is_platform_admin,
   })
+  const mollieQ = useQuery({
+    queryKey: ['mollie-status'],
+    queryFn: () => api.mollieStatus(),
+    enabled: !!user?.is_platform_admin,
+  })
+  const mollieTest = useMutation({
+    mutationFn: () => api.mollieConnectionTest(),
+    onSuccess: (r) => {
+      setMollieMsg(String(r.message_de ?? JSON.stringify(r)))
+      void qc.invalidateQueries({ queryKey: ['mollie-status'] })
+    },
+    onError: (e: Error) => setMollieMsg(e.message),
+  })
 
   if (!user?.is_platform_admin) {
     return <Navigate to="/subscriptions" replace />
   }
 
   const d = dashQ.data
+  const m = mollieQ.data
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Administration"
-        description="Betreiber-Kennzahlen aus der Datenbank. Stripe-Testmodus möglich; Live-Charges gesperrt ohne Freigabe."
+        description="Betreiber-Kennzahlen. Zahlung: Mollie (Stripe entfernt). Live-Charges gesperrt ohne Freigabe."
       />
+
+      <Panel>
+        <SectionTitle>Mollie</SectionTitle>
+        <div className="mb-2 flex flex-wrap gap-2">
+          <Badge>{String(m?.provider ?? 'mollie')}</Badge>
+          <Badge tone={m?.configured ? undefined : 'warn'}>
+            {m?.configured ? 'Key gesetzt' : 'Key fehlt (Env MOLLIE_API_KEY)'}
+          </Badge>
+          <Badge>{m?.test_mode ? 'Testmodus' : m?.live_keys_present ? 'Live-Key' : '—'}</Badge>
+        </div>
+        <p className="mb-2 text-sm text-[var(--dn-muted)]">{String(m?.message_de ?? '')}</p>
+        <p className="mb-3 text-xs text-[var(--dn-muted)]">
+          API-Key nur in Server-Env/Secrets setzen – nie in Git. Danach Verbindungstest (ohne Abbuchung).
+        </p>
+        <button
+          type="button"
+          className="rounded border border-[var(--dn-border)] px-3 py-1.5 text-sm hover:bg-[var(--dn-surface-2)]"
+          disabled={mollieTest.isPending}
+          onClick={() => mollieTest.mutate()}
+        >
+          {mollieTest.isPending ? 'Teste…' : 'Verbindungstest'}
+        </button>
+        {mollieMsg ? (
+          <p className="mt-2 text-sm text-[var(--dn-muted)]">{mollieMsg}</p>
+        ) : null}
+      </Panel>
 
       <Panel>
         <div className="mb-3 flex flex-wrap gap-2">

@@ -193,6 +193,7 @@ export interface AdminDashboard {
   subscriptions: SubscriptionInfo[]
   legal_open_items_de: string[]
   stripe?: Record<string, unknown> | null
+  mollie?: Record<string, unknown> | null
   customers_count?: number
   customers_b2b?: number
   customers_b2c?: number
@@ -2023,6 +2024,15 @@ export const api = {
   },
   adminDashboard() {
     return request<AdminDashboard>('/api/admin/dashboard')
+  },
+  mollieStatus() {
+    return request<Record<string, unknown>>('/api/billing/mollie/status')
+  },
+  mollieConnectionTest() {
+    return request<Record<string, unknown>>('/api/billing/mollie/connection-test', {
+      method: 'POST',
+      body: '{}',
+    })
   },
   adminUsers() {
     return request<

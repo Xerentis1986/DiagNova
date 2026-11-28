@@ -242,8 +242,11 @@ def test_admin_dashboard_platform_only(client: TestClient, auth_headers: dict[st
     assert body["payment_mode"] in {
         "mock_stub",
         "mock_stub_plus_stripe_ready",
+        "mock_stub_plus_mollie_ready",
         "stripe_test",
         "stripe_live_gated",
+        "mollie_test",
+        "mollie_live_gated",
     }
     assert body["workshops_count"] >= 1
     assert body["users_count"] >= 2

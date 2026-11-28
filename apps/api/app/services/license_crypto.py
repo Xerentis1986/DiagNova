@@ -28,7 +28,8 @@ def _load_private_key() -> RSAPrivateKey | None:
         if env:
             pem = env if "BEGIN" in env else base64.b64decode(env).decode()
     if not pem:
-        if _REPO_FIXTURE.is_file() and os.environ.get("DIAGNOVA_LICENSE_ALLOW_DEMO_PRIVATE", "1") == "1":
+        # Demo-Private standardmäßig AUS – nur mit explizitem ALLOW=1 (Tests/Dev)
+        if _REPO_FIXTURE.is_file() and os.environ.get("DIAGNOVA_LICENSE_ALLOW_DEMO_PRIVATE", "0") == "1":
             pem = _REPO_FIXTURE.read_text(encoding="utf-8")
     if not pem:
         return None

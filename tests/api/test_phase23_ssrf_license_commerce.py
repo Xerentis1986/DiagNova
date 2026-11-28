@@ -37,16 +37,9 @@ def test_ssrf_blocks_external_connector_host(monkeypatch):
     assert validate_connector_base_url().startswith("http://127.0.0.1")
 
 
-def test_stripe_webhook_signature_fixture():
-    secret = "whsec_test_phase23"
-    payload = b'{"id":"evt_test","type":"checkout.session.completed"}'
-    ts = int(time.time())
-    signed = f"{ts}.".encode() + payload
-    sig = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
-    header = f"t={ts},v1={sig}"
-    assert verify_stripe_signature(payload, header, secret) is True
-    assert verify_stripe_signature(payload, f"t={ts},v1=deadbeef", secret) is False
-    assert verify_stripe_signature(payload, None, secret) is False
+def test_stripe_removed_signature_helper():
+    # Phase 25: Stripe-Signatur-Helper deaktiviert (immer False)
+    assert verify_stripe_signature(b"{}", "t=1,v1=x", "secret") is False
 
 
 def test_smtp_send_path_with_local_stub(monkeypatch):

@@ -30,11 +30,21 @@ class Settings(BaseSettings):
     update_hmac_demo_secret: str = "diagnova-phase07-demo-hmac-not-for-prod"
     # Phase 13 – Payment-Stub Webhook-HMAC (kein echter PSP)
     payment_webhook_demo_secret: str = "diagnova-phase13-payment-stub-hmac-not-for-prod"
-    # Phase 21 – Stripe (Testmodus; Live-Charges nur mit Freigabe-Flag)
+    # Phase 21 Stripe – entfernt Phase 25 (Felder leer lassen / ignoriert)
     stripe_secret_key: str = ""
     stripe_publishable_key: str = ""
     stripe_webhook_secret: str = ""
     stripe_live_charges_allowed: bool = False
+    # Phase 25 – Mollie (Keys nur Env; nie committen)
+    mollie_api_key: str = ""
+    mollie_webhook_secret: str = ""
+    mollie_webhook_url: str = ""
+    mollie_live_charges_allowed: bool = False
+    # AT technische Defaults (keine Rechtsfreigabe)
+    supplier_country: str = "AT"
+    default_currency: str = "EUR"
+    tax_review_status: str = "draft_needs_review"
+    at_legal_aligned_technical: bool = True
     # Phase 21 – SMTP (leer = dry_run)
     smtp_host: str = ""
     smtp_port: int = 587
