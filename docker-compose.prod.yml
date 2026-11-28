@@ -1,0 +1,88 @@
+# DiagNova – Produktions-Stack (World4You / Plesk)
+# - Ports nur auf 127.0.0.1 (Reverse-Proxy)
+# - Postgres ohne Host-Port
+# - Memory-Limits (helix-ki läuft parallel – nicht anfassen)
+# - Secrets ausschließlich über .env (chmod 600), nie in Git
+#
+# Start: docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-diagnova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      POSTGRES_DB: ${POSTGRES_DB:-diagnova}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diagnova} -d ${POSTGRES_DB:-diagnova}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    mem_limit: 256m
+    cpus: 0.5
+    # kein Host-Port – nur Docker-Netz
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-diagnova}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-diagnova}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://diagnova.codekreativ.at}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:?SEED_ADMIN_PASSWORD required}
+      SEED_TECH_EMAIL: ${SEED_TECH_EMAIL:-tech@example.com}
+      SEED_TECH_PASSWORD: ${SEED_TECH_PASSWORD:?SEED_TECH_PASSWORD required}
+      DEMO_MODE: ${DEMO_MODE:-true}
+      UPDATE_SCHEDULER_ENABLED: ${UPDATE_SCHEDULER_ENABLED:-false}
+      UPDATE_HMAC_DEMO_SECRET: ${UPDATE_HMAC_DEMO_SECRET:-}
+      PAYMENT_WEBHOOK_DEMO_SECRET: ${PAYMENT_WEBHOOK_DEMO_SECRET:-}
+      SOFTWARE_UPDATE_HMAC_DEMO_SECRET: ${SOFTWARE_UPDATE_HMAC_DEMO_SECRET:-}
+      SOFTWARE_UPDATE_SIGNING_CERT_CONFIGURED: ${SOFTWARE_UPDATE_SIGNING_CERT_CONFIGURED:-false}
+      SOFTWARE_UPDATE_AUTO_INSTALL_ENABLED: ${SOFTWARE_UPDATE_AUTO_INSTALL_ENABLED:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 40s
+    mem_limit: 384m
+    cpus: 0.75
+    # kein Host-Port – Web-Nginx proxyt intern
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ""
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    mem_limit: 64m
+    cpus: 0.25
+
+volumes:
+  postgres_data:
