@@ -29,6 +29,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { SubscriptionsPage } from './pages/SubscriptionsPage'
 import { CommercePage } from './pages/CommercePage'
 import { OperatorPage } from './pages/OperatorPage'
+import { AutomotiveCatalogPage } from './pages/AutomotiveCatalogPage'
 import { SoftwareUpdatesPage } from './pages/SoftwareUpdatesPage'
 import { SecurityPage } from './pages/SecurityPage'
 import type { ReactNode } from 'react'
@@ -86,6 +87,7 @@ export default function App() {
                 <Route path="commerce" element={<CommercePage />} />
                 <Route path="operator" element={<OperatorPage />} />
                 <Route path="admin" element={<Navigate to="/operator" replace />} />
+                <Route path="automotive-catalog" element={<AutomotiveCatalogPage />} />
                 <Route path="diagnostic-data" element={<DiagnosticDataPage />} />
                 <Route path="data-updates" element={<DataUpdatesPage />} />
                 <Route path="software-updates" element={<SoftwareUpdatesPage />} />

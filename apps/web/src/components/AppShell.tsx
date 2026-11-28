@@ -35,6 +35,7 @@ const SIDEBAR_PRIMARY: NavItem[] = [
   { to: '/vehicles', label: 'Fahrzeugverwaltung', icon: <IconFleet /> },
   { to: '/work-orders', label: 'Werkstatt & Aufträge', icon: <IconWorkshop /> },
   { to: '/diagnostic-data', label: 'Diagnosedatenbank', icon: <IconDatabase /> },
+  { to: '/automotive-catalog', label: 'Quellenkatalog', icon: <IconDatabase /> },
   { to: '/data-updates', label: 'Updates & Datenquellen', icon: <IconUpdates /> },
   { to: '/software-updates', label: 'Software-Updates', icon: <IconUpdates /> },
   { to: '/settings', label: 'Einstellungen', icon: <IconSettings /> },

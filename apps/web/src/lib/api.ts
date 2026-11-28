@@ -2233,6 +2233,35 @@ export const api = {
       message_de?: string
     }>('/health')
   },
+  automotiveCatalogSummary() {
+    return request<Record<string, unknown>>('/api/automotive-catalog/summary')
+  },
+  automotiveCatalogSources(params?: { q?: string; category?: string; limit?: number; offset?: number }) {
+    const sp = new URLSearchParams()
+    if (params?.q) sp.set('q', params.q)
+    if (params?.category) sp.set('category', params.category)
+    if (params?.limit != null) sp.set('limit', String(params.limit))
+    if (params?.offset != null) sp.set('offset', String(params.offset))
+    const qs = sp.toString()
+    return request<{
+      total: number
+      offset: number
+      limit: number
+      items: Record<string, unknown>[]
+    }>(`/api/automotive-catalog/sources${qs ? `?${qs}` : ''}`)
+  },
+  automotiveCatalogProbe(live = true) {
+    return request<Record<string, unknown>>(
+      `/api/automotive-catalog/probe?live=${live ? 'true' : 'false'}`,
+      { method: 'POST', body: '{}' },
+    )
+  },
+  automotiveCatalogImportPreview() {
+    return request<Record<string, unknown>>('/api/automotive-catalog/fixtures/import-preview', {
+      method: 'POST',
+      body: '{}',
+    })
+  },
   commerceInvoices(accountId?: string) {
     const qs = accountId ? `?account_id=${encodeURIComponent(accountId)}` : ''
     return request<{ count: number; invoices: Record<string, unknown>[] }>(`/api/commerce/invoices${qs}`)
