@@ -7,6 +7,8 @@ import { BrandsPage } from './pages/BrandsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { DiagnosticsPage } from './pages/DiagnosticsPage'
 import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
+import { InviteAcceptPage } from './pages/InviteAcceptPage'
 import { CustomersPage } from './pages/CustomersPage'
 import { DataUpdatesPage } from './pages/DataUpdatesPage'
 import { DiagnosticDataPage } from './pages/DiagnosticDataPage'
@@ -54,6 +56,8 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/invite" element={<InviteAcceptPage />} />
               <Route
                 path="/"
                 element={

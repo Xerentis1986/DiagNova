@@ -52,9 +52,14 @@ app.include_router(api_router)
 @app.get("/health")
 def health() -> dict:
     insecure = is_insecure_default_secret()
+    pilot = bool(getattr(settings, "pilot_mode", True))
+    commercial = bool(getattr(settings, "commercial_go", False))
     return {
         "status": "ok",
         "demo_mode": settings.demo_mode,
+        "pilot_mode": pilot,
+        "commercial_go": commercial,
+        "go_status": "PILOT" if pilot and not commercial else ("GO" if commercial else "NO-GO"),
         "data_source_default": "simulated",
         "version": COMPONENT_VERSIONS["api"],
         "components": COMPONENT_VERSIONS,
@@ -63,12 +68,25 @@ def health() -> dict:
             "headers": True,
             "login_rate_limit": True,
         },
-        "message_de": "API bereit. Fahrzeugdaten im MVP sind simuliert.",
+        "message_de": (
+            "API bereit – PILOT (Demo/Trial). Kein kommerzielles Voll-GO "
+            "(Mollie-Key, SMTP, Rechtsfreigabe, HW fehlen)."
+            if pilot and not commercial
+            else "API bereit. Fahrzeugdaten im MVP sind simuliert."
+        ),
         "prod_ready_hint_de": (
             "Nicht produktionsbereit: Default-JWT-Secret."
             if insecure
-            else "JWT-Secret gesetzt; Freigabe weiterhin an Checkliste Phase 15/16 gebunden."
+            else "JWT-Secret gesetzt; kommerzielles GO weiterhin an Checkliste gebunden."
         ),
+        "customer_signup_de": {
+            "register_ui": "/register",
+            "login_ui": "/login",
+            "invite_ui": "/invite?token=…",
+            "billing_after_login": "/commerce",
+            "operator": "/operator",
+            "api_register": "POST /api/tenants/register",
+        },
     }
 
 

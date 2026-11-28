@@ -164,3 +164,33 @@ def test_hardware_probe_without_connector(client: TestClient, auth_headers: dict
     # Connector meist nicht erreichbar in CI – ehrlicher Fail ok
     assert "message_de" in body
     assert body.get("ok") in {True, False}
+
+
+def test_health_pilot_not_commercial_go(client: TestClient):
+    r = client.get("/health")
+    assert r.status_code == 200
+    body = r.json()
+    assert body.get("pilot_mode") is True
+    assert body.get("commercial_go") is False
+    assert body.get("go_status") == "PILOT"
+    assert body.get("customer_signup_de", {}).get("register_ui") == "/register"
+
+
+def test_tenant_self_register_demo(client: TestClient):
+    email = "pilot.shop@example.com"
+    r = client.post(
+        "/api/tenants/register",
+        json={
+            "workshop_name": "Pilot Werkstatt",
+            "admin_email": email,
+            "admin_full_name": "Pilot Admin",
+            "password": "PilotShop123!",
+            "country": "AT",
+            "plan_code": "pkw_trial",
+            "acknowledge_demo": True,
+        },
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["is_example_data"] is True
+    login = client.post("/api/auth/login", json={"email": email, "password": "PilotShop123!"})
+    assert login.status_code == 200

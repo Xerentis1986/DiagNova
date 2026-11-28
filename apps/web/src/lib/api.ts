@@ -2204,6 +2204,35 @@ export const api = {
   commerceAccounts() {
     return request<{ count: number; accounts: Record<string, unknown>[] }>('/api/commerce/accounts')
   },
+  commerceCreateAccount(body: {
+    customer_type: 'b2b' | 'b2c'
+    contact_name: string
+    billing_email: string
+    country?: string
+    company_name?: string
+    vat_id?: string
+    street?: string
+    postal_code?: string
+    city?: string
+    preferred_plan_code?: string
+    accept_terms: boolean
+    accept_privacy: boolean
+    ack_withdrawal: boolean
+  }) {
+    return request<Record<string, unknown>>('/api/commerce/accounts', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
+  goStatus() {
+    return request<{
+      go_status?: string
+      pilot_mode?: boolean
+      commercial_go?: boolean
+      customer_signup_de?: Record<string, string>
+      message_de?: string
+    }>('/health')
+  },
   commerceInvoices(accountId?: string) {
     const qs = accountId ? `?account_id=${encodeURIComponent(accountId)}` : ''
     return request<{ count: number; invoices: Record<string, unknown>[] }>(`/api/commerce/invoices${qs}`)

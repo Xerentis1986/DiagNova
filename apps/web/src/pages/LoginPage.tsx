@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { BrandMark } from '../components/BrandMark'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { Button, Field, Input } from '../components/ui'
@@ -50,7 +50,8 @@ export function LoginPage() {
           </div>
           <h1 className="sr-only">DiagNova Anmeldung</h1>
           <div className="dn-banner-sim mb-4 rounded-lg px-3 py-2 text-xs">
-            Demo-Zugang vorkonfiguriert. Alle Diagnosedaten sind <strong>simuliert</strong>.
+            <strong>PILOT</strong> – Demo-Zugang vorkonfiguriert. Diagnosedaten{' '}
+            <strong>simuliert</strong>. Kein kommerzielles Voll-GO.
           </div>
           <form onSubmit={onSubmit} className="space-y-4">
             <Field label="E-Mail">
@@ -86,7 +87,13 @@ export function LoginPage() {
               {busy ? 'Anmelden…' : 'Anmelden'}
             </Button>
           </form>
-          <p className="mt-4 text-xs text-[var(--dn-muted)]">
+          <p className="mt-4 text-center text-sm">
+            Neu?{' '}
+            <Link to="/register" className="text-[var(--dn-accent)] underline">
+              Werkstatt registrieren
+            </Link>
+          </p>
+          <p className="mt-2 text-xs text-[var(--dn-muted)]">
             Seed: admin@example.com / AdminDemo123! · tech@example.com / TechDemo123!
           </p>
         </div>

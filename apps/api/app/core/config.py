@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     seed_tech_password: str = "TechDemo123!"
     app_name: str = "DiagNova API"
     demo_mode: bool = True
+    # Pilot-GO: Demo/Trial nutzbar. Kommerzielles Voll-GO nur explizit + Voraussetzungen.
+    pilot_mode: bool = True
+    commercial_go: bool = False
 
     # Phase 07 – Diagnosedaten-Updates (Standard: Scheduler aus, Intervall täglich)
     update_scheduler_enabled: bool = False
