@@ -1,0 +1,9 @@
+{
+  "component": "web",
+  "version": "0.18.1",
+  "release_notes_de": "Patch: Tuning-UI Feinschliff (Phase 18 Architektur).",
+  "migration_plan": [],
+  "channel": "stable-fixture",
+  "kind": "software",
+  "note_de": "Simuliertes Software-Paket – kein Diagnosedaten-Update."
+}

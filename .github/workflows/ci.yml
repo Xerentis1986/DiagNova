@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api-pytest:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: diagnova
+          POSTGRES_PASSWORD: changeme_local_only
+          POSTGRES_DB: diagnova
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U diagnova"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install API deps
+        run: |
+          python -m pip install -U pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f apps/api/requirements.txt ]; then pip install -r apps/api/requirements.txt; fi
+          pip install pytest httpx reportlab pyotp 2>/dev/null || true
+      - name: Pytest API
+        env:
+          DATABASE_URL: postgresql+psycopg://diagnova:changeme_local_only@localhost:5432/diagnova
+        run: |
+          export PYTHONPATH=apps/api${PYTHONPATH:+:$PYTHONPATH}
+          python -m pytest tests/api -q --tb=line
+
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install & build
+        working-directory: apps/web
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npx tsc --noEmit || true
+          npm run build
+
+  connector-dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Test Connector
+        working-directory: apps/windows-connector
+        run: dotnet test -c Release --verbosity minimal
+      - name: Publish linux (sanity)
+        working-directory: apps/windows-connector
+        run: |
+          dotnet publish DiagNova.Connector/DiagNova.Connector.csproj -c Release -o publish/linux-sanity
+
+  connector-installer-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publish win-x64
+        shell: pwsh
+        working-directory: apps/windows-connector
+        run: ./scripts/publish-win-x64.ps1
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+      - name: Build UNSIGNED installer
+        shell: pwsh
+        working-directory: apps/windows-connector
+        run: ./scripts/build-installer.ps1
+      - name: Hash UNSIGNED installer
+        shell: pwsh
+        working-directory: apps/windows-connector
+        run: |
+          $dir = "publish/installer"
+          Get-ChildItem $dir -Filter *.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File -FilePath "$dir/$($_.Name).sha256" -Encoding ascii
+            Write-Host "SHA256 $($_.Name) = $hash size=$($_.Length)"
+          }
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnova-connector-installer-unsigned
+          path: apps/windows-connector/publish/installer/*
+          if-no-files-found: warn

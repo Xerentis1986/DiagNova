@@ -1,0 +1,11 @@
+{
+  "schema_version": "wrong.schema",
+  "dataset_version_label": "phase07-broken",
+  "source_key": "diagnova-structural",
+  "license_name": "DiagNova structural",
+  "dtcs": [
+    {
+      "code": "INVALID"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# DiagNova Connector UNSIGNED Inno Setup – Phase 24 evidence
+# Built by GitHub Actions CI run 46088694592 (Phase 23 tip / reused verified artifact)
+# Marking: UNSIGNED – no code signing (BLK-CERT)
+# Source run: https://github.com/Xerentis1986/DiagNova/actions/runs/46088694592
+# Artifact name: diagnova-connector-installer-unsigned
+# Local copy (agent): /opt/cursor/artifacts/DiagNovaConnectorSetup-0.23.0-unsigned.exe
+
+b6c4bcb53938ca4f3d2e6c409f2633225a7df41a2296ca6887d957148024f0a9  DiagNovaConnectorSetup-0.23.0-unsigned.exe
+# size_bytes=32294999
+# version=0.23.0
+# signing=UNSIGNED
