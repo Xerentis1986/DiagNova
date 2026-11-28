@@ -6,7 +6,7 @@ set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/diagnova}"
 REPO_URL="${REPO_URL:-https://github.com/Xerentis1986/DiagNova.git}"
-BRANCH="${BRANCH:-cursor/diagnova-phase-16-deploy-8876}"
+BRANCH="${BRANCH:-cursor/diagnova-live-tip-8876}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 BACKUP_DIR="${BACKUP_DIR:-/var/backups/diagnova}"
 
@@ -36,6 +36,26 @@ fi
 if [[ "$(stat -c '%a' .env 2>/dev/null || echo '?')" != "600" ]]; then
   echo "WARNUNG: .env sollte chmod 600 haben (aktuell: $(stat -c '%a' .env 2>/dev/null || echo unbekannt))"
 fi
+
+# Branding-Gate – OEM-Logos + Wordmark-only dürfen bei Redeploys nicht verloren gehen
+if [[ ! -d apps/web/public/oem-logos/logos ]]; then
+  echo "FEHLER Branding-Gate: apps/web/public/oem-logos/logos fehlt – OEM-Markenlogos müssen im Deploy-Branch sein."
+  exit 1
+fi
+OEM_COUNT="$(find apps/web/public/oem-logos/logos -type f | wc -l | tr -d ' ')"
+if [[ "${OEM_COUNT}" -lt 30 ]]; then
+  echo "FEHLER Branding-Gate: zu wenige OEM-Logo-Dateien (${OEM_COUNT})."
+  exit 1
+fi
+if ! grep -qE 'lockup = nur Wordmark|kein Symbol neben dem Logo' apps/web/src/components/BrandMark.tsx; then
+  echo "FEHLER Branding-Gate: BrandMark-Lockup ist nicht als Wordmark-only markiert."
+  exit 1
+fi
+if grep -n 'variant="symbol"' apps/web/src/pages/LoginPage.tsx apps/web/src/components/AppShell.tsx 2>/dev/null | grep -q .; then
+  echo "FEHLER Branding-Gate: Header/Login nutzt noch BrandMark variant=symbol."
+  exit 1
+fi
+echo "Branding-Gate OK (OEM-Logos=${OEM_COUNT}, Wordmark-only Header/Login)."
 
 # Optional: DB-Backup vor Rebuild (wenn Stack schon läuft)
 if docker compose -f "${COMPOSE_FILE}" --env-file .env ps --status running 2>/dev/null | grep -q postgres; then
