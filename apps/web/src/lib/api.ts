@@ -1395,6 +1395,57 @@ export const api = {
       message_de: string
     }>('/api/connector/bridge-status')
   },
+  connectorSetupGuide() {
+    return request<{
+      title_de: string
+      legal_notice_de: string
+      signing: string
+      installer: {
+        filename: string
+        version: string
+        sha256: string
+        size_bytes_expected: number
+        download_path: string
+        signing: string
+        available: boolean
+        size_bytes_on_disk?: number | null
+        operator_de?: string
+      }
+      install_steps_de: string[]
+      pairing_steps_de: string[]
+      live_checklist: { id: string; title_de: string; hint_de: string }[]
+      adapters: { id: string; label_de: string; notes_de: string }[]
+      obd_basics_de: string[]
+      ui_separation_de: string
+      docs_ref: string
+    }>('/api/connector/setup-guide')
+  },
+  connectorLiveAssistant(mode: 'demo' | 'live' = 'live') {
+    return request<{
+      mode: string
+      connector: { reachable: boolean; error_de?: string; base_url?: string }
+      connection: ConnectionStatus
+      hardware_probe_ok: boolean
+      steps: {
+        id: string
+        title_de: string
+        hint_de: string
+        auto_ok: boolean | null
+        status_de: string
+      }[]
+      legal_notice_de: string
+      message_de: string
+      installer: {
+        filename: string
+        version: string
+        sha256: string
+        download_path: string
+        signing: string
+        available: boolean
+        operator_de?: string
+      }
+    }>(`/api/connector/live-assistant?mode=${mode}`)
+  },
   dtcs(vehicleId: string, mode: 'demo' | 'live' = 'demo') {
     return request<DtcEntry[]>(`/api/diagnostics/${vehicleId}/dtcs?mode=${mode}`)
   },

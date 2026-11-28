@@ -11,15 +11,23 @@ Software-Updates (API / Web / Connector) sind **getrennt** von Diagnosedaten-Upd
 - Loopback `http://127.0.0.1:8765` – keine offenen Netzwerk-Ports
 - Keine laufende Diagnose, Service- oder Flash-/Codieroperation
 
+## Kunden-UI (empfohlen)
+
+- Route: `/connector` – Download, Install-/Pairing-Schritte, LIVE-Assistent.
+- UNSIGNED Setup: `/downloads/DiagNovaConnectorSetup-0.23.0-unsigned.exe` (+ SHA in `INSTALLER_SHA256SUMS.txt`).
+- API: `GET /api/connector/setup-guide`, `GET /api/connector/live-assistant`.
+- Betreiber legt CI-Artefakt `diagnova-connector-installer-unsigned` in `apps/web/public/downloads/` bzw. auf dem Server ab.
+
 ## Installation (dokumentiert)
 
-1. Release-Paket nur aus vertrauenswürdigem Kanal laden (Admin-UI `/software-updates`).
-2. SHA-256 und Signatur gegen die Admin-Anzeige prüfen; manipulierte Pakete ablehnen.
+1. Release-Paket nur aus vertrauenswürdigem Kanal laden (Kunden-UI `/connector` oder Admin `/software-updates`).
+2. SHA-256 und Signatur gegen die Anzeige prüfen; manipulierte Pakete ablehnen. UNSIGNED = SmartScreen-Warnung erwartet.
 3. Ohne gültiges Signaturzertifikat: **kein** produktives Auto-Update – nur manuelle Freigabe in der Demo.
 4. Diagnose/Service/Flash beenden (Busy-Gate).
 5. Archiv entpacken bzw. Installer ausführen (Benutzerrechte lokal).
 6. Connector starten; prüfen: `GET /health`, `GET /version`, `GET /updates/status`.
 7. Browser erneut pairen (`POST /pair`), Origin-Allowlist beachten.
+8. LIVE-Modus in der Diagnose – **kein** DEMO-Fallback bei Connector-Fehlern.
 
 ## Deinstallation
 

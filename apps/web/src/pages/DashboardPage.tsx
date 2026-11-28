@@ -26,6 +26,9 @@ export function DashboardPage() {
             <Link to="/">
               <Button variant="secondary">Marke wählen</Button>
             </Link>
+            <Link to="/connector">
+              <Button variant="secondary">Connector & LIVE</Button>
+            </Link>
             <Link to="/diagnostics">
               <Button variant="primary">Diagnose starten</Button>
             </Link>

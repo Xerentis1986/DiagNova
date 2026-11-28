@@ -425,6 +425,11 @@ export function OperatorPage() {
             CDP+ / OBD-DIAG / Vgate iCar Pro 2S – nur dokumentierte Pfade, keine erfundenen Protokolle,
             keine Live-Charges.
           </p>
+          <p className="mt-3 rounded-md border border-[var(--dn-border)] bg-[var(--dn-surface-inset)] p-3 text-xs text-[var(--dn-muted)]">
+            Kunden-UI „Connector &amp; LIVE“ erwartet die UNSIGNED EXE unter{' '}
+            <code className="font-mono">/downloads/DiagNovaConnectorSetup-0.23.0-unsigned.exe</code>{' '}
+            (CI-Artefakt). Keine OEM-Raubkopien. Diagnose-Hilfe bleibt im Kunden-Frontend, nicht hier.
+          </p>
         </Panel>
       )}
 

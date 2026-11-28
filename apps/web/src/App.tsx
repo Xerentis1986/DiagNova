@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './lib/auth'
 import { ThemeProvider } from './lib/theme'
 import { BrandsPage } from './pages/BrandsPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { ConnectorLivePage } from './pages/ConnectorLivePage'
 import { DiagnosticsPage } from './pages/DiagnosticsPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -77,6 +78,7 @@ export default function App() {
                 <Route path="vehicle-record" element={<VehicleRecordPage />} />
                 <Route path="vehicle-record/:vehicleId" element={<VehicleRecordPage />} />
                 <Route path="diagnostics" element={<DiagnosticsPage />} />
+                <Route path="connector" element={<ConnectorLivePage />} />
                 <Route path="reports" element={<ReportsPage />} />
                 <Route path="ecu" element={<EcuPage />} />
                 <Route path="service" element={<ServicePage />} />
