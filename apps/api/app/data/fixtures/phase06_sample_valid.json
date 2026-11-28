@@ -1,0 +1,57 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "import-demo-06-a",
+  "source_key": "diagnova-structural",
+  "manufacturers": [
+    {
+      "slug": "vw",
+      "name": "VW",
+      "data_scope": "generic",
+      "notes_de": "Struktureller Eintrag – keine OEM-Diagnosedaten."
+    }
+  ],
+  "models": [
+    {
+      "manufacturer_slug": "vw",
+      "code": "golf",
+      "name": "Golf",
+      "year_from": 2013,
+      "year_to": 2020,
+      "data_scope": "generic"
+    }
+  ],
+  "variants": [
+    {
+      "manufacturer_slug": "vw",
+      "model_code": "golf",
+      "code": "golf-vii-14tsi",
+      "name": "Golf VII 1.4 TSI",
+      "year_from": 2013,
+      "year_to": 2017,
+      "engine": "1.4 TSI",
+      "data_scope": "generic"
+    }
+  ],
+  "ecus": [],
+  "dtcs": [
+    {
+      "code": "P0500",
+      "description_de": null,
+      "description_status": "unknown",
+      "data_scope": "generic",
+      "notes_de": "Nur Code – keine erfundene Beschreibung."
+    }
+  ],
+  "pids": [],
+  "units": [],
+  "service_procedures": [
+    {
+      "code": "oil_reset_placeholder",
+      "name_de": "Öl-Service-Reset (Platzhalter)",
+      "prerequisites": ["vehicle_confirmed", "adapter_connected", "explicit_write_approval"],
+      "data_scope": "generic",
+      "enabled": false,
+      "notes_de": "Nur Gerüst – keine OEM-Schritte. enabled bleibt false."
+    }
+  ]
+}

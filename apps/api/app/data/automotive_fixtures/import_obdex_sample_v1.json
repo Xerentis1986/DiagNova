@@ -1,0 +1,1547 @@
+{
+  "schema_version": "diagnova.diagnostic-import.v1",
+  "dataset_version_label": "automotive-catalog-obdex-sample-v1",
+  "source_key": "obdex-cc0",
+  "dtcs": [
+    {
+      "code": "B0001",
+      "description_de": "Fahrer-Frontairbag Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0002",
+      "description_de": "Fahrer-Frontairbag Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0003",
+      "description_de": "Fahrer-Frontairbag Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0004",
+      "description_de": "Fahrer-Kniepolster (Knieairbag) Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0005",
+      "description_de": "Zusammenschiebbare Lenksäule Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0006",
+      "description_de": "Fahrer-Frontairbag Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0007",
+      "description_de": "Fahrer-Frontairbag Auslösekreis Kurzschluss nach Plus",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0010",
+      "description_de": "Beifahrer-Frontairbag Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0011",
+      "description_de": "Beifahrer-Frontairbag Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0012",
+      "description_de": "Beifahrer-Frontairbag Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0013",
+      "description_de": "Beifahrer-Kniepolster (Knieairbag) Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0014",
+      "description_de": "Fahrer-Knieairbag Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0015",
+      "description_de": "Beifahrer-Knieairbag Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0016",
+      "description_de": "Beifahrer-Frontairbag Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0017",
+      "description_de": "Beifahrer-Frontairbag Auslösekreis Kurzschluss nach Plus",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0018",
+      "description_de": "Mittlerer Frontairbag Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0019",
+      "description_de": "Mittlerer Frontairbag Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B001A",
+      "description_de": "Mittlerer Frontairbag Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0020",
+      "description_de": "Seitenairbag links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0021",
+      "description_de": "Kopfairbag links Auslösesteuerung 1",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0022",
+      "description_de": "Kopfairbag links Auslösesteuerung 2",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0023",
+      "description_de": "Seitenairbag links Stufe 1 Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0024",
+      "description_de": "Seitenairbag rechts Auslösekreis",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0025",
+      "description_de": "Seitenairbag links Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0026",
+      "description_de": "Seitenairbag links Stufe 2 Auslösekreis unterbrochen",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0028",
+      "description_de": "Seitenairbag rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0029",
+      "description_de": "Kopfairbag rechts Auslösesteuerung 1",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B002A",
+      "description_de": "Kopfairbag rechts Auslösesteuerung 2",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0030",
+      "description_de": "Seitenairbag zweite Sitzreihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0031",
+      "description_de": "Frontairbag zweite Sitzreihe links Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0032",
+      "description_de": "Frontairbag zweite Sitzreihe links Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0033",
+      "description_de": "Frontairbag zweite Sitzreihe links Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0034",
+      "description_de": "Seitenairbag rechts Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0036",
+      "description_de": "Seitenairbag rechts Stufe 2 Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0038",
+      "description_de": "Seitenairbag zweite Sitzreihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0039",
+      "description_de": "Frontairbag zweite Sitzreihe rechts Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B003A",
+      "description_de": "Frontairbag zweite Sitzreihe rechts Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B003B",
+      "description_de": "Frontairbag zweite Sitzreihe rechts Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0040",
+      "description_de": "Seitenairbag dritte Sitzreihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0041",
+      "description_de": "Frontairbag dritte Sitzreihe links Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0042",
+      "description_de": "Frontairbag dritte Sitzreihe links Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0043",
+      "description_de": "Frontairbag dritte Sitzreihe links Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0046",
+      "description_de": "Kopfairbag links Auslösekreis unterbrochen",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0047",
+      "description_de": "Kopfairbag links Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0048",
+      "description_de": "Seitenairbag dritte Sitzreihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0049",
+      "description_de": "Frontairbag dritte Sitzreihe rechts Stufe 1 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B004A",
+      "description_de": "Frontairbag dritte Sitzreihe rechts Stufe 2 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B004B",
+      "description_de": "Frontairbag dritte Sitzreihe rechts Stufe 3 Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0050",
+      "description_de": "Gurtsensor Fahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0051",
+      "description_de": "Gurtsensor erste Sitzreihe Mitte",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0052",
+      "description_de": "Gurtsensor Beifahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0053",
+      "description_de": "Gurtsensor zweite Sitzreihe links",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0054",
+      "description_de": "Gurtsensor zweite Sitzreihe Mitte",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0055",
+      "description_de": "Gurtsensor zweite Sitzreihe rechts",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0056",
+      "description_de": "Gurtsensor dritte Sitzreihe links",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0057",
+      "description_de": "Gurtsensor dritte Sitzreihe Mitte",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0058",
+      "description_de": "Gurtsensor dritte Sitzreihe rechts",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0060",
+      "description_de": "Gurtkraftsensor Fahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0061",
+      "description_de": "Gurtkraftsensor Beifahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0062",
+      "description_de": "Knieairbag Auslösekreis Kurzschluss nach Masse",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0064",
+      "description_de": "Gurtstraffer Fahrer Zündkreis Widerstand zu niedrig",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0070",
+      "description_de": "Fahrer-Gurtstraffer A Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0071",
+      "description_de": "Gurtstraffer erste Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0072",
+      "description_de": "Beifahrer-Gurtstraffer A Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0073",
+      "description_de": "Gurtstraffer zweite Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0074",
+      "description_de": "Gurtstraffer zweite Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0075",
+      "description_de": "Gurtstraffer zweite Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0076",
+      "description_de": "Gurtstraffer dritte Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0077",
+      "description_de": "Gurtstraffer dritte Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0078",
+      "description_de": "Gurtstraffer dritte Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0079",
+      "description_de": "Fahrer-Gurtstraffer B Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007A",
+      "description_de": "Beifahrer-Gurtstraffer B Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007B",
+      "description_de": "Gurtstraffer B zweite Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007C",
+      "description_de": "Gurtstraffer B zweite Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007D",
+      "description_de": "Gurtstraffer B zweite Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007E",
+      "description_de": "Fahrer-Gurtstraffer C Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B007F",
+      "description_de": "Beifahrer-Gurtstraffer C Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0080",
+      "description_de": "Fahrer-Gurtkraftbegrenzer Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0081",
+      "description_de": "Gurtkraftbegrenzer erste Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0082",
+      "description_de": "Beifahrer-Gurtkraftbegrenzer Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0083",
+      "description_de": "Gurtkraftbegrenzer zweite Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0084",
+      "description_de": "Gurtkraftbegrenzer zweite Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0085",
+      "description_de": "Gurtkraftbegrenzer zweite Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0086",
+      "description_de": "Gurtkraftbegrenzer dritte Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0087",
+      "description_de": "Gurtkraftbegrenzer dritte Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0088",
+      "description_de": "Gurtkraftbegrenzer dritte Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0090",
+      "description_de": "Crashsensor vorne links",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0091",
+      "description_de": "Seitencrashsensor links 1",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0092",
+      "description_de": "Seitencrashsensor links 2",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0093",
+      "description_de": "Seitencrashsensor links 3",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0094",
+      "description_de": "Crashsensor vorne Mitte",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0095",
+      "description_de": "Crashsensor vorne rechts",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0096",
+      "description_de": "Seitencrashsensor rechts 1",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0097",
+      "description_de": "Seitencrashsensor rechts 2",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0098",
+      "description_de": "Seitencrashsensor rechts 3",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0099",
+      "description_de": "Überschlagsensor",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009A",
+      "description_de": "Seitencrashsensor links 4",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009B",
+      "description_de": "Seitencrashsensor links 5",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009C",
+      "description_de": "Seitencrashsensor links 6",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009D",
+      "description_de": "Seitencrashsensor rechts 4",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009E",
+      "description_de": "Seitencrashsensor rechts 5",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B009F",
+      "description_de": "Seitencrashsensor rechts 6",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00A0",
+      "description_de": "Insassenklassifizierungssystem",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00A1",
+      "description_de": "Insassenpositionssystem",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B0",
+      "description_de": "Fahrersitz Insassenklassifizierungssensor A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B1",
+      "description_de": "Fahrersitz Insassenklassifizierungssensor B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B2",
+      "description_de": "Fahrersitz Insassenklassifizierungssensor C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B3",
+      "description_de": "Fahrersitz Insassenklassifizierungssensor D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B4",
+      "description_de": "Fahrersitz Insassenklassifizierungssensor E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B5",
+      "description_de": "Fahrersitz-Schienenpositionssensor (Rückhaltesystem)",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B6",
+      "description_de": "Fahrersitz-Lehnenpositionssensor (Rückhaltesystem)",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B7",
+      "description_de": "Fahrersitz Insassenpositionssensor A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B8",
+      "description_de": "Fahrersitz Insassenpositionssensor B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00B9",
+      "description_de": "Fahrersitz Insassenpositionssensor C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00BA",
+      "description_de": "Fahrersitz Insassenpositionssensor D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00BB",
+      "description_de": "Fahrersitz Insassenpositionssensor E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C0",
+      "description_de": "Beifahrersitz Insassenklassifizierungssensor A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C1",
+      "description_de": "Beifahrersitz Insassenklassifizierungssensor B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C2",
+      "description_de": "Beifahrersitz Insassenklassifizierungssensor C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C3",
+      "description_de": "Beifahrersitz Insassenklassifizierungssensor D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C4",
+      "description_de": "Beifahrersitz Insassenklassifizierungssensor E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C5",
+      "description_de": "Beifahrersitz-Schienenpositionssensor (Rückhaltesystem)",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C6",
+      "description_de": "Beifahrersitz-Lehnenpositionssensor (Rückhaltesystem)",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C7",
+      "description_de": "Beifahrersitz Insassenpositionssensor A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C8",
+      "description_de": "Beifahrersitz Insassenpositionssensor B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00C9",
+      "description_de": "Beifahrersitz Insassenpositionssensor C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00CA",
+      "description_de": "Beifahrersitz Insassenpositionssensor D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00CB",
+      "description_de": "Beifahrersitz Insassenpositionssensor E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D0",
+      "description_de": "Gurtwarnleuchte Fahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D1",
+      "description_de": "Gurtwarnleuchte Beifahrer",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D2",
+      "description_de": "Rückhaltesystem-Störungsanzeige 1",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D3",
+      "description_de": "Rückhaltesystem-Störungsanzeige 2",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D4",
+      "description_de": "Rückhaltesystem-Störungsanzeige akustisch",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00D5",
+      "description_de": "Anzeige Beifahrer-Rückhaltesystem deaktiviert",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00DF",
+      "description_de": "Abschaltschalter Beifahrer-Rückhaltesystem",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E0",
+      "description_de": "Gurtstraffer B dritte Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E1",
+      "description_de": "Gurtstraffer B dritte Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E2",
+      "description_de": "Gurtstraffer B dritte Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E3",
+      "description_de": "Gurtstraffer C zweite Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E4",
+      "description_de": "Gurtstraffer C zweite Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E5",
+      "description_de": "Gurtstraffer C zweite Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E6",
+      "description_de": "Gurtstraffer C dritte Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E7",
+      "description_de": "Gurtstraffer C dritte Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00E8",
+      "description_de": "Gurtstraffer C dritte Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F0",
+      "description_de": "Aufblasbarer Sicherheitsgurt Fahrer Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F1",
+      "description_de": "Aufblasbarer Sicherheitsgurt Beifahrer Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F2",
+      "description_de": "Aufblasbarer Sicherheitsgurt zweite Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F3",
+      "description_de": "Aufblasbarer Sicherheitsgurt zweite Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F4",
+      "description_de": "Aufblasbarer Sicherheitsgurt zweite Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F5",
+      "description_de": "Aufblasbarer Sicherheitsgurt dritte Reihe links Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F6",
+      "description_de": "Aufblasbarer Sicherheitsgurt dritte Reihe Mitte Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B00F7",
+      "description_de": "Aufblasbarer Sicherheitsgurt dritte Reihe rechts Auslösesteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0100",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0101",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0102",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator A Ansteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0103",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator B Ansteuerung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0104",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator A Steuerrelais",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0105",
+      "description_de": "Sensorreinigung Luftgebläse-Aktuator B Steuerrelais",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0106",
+      "description_de": "LIDAR-Wascher-Aktuator A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0107",
+      "description_de": "LIDAR-Wascher-Aktuator B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0108",
+      "description_de": "LIDAR-Wascher-Aktuator C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0109",
+      "description_de": "LIDAR-Wascher-Aktuator D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010A",
+      "description_de": "Kamera-Wascher-Aktuator A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010B",
+      "description_de": "Kamera-Wascher-Aktuator B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010C",
+      "description_de": "Kamera-Wascher-Aktuator C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010D",
+      "description_de": "Kamera-Wascher-Aktuator D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010E",
+      "description_de": "Kamera-Wascher-Aktuator E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B010F",
+      "description_de": "Kamera-Wascher-Aktuator F",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0110",
+      "description_de": "Kamera-Wascher-Aktuator G",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0111",
+      "description_de": "Kamera-Wascher-Aktuator H",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0112",
+      "description_de": "Kamera-Wascher-Aktuator J",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0113",
+      "description_de": "Kamera-Wascher-Aktuator K",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0114",
+      "description_de": "Kamera-Wascher-Aktuator L",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0115",
+      "description_de": "Kamera-Wascher-Aktuator M",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0116",
+      "description_de": "Kamera-Wascher-Aktuator N",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0117",
+      "description_de": "Kamera-Wascher-Aktuator O",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0118",
+      "description_de": "Kamera-Wascher-Aktuator P",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0119",
+      "description_de": "Kamera-Wascher-Aktuator Q",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011A",
+      "description_de": "Kamera-Wascher-Aktuator R",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011B",
+      "description_de": "Kamera-Wascher-Aktuator S",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011C",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011D",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011E",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor C",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B011F",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor D",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0120",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor E",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0121",
+      "description_de": "Flüssigkeitsbehälter Füllstandssensor F",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0122",
+      "description_de": "Fußgänger-Warnlautsprecher A",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0123",
+      "description_de": "Fußgänger-Warnlautsprecher B",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0124",
+      "description_de": "Nachtsichtkamera",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0125",
+      "description_de": "Nachtsicht-Steuergerät",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0126",
+      "description_de": "Fahrerbeobachtungskamera",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0127",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdose „A“ Stromkreis/Unterbrechung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0128",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdose „B“ Stromkreis/Unterbrechung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B0129",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdose „C“ Stromkreis/Unterbrechung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012A",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdose „D“ Stromkreis/Unterbrechung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012B",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdose „E“ Stromkreis/Unterbrechung",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012C",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdosen-Steuermodul „A“",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012D",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdosen-Steuermodul „B“",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012E",
+      "description_de": "DC/AC-Wandler A Hochvolt-Steckdosen-Steuermodul „C“",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    },
+    {
+      "code": "B012F",
+      "description_de": "A/V-Sensor-Waschflüssigkeit A Steuerkreis",
+      "description_status": "known",
+      "data_scope": "generic",
+      "notes_de": "Import OBDex Sample (CC0-1.0); nicht am Fahrzeug validiert."
+    }
+  ],
+  "pids": [
+    {
+      "pid_hex": "04",
+      "name": "engine_load",
+      "description_de": "Berechnete Motorlast",
+      "unit": "%",
+      "bytes_needed": 1,
+      "conversion_formula": "100*A/255",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "05",
+      "name": "coolant_temp",
+      "description_de": "Kühlmitteltemperatur",
+      "unit": "°C",
+      "bytes_needed": 1,
+      "conversion_formula": "A-40",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "0C",
+      "name": "rpm",
+      "description_de": "Motordrehzahl",
+      "unit": "1/min",
+      "bytes_needed": 2,
+      "conversion_formula": "(256*A+B)/4",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "0D",
+      "name": "speed",
+      "description_de": "Fahrzeuggeschwindigkeit",
+      "unit": "km/h",
+      "bytes_needed": 1,
+      "conversion_formula": "A",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "0F",
+      "name": "intake_temp",
+      "description_de": "Ansauglufttemperatur",
+      "unit": "°C",
+      "bytes_needed": 1,
+      "conversion_formula": "A-40",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "10",
+      "name": "maf",
+      "description_de": "Luftmassenstrom",
+      "unit": "g/s",
+      "bytes_needed": 2,
+      "conversion_formula": "(256*A+B)/100",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "11",
+      "name": "throttle",
+      "description_de": "Drosselklappenposition",
+      "unit": "%",
+      "bytes_needed": 1,
+      "conversion_formula": "100*A/255",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "1F",
+      "name": "run_time",
+      "description_de": "Laufzeit seit Motorstart",
+      "unit": "s",
+      "bytes_needed": 2,
+      "conversion_formula": "256*A+B",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "2F",
+      "name": "fuel_level",
+      "description_de": "Kraftstofffüllstand",
+      "unit": "%",
+      "bytes_needed": 1,
+      "conversion_formula": "100*A/255",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "33",
+      "name": "baro",
+      "description_de": "Umgebungsdruck",
+      "unit": "kPa",
+      "bytes_needed": 1,
+      "conversion_formula": "A",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "42",
+      "name": "module_voltage",
+      "description_de": "Steuergerätespannung",
+      "unit": "V",
+      "bytes_needed": 2,
+      "conversion_formula": "(256*A+B)/1000",
+      "data_scope": "generic",
+      "kind": "pid"
+    },
+    {
+      "pid_hex": "46",
+      "name": "ambient_temp",
+      "description_de": "Außentemperatur",
+      "unit": "°C",
+      "bytes_needed": 1,
+      "conversion_formula": "A-40",
+      "data_scope": "generic",
+      "kind": "pid"
+    }
+  ],
+  "service_procedures": [
+    {
+      "code": "OBD_READ_DTC",
+      "name_de": "OBD Fehlercodes lesen (Mode 03)",
+      "enabled": true,
+      "data_scope": "generic",
+      "prerequisites": [],
+      "notes_de": "Nur Lesen; Clear/Flash gesperrt bis Freigabe."
+    },
+    {
+      "code": "OBD_LIVE_PID",
+      "name_de": "Live-Daten Mode 01 PIDs",
+      "enabled": true,
+      "data_scope": "generic",
+      "prerequisites": [],
+      "notes_de": "write_enabled=0"
+    }
+  ]
+}

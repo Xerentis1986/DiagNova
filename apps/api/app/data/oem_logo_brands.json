@@ -1,0 +1,344 @@
+[
+  {
+    "id": "volkswagen",
+    "name": "Volkswagen",
+    "sourceBrand": "Volkswagen",
+    "originalLogoIncluded": true,
+    "logo": "logos/volkswagen.svg",
+    "tileLight": "tiles/light/volkswagen.png",
+    "tileDark": "tiles/dark/volkswagen.png"
+  },
+  {
+    "id": "audi",
+    "name": "Audi",
+    "sourceBrand": "Audi",
+    "originalLogoIncluded": true,
+    "logo": "logos/audi.svg",
+    "tileLight": "tiles/light/audi.png",
+    "tileDark": "tiles/dark/audi.png"
+  },
+  {
+    "id": "skoda",
+    "name": "Škoda",
+    "sourceBrand": "Skoda",
+    "originalLogoIncluded": true,
+    "logo": "logos/skoda.svg",
+    "tileLight": "tiles/light/skoda.png",
+    "tileDark": "tiles/dark/skoda.png"
+  },
+  {
+    "id": "seat",
+    "name": "SEAT",
+    "sourceBrand": "Seat",
+    "originalLogoIncluded": true,
+    "logo": "logos/seat.svg",
+    "tileLight": "tiles/light/seat.png",
+    "tileDark": "tiles/dark/seat.png"
+  },
+  {
+    "id": "cupra",
+    "name": "CUPRA",
+    "sourceBrand": "Cupra",
+    "originalLogoIncluded": true,
+    "logo": "logos/cupra.svg",
+    "tileLight": "tiles/light/cupra.png",
+    "tileDark": "tiles/dark/cupra.png"
+  },
+  {
+    "id": "bmw",
+    "name": "BMW",
+    "sourceBrand": "BMW",
+    "originalLogoIncluded": true,
+    "logo": "logos/bmw.svg",
+    "tileLight": "tiles/light/bmw.png",
+    "tileDark": "tiles/dark/bmw.png"
+  },
+  {
+    "id": "mini",
+    "name": "MINI",
+    "sourceBrand": "Mini",
+    "originalLogoIncluded": true,
+    "logo": "logos/mini.svg",
+    "tileLight": "tiles/light/mini.png",
+    "tileDark": "tiles/dark/mini.png"
+  },
+  {
+    "id": "mercedes-benz",
+    "name": "Mercedes-Benz",
+    "sourceBrand": "Mercedes-Benz",
+    "originalLogoIncluded": true,
+    "logo": "logos/mercedes-benz.svg",
+    "tileLight": "tiles/light/mercedes-benz.png",
+    "tileDark": "tiles/dark/mercedes-benz.png"
+  },
+  {
+    "id": "smart",
+    "name": "Smart",
+    "sourceBrand": "Smart",
+    "originalLogoIncluded": true,
+    "logo": "logos/smart.png",
+    "tileLight": "tiles/light/smart.png",
+    "tileDark": "tiles/dark/smart.png"
+  },
+  {
+    "id": "opel",
+    "name": "Opel",
+    "sourceBrand": "Opel",
+    "originalLogoIncluded": true,
+    "logo": "logos/opel.svg",
+    "tileLight": "tiles/light/opel.png",
+    "tileDark": "tiles/dark/opel.png"
+  },
+  {
+    "id": "ford",
+    "name": "Ford",
+    "sourceBrand": "Ford",
+    "originalLogoIncluded": true,
+    "logo": "logos/ford.png",
+    "tileLight": "tiles/light/ford.png",
+    "tileDark": "tiles/dark/ford.png"
+  },
+  {
+    "id": "renault",
+    "name": "Renault",
+    "sourceBrand": "Renault",
+    "originalLogoIncluded": true,
+    "logo": "logos/renault.svg",
+    "tileLight": "tiles/light/renault.png",
+    "tileDark": "tiles/dark/renault.png"
+  },
+  {
+    "id": "dacia",
+    "name": "Dacia",
+    "sourceBrand": "Dacia",
+    "originalLogoIncluded": true,
+    "logo": "logos/dacia.svg",
+    "tileLight": "tiles/light/dacia.png",
+    "tileDark": "tiles/dark/dacia.png"
+  },
+  {
+    "id": "peugeot",
+    "name": "Peugeot",
+    "sourceBrand": "Peugeot",
+    "originalLogoIncluded": true,
+    "logo": "logos/peugeot.svg",
+    "tileLight": "tiles/light/peugeot.png",
+    "tileDark": "tiles/dark/peugeot.png"
+  },
+  {
+    "id": "citroen",
+    "name": "Citroën",
+    "sourceBrand": "Citroen",
+    "originalLogoIncluded": true,
+    "logo": "logos/citroen.svg",
+    "tileLight": "tiles/light/citroen.png",
+    "tileDark": "tiles/dark/citroen.png"
+  },
+  {
+    "id": "ds-automobiles",
+    "name": "DS Automobiles",
+    "sourceBrand": "DS",
+    "originalLogoIncluded": true,
+    "logo": "logos/ds-automobiles.svg",
+    "tileLight": "tiles/light/ds-automobiles.png",
+    "tileDark": "tiles/dark/ds-automobiles.png"
+  },
+  {
+    "id": "fiat",
+    "name": "Fiat",
+    "sourceBrand": "Fiat",
+    "originalLogoIncluded": true,
+    "logo": "logos/fiat.svg",
+    "tileLight": "tiles/light/fiat.png",
+    "tileDark": "tiles/dark/fiat.png"
+  },
+  {
+    "id": "alfa-romeo",
+    "name": "Alfa Romeo",
+    "sourceBrand": "Alfa Romeo",
+    "originalLogoIncluded": true,
+    "logo": "logos/alfa-romeo.svg",
+    "tileLight": "tiles/light/alfa-romeo.png",
+    "tileDark": "tiles/dark/alfa-romeo.png"
+  },
+  {
+    "id": "jeep",
+    "name": "Jeep",
+    "sourceBrand": "Jeep",
+    "originalLogoIncluded": true,
+    "logo": "logos/jeep.svg",
+    "tileLight": "tiles/light/jeep.png",
+    "tileDark": "tiles/dark/jeep.png"
+  },
+  {
+    "id": "volvo",
+    "name": "Volvo",
+    "sourceBrand": "Volvo",
+    "originalLogoIncluded": true,
+    "logo": "logos/volvo.svg",
+    "tileLight": "tiles/light/volvo.png",
+    "tileDark": "tiles/dark/volvo.png"
+  },
+  {
+    "id": "polestar",
+    "name": "Polestar",
+    "sourceBrand": "Polestar",
+    "originalLogoIncluded": true,
+    "logo": "logos/polestar.png",
+    "tileLight": "tiles/light/polestar.png",
+    "tileDark": "tiles/dark/polestar.png"
+  },
+  {
+    "id": "porsche",
+    "name": "Porsche",
+    "sourceBrand": "Porsche",
+    "originalLogoIncluded": true,
+    "logo": "logos/porsche.svg",
+    "tileLight": "tiles/light/porsche.png",
+    "tileDark": "tiles/dark/porsche.png"
+  },
+  {
+    "id": "land-rover",
+    "name": "Land Rover",
+    "sourceBrand": "Land Rover",
+    "originalLogoIncluded": true,
+    "logo": "logos/land-rover.svg",
+    "tileLight": "tiles/light/land-rover.png",
+    "tileDark": "tiles/dark/land-rover.png"
+  },
+  {
+    "id": "jaguar",
+    "name": "Jaguar",
+    "sourceBrand": "Jaguar",
+    "originalLogoIncluded": true,
+    "logo": "logos/jaguar.svg",
+    "tileLight": "tiles/light/jaguar.png",
+    "tileDark": "tiles/dark/jaguar.png"
+  },
+  {
+    "id": "toyota",
+    "name": "Toyota",
+    "sourceBrand": "Toyota",
+    "originalLogoIncluded": true,
+    "logo": "logos/toyota.svg",
+    "tileLight": "tiles/light/toyota.png",
+    "tileDark": "tiles/dark/toyota.png"
+  },
+  {
+    "id": "lexus",
+    "name": "Lexus",
+    "sourceBrand": "Lexus",
+    "originalLogoIncluded": true,
+    "logo": "logos/lexus.png",
+    "tileLight": "tiles/light/lexus.png",
+    "tileDark": "tiles/dark/lexus.png"
+  },
+  {
+    "id": "honda",
+    "name": "Honda",
+    "sourceBrand": "Honda",
+    "originalLogoIncluded": true,
+    "logo": "logos/honda.png",
+    "tileLight": "tiles/light/honda.png",
+    "tileDark": "tiles/dark/honda.png"
+  },
+  {
+    "id": "nissan",
+    "name": "Nissan",
+    "sourceBrand": "Nissan",
+    "originalLogoIncluded": true,
+    "logo": "logos/nissan.svg",
+    "tileLight": "tiles/light/nissan.png",
+    "tileDark": "tiles/dark/nissan.png"
+  },
+  {
+    "id": "mazda",
+    "name": "Mazda",
+    "sourceBrand": "Mazda",
+    "originalLogoIncluded": true,
+    "logo": "logos/mazda.svg",
+    "tileLight": "tiles/light/mazda.png",
+    "tileDark": "tiles/dark/mazda.png"
+  },
+  {
+    "id": "mitsubishi",
+    "name": "Mitsubishi",
+    "sourceBrand": "Mitsubishi",
+    "originalLogoIncluded": true,
+    "logo": "logos/mitsubishi.svg",
+    "tileLight": "tiles/light/mitsubishi.png",
+    "tileDark": "tiles/dark/mitsubishi.png"
+  },
+  {
+    "id": "suzuki",
+    "name": "Suzuki",
+    "sourceBrand": "Suzuki",
+    "originalLogoIncluded": true,
+    "logo": "logos/suzuki.svg",
+    "tileLight": "tiles/light/suzuki.png",
+    "tileDark": "tiles/dark/suzuki.png"
+  },
+  {
+    "id": "subaru",
+    "name": "Subaru",
+    "sourceBrand": "Subaru",
+    "originalLogoIncluded": true,
+    "logo": "logos/subaru.png",
+    "tileLight": "tiles/light/subaru.png",
+    "tileDark": "tiles/dark/subaru.png"
+  },
+  {
+    "id": "hyundai",
+    "name": "Hyundai",
+    "sourceBrand": "Hyundai",
+    "originalLogoIncluded": true,
+    "logo": "logos/hyundai.svg",
+    "tileLight": "tiles/light/hyundai.png",
+    "tileDark": "tiles/dark/hyundai.png"
+  },
+  {
+    "id": "kia",
+    "name": "Kia",
+    "sourceBrand": "Kia",
+    "originalLogoIncluded": true,
+    "logo": "logos/kia.svg",
+    "tileLight": "tiles/light/kia.png",
+    "tileDark": "tiles/dark/kia.png"
+  },
+  {
+    "id": "genesis",
+    "name": "Genesis",
+    "sourceBrand": "Genesis",
+    "originalLogoIncluded": true,
+    "logo": "logos/genesis.svg",
+    "tileLight": "tiles/light/genesis.png",
+    "tileDark": "tiles/dark/genesis.png"
+  },
+  {
+    "id": "mg",
+    "name": "MG",
+    "sourceBrand": "MG",
+    "originalLogoIncluded": true,
+    "logo": "logos/mg.png",
+    "tileLight": "tiles/light/mg.png",
+    "tileDark": "tiles/dark/mg.png"
+  },
+  {
+    "id": "byd",
+    "name": "BYD",
+    "sourceBrand": "BYD",
+    "originalLogoIncluded": true,
+    "logo": "logos/byd.svg",
+    "tileLight": "tiles/light/byd.png",
+    "tileDark": "tiles/dark/byd.png"
+  },
+  {
+    "id": "tesla",
+    "name": "Tesla",
+    "sourceBrand": "Tesla",
+    "originalLogoIncluded": true,
+    "logo": "logos/tesla.svg",
+    "tileLight": "tiles/light/tesla.png",
+    "tileDark": "tiles/dark/tesla.png"
+  }
+]
