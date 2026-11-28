@@ -98,7 +98,27 @@ public sealed class ObdDiagAdapterService
                 "Vendor/Product-ID aus Geräte-Manager notieren",
                 "Falls COM: Portname dokumentieren",
                 "Hersteller-API/Lizenz klären bevor Integration"
+            },
+            transport_abstraction = new
+            {
+                interface_name = "IObdDiagTransport",
+                status = "stub_only",
+                implementations = new[] { "none_verified" },
+                note_de =
+                    "Abstraktion vorbereitet; keine Implementierung ohne dokumentiertes Protokoll. Kein ELM-Fake."
             }
         };
     }
+
+    /// <summary>
+    /// Transport-Abstraktion – bewusst ohne Send/Receive bis Protokoll verifiziert.
+    /// </summary>
+    public object TransportStub() => new
+    {
+        name = "IObdDiagTransport",
+        open = false,
+        protocol_documented = false,
+        send_receive = false,
+        message_de = "Stub only – BlockedUndocumented."
+    };
 }

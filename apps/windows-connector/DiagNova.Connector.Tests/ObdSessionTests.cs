@@ -138,7 +138,7 @@ public class ObdSessionTests
 
         await manager.InitObdAsync();
         Assert.True(manager.GetStatus().VehicleConnected);
-        Assert.Equal("simulated", manager.DataSource);
+        Assert.Equal("adapter_fake", manager.DataSource);
 
         await manager.DisconnectAsync();
         Assert.False(manager.GetStatus().AdapterConnected);

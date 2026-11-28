@@ -134,12 +134,13 @@ public sealed class AdapterConnectionManager : IDiagnosticAdapter
 
     public async Task<object> ConnectFakeAsync(CancellationToken cancellationToken = default)
     {
+        // Phase 23: adapter_fake = bewusster Test-Double im Connector (nicht API-Simulator).
         return await ConnectTransportAsync(
             deviceId: "fake:COM99",
             transportKind: "fake",
             portName: "COM99",
             runAtInit: true,
-            dataSource: "simulated",
+            dataSource: "adapter_fake",
             isSimulator: true,
             cancellationToken).ConfigureAwait(false);
     }
@@ -161,7 +162,7 @@ public sealed class AdapterConnectionManager : IDiagnosticAdapter
             transportKind: transportKind,
             portName: portName,
             runAtInit: runAtInit,
-            dataSource: isFake ? "simulated" : "live",
+            dataSource: isFake ? "adapter_fake" : "live",
             isSimulator: isFake,
             cancellationToken).ConfigureAwait(false);
     }

@@ -118,6 +118,20 @@ async def bridge_obd_init(
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
+@router.post("/connector/connect-fake")
+async def bridge_connect_fake(_user: Technician) -> dict:
+    """E2E: Fake-Adapter am Loopback-Connector (kein HW). SSRF-geschützt."""
+    try:
+        status = await connector_bridge.connect_fake_adapter()
+        return {
+            "ok": True,
+            "connector_status": status,
+            "message_de": "Fake-Adapter am Connector angewählt (adapter_fake).",
+        }
+    except ConnectorBridgeError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
 @router.get("/diagnostics/pids")
 def list_pids(_user: CurrentUser) -> dict:
     return {"data_source": "simulated", "pids": simulator.supported_pids()}

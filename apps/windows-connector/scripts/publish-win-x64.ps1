@@ -1,5 +1,6 @@
 # DiagNova Connector – Self-contained Publish (Windows x64)
-# Kein Code-Signing in diesem Skript. Keine Fake-Signaturen.
+# Kein Code-Signing. Keine Fake-Signaturen.
+# Installer: build-installer.ps1 (Inno Setup, UNSIGNED).
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
@@ -17,5 +18,13 @@ dotnet publish DiagNova.CdpProbe\DiagNova.CdpProbe.csproj `
   -p:PublishSingleFile=true `
   -o (Join-Path $root "publish\cdp-probe")
 
-Write-Host "Fertig. Installer/MSI: manuell oder WiX später. Signing: BLK-CERT."
+$verFile = Join-Path $out "INSTALLER_NOTE.txt"
+@"
+DiagNova Connector publish (unsigned).
+Build installer on Windows: scripts\build-installer.ps1 (requires Inno Setup 6).
+Code signing: NOT performed – BLK-CERT. Do not treat as production-signed.
+OEM logos + wordmark without symbol icon must remain.
+"@ | Set-Content -Path $verFile -Encoding UTF8
+
+Write-Host "Fertig. UNSIGNED publish. Installer via build-installer.ps1."
 Get-ChildItem $out | Select-Object Name, Length

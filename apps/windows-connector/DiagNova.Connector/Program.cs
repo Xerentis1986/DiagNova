@@ -14,8 +14,9 @@ using DiagNova.Connector.Updates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Nur Loopback – keine offenen Netzwerk-Endpunkte.
-const string loopbackUrl = "http://127.0.0.1:8765";
+// Nur Loopback – keine offenen Netzwerk-Endpunkte (Override für E2E-Tests).
+var loopbackUrl = Environment.GetEnvironmentVariable("DIAGNOVA_CONNECTOR_URL")
+    ?? "http://127.0.0.1:8765";
 builder.WebHost.UseUrls(loopbackUrl);
 
 builder.Services.AddSingleton<DiagnosticProtocolLog>();
@@ -274,15 +275,38 @@ app.MapPost("/adapters/obd-diag/inventory-probe", async (ObdDiagAdapterService o
     Results.Json(await obd.InventoryProbeAsync(ct)));
 
 app.MapGet("/license/gate", (LicenseGateService gate) => Results.Json(gate.Status()));
+app.MapGet("/license/device", (LicenseGateService gate) => Results.Json(new
+{
+    device_id = gate.DeviceId,
+    note_de = "Geräteidentität für Backend-Lizenzbindung."
+}));
 app.MapPost("/license/gate/apply", async (HttpRequest req, LicenseGateService gate) =>
 {
     using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
     var root = doc.RootElement;
+    if (root.TryGetProperty("payload", out var payloadEl) && root.TryGetProperty("signature", out var sigEl))
+    {
+        return Results.Json(gate.ApplySignedToken(
+            payloadEl.GetString() ?? "",
+            sigEl.GetString() ?? ""));
+    }
     var allowed = root.TryGetProperty("allowed", out var a) && a.GetBoolean();
     var plan = root.TryGetProperty("plan_code", out var p) ? p.GetString() ?? "none" : "none";
     var hours = root.TryGetProperty("offline_hours", out var h) ? h.GetInt32() : 72;
     var msg = root.TryGetProperty("message_de", out var m) ? m.GetString() : null;
     return Results.Json(gate.ApplyServerVerification(allowed, plan, hours, msg));
+});
+app.MapPost("/license/gate/revoke", async (HttpRequest req, LicenseGateService gate) =>
+{
+    string? jti = null;
+    try
+    {
+        using var doc = await System.Text.Json.JsonDocument.ParseAsync(req.Body);
+        if (doc.RootElement.TryGetProperty("jti", out var j))
+            jti = j.GetString();
+    }
+    catch { /* empty body ok */ }
+    return Results.Json(gate.Revoke(jti));
 });
 
 app.MapGet("/status", (AdapterConnectionManager manager) => Results.Json(manager.GetExtendedStatus()));
@@ -338,18 +362,27 @@ app.MapPost("/adapter/connect/com", async (ConnectComRequest body, AdapterConnec
 app.MapPost("/adapter/disconnect", async (AdapterConnectionManager manager, CancellationToken ct) =>
     Results.Json(await manager.DisconnectAsync(ct)));
 
-// —— Phase 04 OBD ——
-app.MapPost("/obd/init", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
+// —— Phase 04/23 OBD – Lizenz-Gate auf allen Diagnose-Endpunkten ——
+static bool IsDemoOrFakePath(AdapterConnectionManager manager)
 {
     var statusJson = System.Text.Json.JsonSerializer.Serialize(manager.GetExtendedStatus());
-    var simPath = statusJson.Contains("simulated", StringComparison.OrdinalIgnoreCase)
-                  || statusJson.Contains("simulator", StringComparison.OrdinalIgnoreCase)
-                  || statusJson.Contains("fake", StringComparison.OrdinalIgnoreCase);
-    if (!gate.IsAllowed() && !simPath)
-    {
-        return Results.Json(new { error = "license_required", license = gate.Status() },
-            statusCode: StatusCodes.Status402PaymentRequired);
-    }
+    return statusJson.Contains("simulated", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("simulator", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("adapter_fake", StringComparison.OrdinalIgnoreCase)
+           || statusJson.Contains("fake:", StringComparison.OrdinalIgnoreCase);
+}
+
+static IResult? LicenseBlock(AdapterConnectionManager manager, LicenseGateService gate)
+{
+    if (gate.IsAllowed() || gate.AllowsDemoPath(IsDemoOrFakePath(manager)))
+        return null;
+    return Results.Json(new { error = "license_required", license = gate.Status() },
+        statusCode: StatusCodes.Status402PaymentRequired);
+}
+
+app.MapPost("/obd/init", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
+{
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.InitObdAsync(ct));
@@ -362,12 +395,7 @@ app.MapPost("/obd/init", async (AdapterConnectionManager manager, LicenseGateSer
 
 app.MapGet("/obd/live", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
-    var json = System.Text.Json.JsonSerializer.Serialize(manager.GetExtendedStatus());
-    var sim = json.Contains("simulated", StringComparison.OrdinalIgnoreCase)
-              || json.Contains("simulator", StringComparison.OrdinalIgnoreCase)
-              || json.Contains("fake", StringComparison.OrdinalIgnoreCase);
-    if (!gate.IsAllowed() && !sim)
-        return Results.Json(new { error = "license_required", license = gate.Status() }, statusCode: StatusCodes.Status402PaymentRequired);
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadLiveAsync(ct));
@@ -378,8 +406,9 @@ app.MapGet("/obd/live", async (AdapterConnectionManager manager, LicenseGateServ
     }
 });
 
-app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadDtcsAsync(ct));
@@ -390,8 +419,9 @@ app.MapGet("/obd/dtcs", async (AdapterConnectionManager manager, CancellationTok
     }
 });
 
-app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadFreezeFrameAsync(ct));
@@ -402,8 +432,9 @@ app.MapGet("/obd/freeze-frame", async (AdapterConnectionManager manager, Cancell
     }
 });
 
-app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadReadinessAsync(ct));
@@ -414,8 +445,9 @@ app.MapGet("/obd/readiness", async (AdapterConnectionManager manager, Cancellati
     }
 });
 
-app.MapGet("/obd/vin", async (AdapterConnectionManager manager, CancellationToken ct) =>
+app.MapGet("/obd/vin", async (AdapterConnectionManager manager, LicenseGateService gate, CancellationToken ct) =>
 {
+    if (LicenseBlock(manager, gate) is { } blocked) return blocked;
     try
     {
         return Results.Json(await manager.ReadVinAsync(ct));

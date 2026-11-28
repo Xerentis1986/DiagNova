@@ -108,7 +108,7 @@ public class AuthAndInventoryTests
         status = manager.GetStatus();
         Assert.True(status.AdapterConnected);
         Assert.False(status.VehicleConnected); // vor OBD-Init
-        Assert.Equal("simulated", manager.DataSource);
+        Assert.Equal("adapter_fake", manager.DataSource);
 
         await manager.InitObdAsync();
         Assert.True(manager.GetStatus().VehicleConnected);

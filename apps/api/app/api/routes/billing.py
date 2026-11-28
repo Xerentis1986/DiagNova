@@ -199,6 +199,25 @@ def licenses_verify(body: LicenseVerifyRequest, user: CurrentUser, db: DbSession
     )
 
 
+class LicenseTokenRequest(BaseModel):
+    device_fingerprint: str = Field(min_length=8, max_length=128)
+    valid_hours: int | None = Field(default=None, ge=1, le=72)
+
+
+@router.post("/licenses/offline-token")
+def licenses_offline_token(body: LicenseTokenRequest, user: CurrentUser, db: DbSession) -> dict:
+    """Phase 23 – signiertes Offline-Token für Connector-Gate."""
+    wid = user.workshop_id
+    if not wid:
+        raise HTTPException(status_code=400, detail="Kein Mandant")
+    return license_management.issue_signed_offline_token(
+        db,
+        workshop_id=wid,
+        device_fingerprint=body.device_fingerprint,
+        valid_hours=body.valid_hours,
+    )
+
+
 @router.get("/email/status")
 def email_status_endpoint(user: CurrentUser) -> dict:
     require_admin_role(user)

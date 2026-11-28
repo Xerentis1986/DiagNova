@@ -192,6 +192,18 @@ export interface AdminDashboard {
   recent_webhooks: Record<string, unknown>[]
   subscriptions: SubscriptionInfo[]
   legal_open_items_de: string[]
+  stripe?: Record<string, unknown> | null
+  customers_count?: number
+  customers_b2b?: number
+  customers_b2c?: number
+  trial_subscriptions?: number
+  mrr_cents?: number
+  arr_cents?: number
+  invoices_open?: number
+  invoices_paid?: number
+  invoices_overdue?: number
+  active_licenses?: number
+  metrics_note_de?: string | null
 }
 
 export interface SecurityThreatNode {

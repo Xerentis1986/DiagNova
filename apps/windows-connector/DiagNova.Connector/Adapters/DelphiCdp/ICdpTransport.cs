@@ -203,6 +203,25 @@ public sealed class FtdiCdpTransport : ICdpTransport
         throw new TimeoutException("Keine CDP-Antwort innerhalb Timeout");
     }
 
+    /// <summary>Reconnect: Close + Open mit gleichem Preferred-Port. Kein Auto-Flash.</summary>
+    public async Task ReconnectAsync(CancellationToken ct = default)
+    {
+        await CloseAsync(ct).ConfigureAwait(false);
+        await OpenAsync(ct).ConfigureAwait(false);
+    }
+
+    public object TransportCapabilities() => new
+    {
+        vcp = true,
+        d2xx_bundled = false,
+        d2xx_optional_note_de = "FTDI D2XX nur bei rechtmäßiger Lizenz/Bindung – nicht gebündelt.",
+        baud = 115200,
+        preferred_port = _preferredPort,
+        opened_port = OpenedPort,
+        reconnect = true,
+        auto_flash = false
+    };
+
     public ValueTask DisposeAsync()
     {
         CloseAsync().GetAwaiter().GetResult();

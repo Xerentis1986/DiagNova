@@ -1,16 +1,22 @@
 """Lizenzverwaltung: serverseitige Prüfung, Gerätebindung, Offline-Toleranz-Hinweis.
 
 Kein Fake-„Lizenz gültig“ ohne Abo-Status.
+Phase 23: signierte Offline-Tokens (HMAC) für Connector-Gate.
 """
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.models.subscriptions import DeviceBinding, Subscription
 from app.services.audit import write_audit
 from app.services.subscriptions import refresh_subscription_status, subscription_to_dict
@@ -189,4 +195,42 @@ def verify_connector_license(
         "plan_code": sub.plan_code,
         "offline_tolerance_hours": OFFLINE_TOLERANCE_HOURS,
         "message_de": "Lizenz aktiv." if allowed else f"Lizenz gesperrt ({sub.status}).",
+    }
+
+
+def _hmac_hex(payload: str) -> str:
+    secret = (get_settings().license_hmac_secret or "").encode("utf-8")
+    return hmac.new(secret, payload.encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def issue_signed_offline_token(
+    db: Session,
+    *,
+    workshop_id: str,
+    device_fingerprint: str,
+    valid_hours: int | None = None,
+) -> dict[str, Any]:
+    """Erzeugt HMAC-signiertes Offline-Token für Connector ApplySignedToken."""
+    verify = verify_connector_license(
+        db, workshop_id=workshop_id, device_fingerprint=device_fingerprint
+    )
+    hours = max(1, min(int(valid_hours or OFFLINE_TOLERANCE_HOURS), 72))
+    exp = int((_now() + timedelta(hours=hours)).timestamp())
+    payload_obj = {
+        "device_id": device_fingerprint,
+        "workshop_id": workshop_id,
+        "plan_code": verify.get("plan_code") or "none",
+        "exp": exp,
+        "jti": uuid.uuid4().hex,
+        "allowed": bool(verify.get("allowed")),
+        "entitlements": ["obd_live", "dtc_read"] if verify.get("allowed") else [],
+    }
+    payload = json.dumps(payload_obj, separators=(",", ":"), sort_keys=True)
+    sig = _hmac_hex(payload)
+    return {
+        **verify,
+        "payload": payload,
+        "signature": sig,
+        "offline_hours": hours,
+        "apply_hint": "POST connector /license/gate/apply mit {payload, signature}",
     }

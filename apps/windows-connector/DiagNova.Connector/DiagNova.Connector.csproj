@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>DiagNova.Connector</RootNamespace>
     <AssemblyName>DiagNova.Connector</AssemblyName>
-    <Version>0.15.0</Version>
-    <InformationalVersion>0.15.0</InformationalVersion>
+    <Version>0.23.0</Version>
+    <InformationalVersion>0.23.0</InformationalVersion>
     <ApplicationIcon>Assets\DiagNova_app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>

@@ -42,12 +42,15 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from_email: str = ""
     smtp_use_tls: bool = True
-    # Phase 22 – Connector Live-Bridge
+    # Phase 22/23 – Connector Live-Bridge (SSRF-Allowlist)
     connector_base_url: str = "http://127.0.0.1:8765"
     connector_bearer_token: str = ""
+    connector_url_allowlist: str = "127.0.0.1,localhost,::1"
     diag_default_mode: str = "demo"  # demo | live
     # MFA TOTP (Issuer-Label)
     mfa_issuer: str = "DiagNova"
+    # Phase 23 – Lizenz-HMAC (Demo; Prod-Secret via Env)
+    license_hmac_secret: str = "diagnova-phase23-license-hmac-not-for-prod"
 
     # Phase 14 – Software-Updates (HMAC-Demo; produktives Code-Signing separat)
     software_update_hmac_demo_secret: str = "diagnova-phase14-software-hmac-not-for-prod"
